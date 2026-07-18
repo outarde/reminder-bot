@@ -1,0 +1,10 @@
+target/
+.git/
+*.log
+bot_data/
+.DS_Store
+.env
+*.db
+Cargo.lock
+*.sublime-workspace
+*.sublime-project
