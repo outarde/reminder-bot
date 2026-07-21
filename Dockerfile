@@ -10,7 +10,9 @@ RUN mkdir src && echo "fn main() {}" > src/main.rs
 RUN cargo build --release
 
 COPY src ./src
-RUN cargo build --release
+RUN cargo build --release --verbose
+
+RUN ls -la /app/target/release/
 
 # ----------
 FROM debian:trixie-slim
@@ -25,8 +27,6 @@ RUN groupadd -g 1000 appuser && \
 WORKDIR /app
 
 COPY --from=builder /app/target/release/reminder-bot /app/bot
-# checking test
-#RUN ls -l /app/target/release
 
 # app folder
 RUN mkdir -p /app/data && chown -R appuser:appuser /app
