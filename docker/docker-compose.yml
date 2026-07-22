@@ -1,0 +1,20 @@
+services:
+  reminder-bot:
+    container_name: reminder-bot
+    image: ghcr.io/outarde/reminder-bot:latest
+    environment:
+      # All supported env variables are in /docker/example.env
+      # It is more convenient to configure variables in .env file in the container folder
+      - TZ=Etc/UTC
+    volumes:
+      - ./data:/app/data
+    env_file:
+      - .env
+    restart: unless-stopped
+    # Uncomment it to run command when the bot starts
+    # Typically, the <recover> command is used with the recovery key specified in the .env file to verify the device
+    # See Readme or --help page for all supported commands
+    # command: ["cleanup", "3"]
+    # Alternative format
+    # command: >
+    #  --cleanup 3
