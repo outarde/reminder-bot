@@ -33,7 +33,7 @@ pub async fn on_room_message(event: OriginalSyncRoomMessageEvent, room: Room, cl
     // Todo: command word modification support 
     let re = REMINDER_REGEX.get_or_init(|| {
         Regex::new(
-            r"^!(?:напомни|remind){1}\s+(?:(?P<datetime>(?P<day>\d{1,2})(?:\s+|\.|\\)(?P<month>[а-яё]+|\d{2})(?:\s+|\.|\\)?(?P<year>\d{4})?)|(?P<day_natural>сегодня|завтра|today|tomorrow))(?:\s+(?:в|at)?\s+(?P<hour>\d{2}):(?P<min>\d{2}))?\s+(?P<text>.+)$"
+            r"^!(?:напомни|remind){1}\s+(?:(?P<datetime>(?P<day>\d{1,2})(?:\s+|\.|\\)(?P<month>[а-яёa-z]+|\d{2})(?:\s+|\.|\\)?(?P<year>\d{4})?)|(?P<day_natural>сегодня|завтра|today|tomorrow))(?:\s+(?:в|at)?\s+(?P<hour>\d{2}):(?P<min>\d{2}))?\s+(?P<text>.+)$"
         ).unwrap()
     }); 
 
@@ -171,13 +171,14 @@ pub async fn on_room_message(event: OriginalSyncRoomMessageEvent, room: Room, cl
             }
 
             let date_str = format!("{}.{}.{}", day, month, year);
-            let reminder_mes = format!("Принято! Напомню {} в {}:{}", date_str, hour, min);
+            let reminder_mes = t!("saved", date = date_str, hour = hour, min = min);
             let _ = room.send(RoomMessageEventContent::text_plain(reminder_mes)).await.unwrap();
         } else {
-            let _ = room.send(RoomMessageEventContent::text_plain("Неверный формат 1")).await.unwrap();
+            let _ = room.send(RoomMessageEventContent::text_plain("Format error.")).await.unwrap();
         }
     } else if body.starts_with("!напомни") | body.starts_with("!remind") {
-        let mes = t!("welcome");
+        let date = Local::now().format("%Y.%m.%d").to_string();
+        let mes = t!("welcome", date = date);
         let _ = room.send(RoomMessageEventContent::text_plain(mes)).await.unwrap();
     }
 }

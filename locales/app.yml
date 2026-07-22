@@ -2,15 +2,20 @@ _version: 2
 welcome:
   en: >
    I'm a reminder bot. Send me a reminder in this format:
-   !remind me 28 June 2026 [at] 15:30 <reminder text>. You can replace the words
-   "today" or "tomorrow" and if no time was specified, the reminder will arrive at 9:00 AM.
+   !remind me %{date} [at] 15:30 <reminder text>. You can replace the month number with its name,
+   use words "today" or "tomorrow". If no time was specified the reminder will arrive at 09:00.
    I'll send it to you in a shared or private chat.
   ru: >
     Я — бот-напоминалка. Отправьте мне напоминание в формате:
-    !напомни 28 июня 2026 [в] 15:30 <текст напоминания>. Вы можете заменить дату на слова 
-    "сегодня" или "завтра" и не указывать время - тогда напоминание придет в 09:00.
+    !напомни %{date} [в] 15:30 <текст напоминания>. Вы можете заменить число месяца его названием,
+    дату — на слова "сегодня" или "завтра" и не указывать время — тогда напоминание придет в 09:00.
     Я отправлю вам его в общем или личном чате.
 reminder:
+  saved:
+    en: >
+      Accepted! Reminder on %{date} at %{hour}:%{min}
+    ru: >
+      Принято! Напомню %{date} в %{hour}:%{min}
   new:
     en: >
       🟢 Reminder for you: %{text}
