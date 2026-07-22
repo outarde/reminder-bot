@@ -177,7 +177,8 @@ pub async fn on_room_message(event: OriginalSyncRoomMessageEvent, room: Room, cl
             let _ = room.send(RoomMessageEventContent::text_plain("Неверный формат 1")).await.unwrap();
         }
     } else if body.starts_with("!напомни") | body.starts_with("!remind") {
-        let _ = room.send(RoomMessageEventContent::text_plain(t!("welcome"))).await.unwrap();
+        let mes = t!("welcome");
+        let _ = room.send(RoomMessageEventContent::text_plain(mes)).await.unwrap();
     }
 }
 
