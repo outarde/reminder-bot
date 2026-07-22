@@ -36,7 +36,7 @@ WORKDIR /app
 COPY --from=builder /app/target/release/reminder-bot /app/bot
 
 #
-RUN ls -lh /app/bot && file /app/bot
+RUN ls -lh /app/bot
 
 # app folder
 RUN mkdir -p /app/data && chown -R appuser:appuser /app
