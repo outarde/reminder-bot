@@ -10,6 +10,7 @@ RUN mkdir src && echo "fn main() {}" > src/main.rs
 RUN cargo build --release
 
 COPY src ./src
+COPY locales ./locales
 
 RUN rm -f /app/target/release/reminder-bot
 RUN rm -rf /app/target/release/.fingerprint/reminder-bot-*
@@ -32,7 +33,7 @@ RUN groupadd -g 1000 appuser && \
 WORKDIR /app
 
 COPY --from=builder /app/target/release/reminder-bot /app/bot
-COPY locales /app/locales
+COPY --from=builder /app/locales /app/locales
 
 # diagnostic
 # RUN ls -lh /app/bot
