@@ -20,7 +20,6 @@ RUN cargo build --release --bin reminder-bot
 
 #
 RUN ls -lh /app/target/release/reminder-bot
-RUN file /app/target/release/reminder-bot
 
 # ----------
 FROM debian:trixie-slim
