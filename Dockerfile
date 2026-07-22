@@ -10,16 +10,14 @@ RUN mkdir src && echo "fn main() {}" > src/main.rs
 RUN cargo build --release
 
 COPY src ./src
-# RUN cargo build --release --verbose
 
 RUN rm -f /app/target/release/reminder-bot
 RUN rm -rf /app/target/release/.fingerprint/reminder-bot-*
 
-#
 RUN cargo build --release --bin reminder-bot
 
-#
-RUN ls -lh /app/target/release/reminder-bot
+# diagnostic
+# RUN ls -lh /app/target/release/reminder-bot
 
 # ----------
 FROM debian:trixie-slim
@@ -34,9 +32,10 @@ RUN groupadd -g 1000 appuser && \
 WORKDIR /app
 
 COPY --from=builder /app/target/release/reminder-bot /app/bot
+COPY locales /app/locales
 
-#
-RUN ls -lh /app/bot
+# diagnostic
+# RUN ls -lh /app/bot
 
 # app folder
 RUN mkdir -p /app/data && chown -R appuser:appuser /app

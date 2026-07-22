@@ -35,9 +35,3 @@ jobs:
           tags: |
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
-      - name: Build binary
-        run: |
-          cargo build --release --verbose
-          ls -la target/release/
-          file target/release/reminder-*
-          du -sh target/release/reminder-*
