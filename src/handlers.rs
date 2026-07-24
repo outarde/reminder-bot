@@ -10,7 +10,7 @@ use matrix_sdk::{
     }
 };
 use tokio::time::{Duration, sleep};
-use chrono::{Local, NaiveDateTime, NaiveDate, TimeDelta};
+use chrono::{Local, Days, NaiveDateTime, NaiveDate, TimeDelta};
 use tokio_rusqlite::Connection;
 
 use regex::Regex;
@@ -43,8 +43,8 @@ pub async fn on_room_message(event: OriginalSyncRoomMessageEvent, room: Room, cl
         let mut month_str: &str = &(Local::now().format("%m").to_string());
 
         let today = Local::now().date_naive();
-        let tomorrow: NaiveDate = today + TimeDelta::try_days(1).unwrap();
-        let tomorrow = tomorrow.format("%d").to_string();
+        let tomorrow_date = today + Days::new(1);
+        let tomorrow = tomorrow_date.format("%d").to_string();
 
         // Named groups
         if let (Some(day_match), Some(month_match)) = (caps.name("day"), caps.name("month")) {
@@ -177,9 +177,10 @@ pub async fn on_room_message(event: OriginalSyncRoomMessageEvent, room: Room, cl
             let _ = room.send(RoomMessageEventContent::text_plain("Format error.")).await.unwrap();
         }
     } else if body.starts_with("!напомни") | body.starts_with("!remind") {
-        let date = Local::now().format("%Y.%m.%d").to_string();
-        let mes = t!("welcome", date = date);
-        let _ = room.send(RoomMessageEventContent::text_plain(mes)).await.unwrap();
+        let tomorrow = Local::now().date_naive() + Days::new(1);
+        let date = tomorrow.format("%Y.%m.%d").to_string();
+
+        let _ = room.send(RoomMessageEventContent::text_plain(t!("welcome", date = date))).await.unwrap();
     }
 }
 
