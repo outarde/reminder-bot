@@ -1,6 +1,6 @@
 # Reminder Bot for Matrix
 
-# Key Features:
+# Key Features
 - Create reminders with the `!remind` command in private and public rooms
 - Basic command variability: use of the words `today`, `tomorrow`, omitting the year and time
 - Basic multilingual support: English and Russian for commands and service messages

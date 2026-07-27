@@ -4,6 +4,13 @@ on:
   push:
     branches: [ "main" ]
     tags: [ "v*" ]
+  paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - 'LICENSE'
+      - '.gitignore'
+      - '.dockerignore'
+      - '**.env'
   workflow_dispatch:
 
 env:
@@ -34,12 +41,14 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=ref,event=branch
-            type=ref,event=pr
             type=semver,pattern=v{{version}}
             type=semver,pattern=v{{major}}.{{minor}}
+            
+            type=ref,event=branch
+            type=ref,event=pr
             type=sha,format=short
 
+            type=raw,value=edge,enable=${{ github.ref == 'refs/heads/main' }}
       - name: Build and push Docker image
         uses: docker/build-push-action@v7
         with:
