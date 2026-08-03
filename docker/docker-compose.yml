@@ -14,7 +14,4 @@ services:
     # Uncomment it to run command when the bot starts
     # Typically, the <recover> command is used with the recovery key specified in the .env file to verify the device
     # See Readme or --help page for all supported commands
-    # command: ["cleanup", "3"]
-    # Alternative format
-    # command: >
-    #  --cleanup 3
+    # command: ["recover"]
