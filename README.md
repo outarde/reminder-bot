@@ -1,7 +1,11 @@
-<p align="center">![Logo](docs/assets/logo.png)</p>
-Logo Credits: [Alarm clock stickers created by Stickers - Flaticon](https://www.flaticon.com/free-stickers/alarm-clock)
+<p align="center">
+	<img src="docs/assets/logo.png" title="Logo" width="30%">
+</p>
+<p align="center">
+	Logo credits: <a href="https://www.flaticon.com/free-stickers/alarm-clock" title="alarm clock stickers">Alarm clock stickers created by Stickers - Flaticon</a>
+</p>
 
-![GitHub License](https://img.shields.io/github/license/outarde/reminder-bot) ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/outarde/reminder-bot/docker-publish.yml) ![GitHub Tag](https://img.shields.io/github/v/tag/outarde/reminder-bot?style=plastic) ![GitHub commit activity](https://img.shields.io/github/commit-activity/m/outarde/reminder-bot)
+![GitHub License](https://img.shields.io/github/license/outarde/reminder-bot) ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/outarde/reminder-bot/docker-publish.yml) ![GitHub Tag](https://img.shields.io/github/v/tag/outarde/reminder-bot) ![GitHub commit activity](https://img.shields.io/github/commit-activity/m/outarde/reminder-bot)
 
 # Reminder Bot
 A lightweight chatbot for reminders on Matrix servers with multilingual support. Schedule reminders without leaving the messenger in personal or group rooms.
@@ -40,8 +44,8 @@ docker run -d --name reminder-bot --restart unless-stopped \
 For more persistent setup use [docker-compose.yml](https://github.com/outarde/reminder-bot/blob/main/docker/docker-compose.yml).
 
 Set the environment variables as shown in [example.env](https://github.com/outarde/reminder-bot/blob/main/docker/example.env):
-	1. `MATRIX_HOMESERVER` — Matrix server address
-	2. `MATRIX_USERNAME` and `MATRIX_PASSWORD` — bot's username and password. Create a user via Matrix Authentication Service (MAS): `docker exec matrix-auth mas-cli manage register-user USERNAME --password PASSWORD`.
+1. `MATRIX_HOMESERVER` — Matrix server address
+2. `MATRIX_USERNAME` and `MATRIX_PASSWORD` — bot's username and password. Create a user via Matrix Authentication Service (MAS): `docker exec matrix-auth mas-cli manage register-user USERNAME --password PASSWORD`.
 
 > [!IMPORTANT]
 >  Make sure the bot's data folder is forwarded to the host in `volumes` section. Otherwise, the bot will create a new session each time it's started.
@@ -50,8 +54,8 @@ Set the environment variables as shown in [example.env](https://github.com/outar
 | Variable            | Description                                                                                                                                | Default                             |
 | :------------------ | :----------------------------------------------------------------------------------------------------------------------------------------- | :---------------------------------- |
 | `MATRIX_HOMESERVER` | Matrix homeserver address.                                                                                                                 | `Required`                          |
-| `MATRIX_USERNAME`   | Bot's account username.                                                                                                                    | `Required, or MATRIX_TOKEN instead` |
-| `MATRIX_PASSWORD`   | Bot's account password.                                                                                                                    | `Required, or MATRIX_TOKEN instead` |
+| `MATRIX_USERNAME`   | Bot's account username.                                                                                                                    | `Required`, or `MATRIX_TOKEN instead` |
+| `MATRIX_PASSWORD`   | Bot's account password.                                                                                                                    | `Required`, or `MATRIX_TOKEN instead` |
 | `MATRIX_TOKEN`      | Authentication token instead of a username and password. Generate a token via Element Admin or other service.                              | `None`                              |
 | `MATRIX_DEVICE`     | An arbitrary name for the bot's device, which will be visible in the server's admin panel and in the bot's device list.                    | `reminder-bot-device`               |
 | `TZ`                | Timezone (e.g. `Europe/Paris`). Use values from the [list](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones#List).             | `UTC`                               |
@@ -85,7 +89,9 @@ After reminders are sent, they are not deleted from the database but marked as s
 ## Matrix Verification
 Without verification, every bot message will be marked with an exclamation point in most clients.
 
-![ElementX-Screenshot1](docs/assets/ElementX-Screenshot1.jpg)
+<p>
+	<img src="docs/assets/ElementX-Screenshot1.jpg" title="ElementX Screenshot" width="30%">
+</p>
 
 For example, the Element X will warn: 
 >Encrypted by a device not verified by its owner.
