@@ -24,7 +24,11 @@
 # Quick Start
 ## Docker
 ```
-docker run -d --name reminder-bot --restart unless-stopped -v reminder-bot:/app/data -e MATRIX_HOMESERVER=homeserver-url -e MATRIX_TOKEN=your-token ghcr.io/outarde/reminder-bot:latest
+docker run -d --name reminder-bot --restart unless-stopped \
+  -v reminder-bot:/app/data \
+  -e MATRIX_HOMESERVER=homeserver-url \
+  -e MATRIX_TOKEN=your-token \
+  ghcr.io/outarde/reminder-bot:latest
 ```
 ### Docker Compose
 
