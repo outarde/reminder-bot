@@ -1,11 +1,14 @@
 <p align="center">
-	<img src="docs/assets/logo.png" title="Logo" width="30%">
+	<img src="docs/assets/logo.png" alt="Logo" width="35%">
 </p>
 <p align="center">
-	Logo credits: <a href="https://www.flaticon.com/free-stickers/alarm-clock" title="alarm clock stickers">Alarm clock stickers created by Stickers - Flaticon</a>
+	<i>
+		Logo credits:  <a href="https://www.flaticon.com/free-stickers/alarm-clock" title="alarm clock stickers">Alarm clock stickers created by Stickers - Flaticon</a>
+	</i>
 </p>
+<br>
 
-![GitHub License](https://img.shields.io/github/license/outarde/reminder-bot) ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/outarde/reminder-bot/docker-publish.yml) ![GitHub Tag](https://img.shields.io/github/v/tag/outarde/reminder-bot) ![GitHub commit activity](https://img.shields.io/github/commit-activity/m/outarde/reminder-bot)
+[![GitHub License](https://img.shields.io/github/license/outarde/reminder-bot)](https://github.com/outarde/reminder-bot/blob/main/LICENSE) [![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/outarde/reminder-bot/docker-publish.yml)](https://github.com/outarde/reminder-bot/actions) [![GitHub Tag](https://img.shields.io/github/v/tag/outarde/reminder-bot)](https://github.com/outarde/reminder-bot/releases) [![GitHub commit activity](https://img.shields.io/github/commit-activity/m/outarde/reminder-bot)](https://github.com/outarde/reminder-bot/commits/main/)
 
 # Reminder Bot
 A lightweight chatbot for reminders on Matrix servers with multilingual support. Schedule reminders without leaving the messenger in personal or group rooms.
@@ -90,7 +93,7 @@ After reminders are sent, they are not deleted from the database but marked as s
 Without verification, every bot message will be marked with an exclamation point in most clients.
 
 <p>
-	<img src="docs/assets/ElementX-Screenshot1.jpg" title="ElementX Screenshot" width="30%">
+	<img src="docs/assets/ElementX-Screenshot1.jpg" alt="ElementX Screenshot" width="480px">
 </p>
 
 For example, the Element X will warn: 
