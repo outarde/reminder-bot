@@ -23,13 +23,17 @@
 - [ ] Administrative module for cleaning up the reminder database
 # Quick Start
 ## Docker
-You'll likely want to configure the bot the same way you configured the Matrix server in Docker.
+```
+docker run -d --name reminder-bot --restart unless-stopped -v reminder-bot:/app/data -e MATRIX_HOMESERVER=homeserver-url -e MATRIX_TOKEN=your-token ghcr.io/outarde/reminder-bot:latest
+```
+### Docker Compose
 
 1. Use [docker-compose.yml](https://github.com/outarde/reminder-bot/blob/main/docker/docker-compose.yml). Make sure the bot's data folder is forwarded to the host in `volumes` section. Otherwise, the bot will create a new session each time it's started.
 2. Set the environment variables as shown in [example.env](https://github.com/outarde/reminder-bot/blob/main/docker/example.env):
 	1. `MATRIX_HOMESERVER` — Matrix server address
 	2. `MATRIX_USERNAME` and `MATRIX_PASSWORD` — Bot username and password. Create a user via Matrix Authentication Service (MAS): `docker exec matrix-auth mas-cli manage register-user USERNAME --password PASSWORD --yes`
-Optional:
+
+Optional variables:
 - `MATRIX_TOKEN` — you can use a token instead of a username and password. Generate a login token via Element Admin.
 - `MATRIX_DEVICE` — an arbitrary name for the bot's device, which will be visible in the server's admin panel and in the bot's device list.
 - `TZ` — specify a time zone. Use values from the [list](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones#List).
