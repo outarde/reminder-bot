@@ -36,8 +36,15 @@ pub struct RecoveryConfig {
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub struct I18nConfig {
+    #[serde(default = "I18nConfig::default_app")]
     pub app: String,
-    pub bot_command: String,
+    pub bot_command: Option<String>,
+}
+
+impl I18nConfig {
+    fn default_app() -> String {
+        "en".to_string()
+    }
 }
 
 impl AppConfig {
