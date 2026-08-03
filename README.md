@@ -1,3 +1,6 @@
+<p align="center">![Logo](docs/assets/logo.png)</p>
+Logo Credits: [Alarm clock stickers created by Stickers - Flaticon](https://www.flaticon.com/free-stickers/alarm-clock)
+
 ![GitHub License](https://img.shields.io/github/license/outarde/reminder-bot) ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/outarde/reminder-bot/docker-publish.yml) ![GitHub Tag](https://img.shields.io/github/v/tag/outarde/reminder-bot?style=plastic) ![GitHub commit activity](https://img.shields.io/github/commit-activity/m/outarde/reminder-bot)
 
 # Reminder Bot
@@ -80,7 +83,11 @@ After reminders are sent, they are not deleted from the database but marked as s
 > Reminders are stored unencrypted.
 
 ## Matrix Verification
-Without verification, every bot message will be marked with an exclamation point in most clients. For example, the Element X will warn: 
+Without verification, every bot message will be marked with an exclamation point in most clients.
+
+![ElementX-Screenshot1](docs/assets/ElementX-Screenshot1.jpg)
+
+For example, the Element X will warn: 
 >Encrypted by a device not verified by its owner.
 
 Users will also receive a warning before sending their first message to the bot.
