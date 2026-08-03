@@ -5,6 +5,9 @@ use tokio::fs;
 use anyhow::{Context, Result};
 use serde::{Deserialize, Serialize};
 
+/// Default language for bot messages.
+pub const DEFAULT_LANG_APP: &str = "en";
+
 /// Config for AppContext
 #[derive(Debug, Deserialize)]
 pub struct AppConfig {
@@ -43,7 +46,7 @@ pub struct I18nConfig {
 
 impl I18nConfig {
     fn default_app() -> String {
-        "en".to_string()
+        DEFAULT_LANG_APP.to_string()
     }
 }
 

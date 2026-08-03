@@ -25,6 +25,9 @@ use rust_i18n::t;
 // app crates
 use crate::config;
 
+/// Default initial_device_display_name to prevent "magic values" in the code.
+pub const DEVICE_NAME: &str = "reminder-bot-device";
+
 /// The data needed to re-build a client.
 #[derive(Debug, Serialize, Deserialize)]
 struct ClientSession {
@@ -97,7 +100,7 @@ pub async fn login(
     let (client, client_session) = build_client(data_dir, config.homeserver.as_str()).await?;
     let matrix_auth = client.matrix_auth();
 
-    let device_name = config.device.as_deref().unwrap_or("reminder-bot-device");
+    let device_name = config.device.as_deref().unwrap_or(DEVICE_NAME);
 
     match match (config.username.as_deref(), config.password.as_deref(), config.token.as_deref()) {
         (Some(u), Some(p), _) => {
