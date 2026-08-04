@@ -23,6 +23,9 @@ use crate::config;
 // Compile regex only once
 static REMINDER_REGEX: OnceLock<Regex> = OnceLock::new();
 
+/// Default command
+pub const DEFAULT_BOT_COMMAND: &str = "remind";
+
 ///
 pub async fn on_room_message(
     event: OriginalSyncRoomMessageEvent, 
@@ -38,19 +41,20 @@ pub async fn on_room_message(
     let MessageType::Text(text_content) = &event.content.msgtype else { return };
     let body = text_content.body.trim();
 
+    // Vec of commands to activate bot
+    let mut commands = vec![DEFAULT_BOT_COMMAND];
+    let i18n_command = t!("reminder.command");
+    commands.push(&i18n_command);
+
     // Command for regular expression
-    let regex_str = match &i18n_config.bot_command {
-        Some(lang_cmd) => {
-            let mut s = String::with_capacity(256); 
-            s.push_str(r"^!(?:remind|напомни|");
-            s.push_str(&regex::escape(lang_cmd));
-            s.push_str(r")\s+(?:(?P<datetime>(?P<day>\d{1,2})(?:\s+|\.|\|-)(?P<month>[а-яёa-z]+|\d{2})(?:\s+|\.|\|-)?(?P<year>\d{4})?)|(?P<day_natural>сегодня|завтра|today|tomorrow))(?:\s+(?:в|at)?\s+(?P<hour>\d{2}):(?P<min>\d{2}))?\s+(?P<text>.+)$");
-            s
-        }
-        None => {
-            String::from(r"^!(?:remind|напомни)\s+(?:(?P<datetime>(?P<day>\d{1,2})(?:\s+|\.|\|-)(?P<month>[а-яёa-z]+|\d{2})(?:\s+|\.|\|-)?(?P<year>\d{4})?)|(?P<day_natural>сегодня|завтра|today|tomorrow))(?:\s+(?:в|at)?\s+(?P<hour>\d{2}):(?P<min>\d{2}))?\s+(?P<text>.+)$")
-        }
+    let mut regex_str = String::with_capacity(256); 
+    regex_str.push_str(&format!("^!(?:{}|", &commands.join("|")));
+    
+    if let Some(lang_cmd) = &i18n_config.bot_command {
+        commands.push(&lang_cmd);
+        regex_str.push_str(&regex::escape(&lang_cmd));
     };
+    regex_str.push_str(r")\s+(?:(?P<datetime>(?P<day>\d{1,2})(?:\s+|\.|\|-)(?P<month>[а-яёa-z]+|\d{2})(?:\s+|\.|\|-)?(?P<year>\d{4})?)|(?P<day_natural>сегодня|завтра|today|tomorrow))(?:\s+(?:в|at)?\s+(?P<hour>\d{2}):(?P<min>\d{2}))?\s+(?P<text>.+)$");
 
     // Regular expression
     let re = REMINDER_REGEX.get_or_init(|| {
@@ -196,11 +200,14 @@ pub async fn on_room_message(
         } else {
             let _ = room.send(RoomMessageEventContent::text_plain("Format error.")).await.unwrap();
         }
-    } else if body.starts_with("!напомни") | body.starts_with("!remind") {
-        let tomorrow = Local::now().date_naive() + Days::new(1);
-        let date = tomorrow.format("%Y.%m.%d").to_string();
+    } else {
+        let found = commands.iter().any(|&cmd| body.starts_with(cmd));
+        if found {
+            let tomorrow = Local::now().date_naive() + Days::new(1);
+            let date = tomorrow.format("%Y.%m.%d").to_string();
 
-        let _ = room.send(RoomMessageEventContent::text_plain(t!("welcome", date = date))).await.unwrap();
+            let _ = room.send(RoomMessageEventContent::text_plain(t!("welcome", date = date))).await.unwrap();
+        }
     }
 }
 

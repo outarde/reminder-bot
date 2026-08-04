@@ -11,6 +11,9 @@ welcome:
     дату — на слова "сегодня" или "завтра" и не указывать время — тогда напоминание придет в 09:00.
     Я отправлю вам его в общем или личном чате.
 reminder:
+  command:
+    en: remind
+    ru: напомни
   saved:
     en: >
       Accepted! Reminder on %{date} at %{hour}:%{min}
