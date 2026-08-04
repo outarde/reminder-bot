@@ -17,11 +17,20 @@ use regex::Regex;
 use std::sync::OnceLock;
 use rust_i18n::t;
 
+// app crates
+use crate::config;
+
 // Compile regex only once
 static REMINDER_REGEX: OnceLock<Regex> = OnceLock::new();
 
 ///
-pub async fn on_room_message(event: OriginalSyncRoomMessageEvent, room: Room, client: Client, db: Connection) {
+pub async fn on_room_message(
+    event: OriginalSyncRoomMessageEvent, 
+    room: Room, 
+    client: Client, 
+    db: Connection,
+    i18n_config: config::I18nConfig,
+) {
     // We only want to log text messages in joined rooms.
     if room.state() != RoomState::Joined {
         return;
@@ -29,12 +38,17 @@ pub async fn on_room_message(event: OriginalSyncRoomMessageEvent, room: Room, cl
     let MessageType::Text(text_content) = &event.content.msgtype else { return };
     let body = text_content.body.trim();
 
+    // Command for regular expression
+    let mut cmd = String::from("^!(?:remind|напомни");
+    if let Some(lang_cmd) = i18n_config.bot_command {
+        cmd.push('|');
+        cmd.push_str(&regex::escape(&lang_cmd));
+    }
+    cmd.push_str(r")\s+(?:(?P<datetime>(?P<day>\d{1,2})(?:\s+|\.|\|-)(?P<month>[а-яёa-z]+|\d{2})(?:\s+|\.|\|-)?(?P<year>\d{4})?)|(?P<day_natural>сегодня|завтра|today|tomorrow))(?:\s+(?:в|at)?\s+(?P<hour>\d{2}):(?P<min>\d{2}))?\s+(?P<text>.+)$");
 
-    // Todo: command word modification support 
+    // Regular expression
     let re = REMINDER_REGEX.get_or_init(|| {
-        Regex::new(
-            r"^!(?:напомни|remind){1}\s+(?:(?P<datetime>(?P<day>\d{1,2})(?:\s+|\.|\\)(?P<month>[а-яёa-z]+|\d{2})(?:\s+|\.|\\)?(?P<year>\d{4})?)|(?P<day_natural>сегодня|завтра|today|tomorrow))(?:\s+(?:в|at)?\s+(?P<hour>\d{2}):(?P<min>\d{2}))?\s+(?P<text>.+)$"
-        ).unwrap()
+        Regex::new(&cmd).unwrap()
     }); 
 
     // Check command word

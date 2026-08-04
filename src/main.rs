@@ -245,8 +245,9 @@ impl AppContext {
         // Handlers
         let client_clone = client.clone();
         let db_clone = self.db_conn.as_ref().unwrap().clone();
+        let i18n_clone = self.config.i18n.clone();
         client.add_event_handler(move |event, room| {
-            handlers::on_room_message(event, room, client_clone.clone(), db_clone.clone())
+            handlers::on_room_message(event, room, client_clone, db_clone, i18n_clone)
         });
         client.add_event_handler(handlers::on_stripped_state_member);
 

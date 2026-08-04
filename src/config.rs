@@ -36,7 +36,7 @@ pub struct RecoveryConfig {
 }
 
 /// Language
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub struct I18nConfig {
     #[serde(default = "I18nConfig::default_app")]
