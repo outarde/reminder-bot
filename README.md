@@ -1,5 +1,5 @@
 <p align="center">
-	<img src="docs/assets/logo.png" alt="Logo" width="35%">
+	<img src="docs/assets/logo.png" alt="Logo" width="400px">
 </p>
 <p align="center">
 	<i>
@@ -17,14 +17,14 @@ A lightweight chatbot for reminders on Matrix servers with multilingual support.
 - 📆 Basic date variability with the words 'today', 'tomorrow', omitting the year and time
 - 🔤 Multilingual support for commands and service messages
 - 📋 Send a summary of missed reminders in each chat and room
-- 🎹 Soon: alternative command to create reminder
+- 🎹 Alternative command to create reminder
 ## Matrix Account Features
 - Login to the bot's Matrix account with a password and token, automatic device verification and backup if this is the first device for the account, and receiving a recovery key
 - Manual verification with a recovery key if the bot account has been logged in to before, and backup enabled via the command line (CLI)
 - Verification of other devices on which the bot is authorized
 - Reset all verification settings with the ability to save or delete the backup and receive a new recovery key
 ## Feature Roadmap
-- [ ] Alternative text for the bot activation command, set in the bot settings
+- [x] Alternative text for the bot activation command
 - [ ] Sending a summary of sent and scheduled room or chat reminders on user command
 - [ ] Deleting reminders
 - [ ] Recurring reminders
@@ -57,12 +57,12 @@ Set the environment variables as shown in [example.env](https://github.com/outar
 | Variable            | Description                                                                                                                                | Default                             |
 | :------------------ | :----------------------------------------------------------------------------------------------------------------------------------------- | :---------------------------------- |
 | `MATRIX_HOMESERVER` | Matrix homeserver address.                                                                                                                 | `Required`                          |
-| `MATRIX_USERNAME`   | Bot's account username.                                                                                                                    | `Required`, or `MATRIX_TOKEN instead` |
-| `MATRIX_PASSWORD`   | Bot's account password.                                                                                                                    | `Required`, or `MATRIX_TOKEN instead` |
+| `MATRIX_USERNAME`   | Bot's account username.                                                                                                                    | `Required`, or `MATRIX_TOKEN` instead |
+| `MATRIX_PASSWORD`   | Bot's account password.                                                                                                                    | `Required`, or `MATRIX_TOKEN` instead |
 | `MATRIX_TOKEN`      | Authentication token instead of a username and password. Generate a token via Element Admin or other service.                              | `None`                              |
 | `MATRIX_DEVICE`     | An arbitrary name for the bot's device, which will be visible in the server's admin panel and in the bot's device list.                    | `reminder-bot-device`               |
 | `TZ`                | Timezone (e.g. `Europe/Paris`). Use values from the [list](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones#List).             | `UTC`                               |
-| `LANG_APP`          | Language for bot messages. As of version 0.2.1, the following languages ​​are available: en — English, ru — Russian. Applies to all users. | `en`                                |
+| `LANG_APP`          | Language for bot messages. As of version 0.2.2, the following languages are available: en — English, ru — Russian. Applies to all users. | `en`                                |
 
 ## Usage
 ### Start a Chat
