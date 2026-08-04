@@ -39,16 +39,22 @@ pub async fn on_room_message(
     let body = text_content.body.trim();
 
     // Command for regular expression
-    let mut cmd = String::from("^!(?:remind|напомни");
-    if let Some(lang_cmd) = i18n_config.bot_command {
-        cmd.push('|');
-        cmd.push_str(&regex::escape(&lang_cmd));
-    }
-    cmd.push_str(r")\s+(?:(?P<datetime>(?P<day>\d{1,2})(?:\s+|\.|\|-)(?P<month>[а-яёa-z]+|\d{2})(?:\s+|\.|\|-)?(?P<year>\d{4})?)|(?P<day_natural>сегодня|завтра|today|tomorrow))(?:\s+(?:в|at)?\s+(?P<hour>\d{2}):(?P<min>\d{2}))?\s+(?P<text>.+)$");
+    let regex_str = match &i18n_config.bot_command {
+        Some(lang_cmd) => {
+            let mut s = String::with_capacity(256); 
+            s.push_str(r"^!(?:remind|напомни|");
+            s.push_str(&regex::escape(lang_cmd));
+            s.push_str(r")\s+(?:(?P<datetime>(?P<day>\d{1,2})(?:\s+|\.|\|-)(?P<month>[а-яёa-z]+|\d{2})(?:\s+|\.|\|-)?(?P<year>\d{4})?)|(?P<day_natural>сегодня|завтра|today|tomorrow))(?:\s+(?:в|at)?\s+(?P<hour>\d{2}):(?P<min>\d{2}))?\s+(?P<text>.+)$");
+            s
+        }
+        None => {
+            String::from(r"^!(?:remind|напомни)\s+(?:(?P<datetime>(?P<day>\d{1,2})(?:\s+|\.|\|-)(?P<month>[а-яёa-z]+|\d{2})(?:\s+|\.|\|-)?(?P<year>\d{4})?)|(?P<day_natural>сегодня|завтра|today|tomorrow))(?:\s+(?:в|at)?\s+(?P<hour>\d{2}):(?P<min>\d{2}))?\s+(?P<text>.+)$")
+        }
+    };
 
     // Regular expression
     let re = REMINDER_REGEX.get_or_init(|| {
-        Regex::new(&cmd).unwrap()
+        Regex::new(&regex_str).unwrap()
     }); 
 
     // Check command word
