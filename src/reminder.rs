@@ -260,11 +260,19 @@ async fn summary_missed(
                 // Sorting by time and combining into a summary, can also be numbered.
                 let mut sorted = reminders.clone();
                 sorted.sort_by_key(|r| r.target_time);
+
                 let summary = sorted
                     .iter()
-                    .map(|r| format!("⚠️ {} (⏲️: {})", r.text, r.target_time))
-                    .collect::<Vec<_>>()
-                    .join("\n");
+                    .map(|r| {
+                        let target_time_date = r.target_time.format("%d.%m.%Y").to_string();
+                        let target_time_time = r.target_time.format("%H:%M").to_string();
+                        let sum = t!("reminder.list", text = r.text, date = target_time_date, time = target_time_time);
+                        sum
+                        //format!("{} ({} {} {})", r.text, target_time_date, "at", target_time_time)
+                    })
+                    .collect::<String>();
+                    //.collect::<Vec<_>>();
+                    //.join("\n");
 
                 let message = t!("reminder.summary", sum = summary);
 

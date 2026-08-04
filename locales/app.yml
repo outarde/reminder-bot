@@ -15,10 +15,13 @@ reminder:
     en: remind
     ru: напомни
   saved:
+    en: ⏲️ Accepted! Remind you on %{date} at %{hour}:%{min}
+    ru: ⏲️ Принято! Напомню %{date} в %{hour}:%{min}
+  list:
     en: >
-      Accepted! Reminder on %{date} at %{hour}:%{min}
+      %{text} on %{date} at %{time}
     ru: >
-      Принято! Напомню %{date} в %{hour}:%{min}
+      %{text} (%{date} в %{time})
   new:
     en: >
       🟢 Reminder for you: %{text}
@@ -26,9 +29,11 @@ reminder:
       🟢 Вам напоминание: %{text}
   summary:
     en: |
-      Missed reminders in this room: %{sum}
+      ⚠️ Missed reminders in this room: 
+      %{sum}
     ru: |
-      Пропущенные напоминания в этой комнате:: %{sum}
+      ⚠️ Пропущенные напоминания в этой комнате: 
+      %{sum}
 recovery:
   verification-with-key-failure:
     en: Can not verify device with this key

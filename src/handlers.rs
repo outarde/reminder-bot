@@ -59,7 +59,7 @@ pub async fn on_room_message(
     // Regular expression
     let re = REMINDER_REGEX.get_or_init(|| {
         Regex::new(&regex_str).unwrap()
-    }); 
+    });
 
     // Check command word
     if let Some(caps) = re.captures(body) {
@@ -200,8 +200,9 @@ pub async fn on_room_message(
         } else {
             let _ = room.send(RoomMessageEventContent::text_plain("Format error.")).await.unwrap();
         }
-    } else {
-        let found = commands.iter().any(|&cmd| body.starts_with(cmd));
+    } else if (body.starts_with("!")) {
+        let body_content = body.strip_prefix("!").unwrap_or(body);
+        let found = commands.iter().any(|&cmd| body_content.starts_with(cmd));
         if found {
             let tomorrow = Local::now().date_naive() + Days::new(1);
             let date = tomorrow.format("%Y.%m.%d").to_string();
