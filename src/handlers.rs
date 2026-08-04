@@ -191,7 +191,7 @@ pub async fn on_room_message(
             }
 
             let date_str = format!("{}.{}.{}", day, month, year);
-            let reminder_mes = t!("saved", date = date_str, hour = hour, min = min);
+            let reminder_mes = t!("reminder.saved", date = date_str, hour = hour, min = min);
             let _ = room.send(RoomMessageEventContent::text_plain(reminder_mes)).await.unwrap();
         } else {
             let _ = room.send(RoomMessageEventContent::text_plain("Format error.")).await.unwrap();
