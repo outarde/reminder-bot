@@ -63,6 +63,7 @@ Set the environment variables as shown in [example.env](https://github.com/outar
 | `MATRIX_DEVICE`     | An arbitrary name for the bot's device, which will be visible in the server's admin panel and in the bot's device list.                    | `reminder-bot-device`               |
 | `TZ`                | Timezone (e.g. `Europe/Paris`). Use values from the [list](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones#List).             | `UTC`                               |
 | `LANG_APP`          | Language for bot messages. As of version 0.2.2, the following languages are available: en — English, ru — Russian. Applies to all users. | `en`                                |
+| `LANG_BOT_COMMAND`  | An alternative command for activating the bot in rooms in addition to `remind` command that will always work. It should be specified without the exclamation point. | `None`                                |
 
 ## Usage
 ### Start a Chat
