@@ -34,6 +34,24 @@ A lightweight chatbot for reminders on Matrix servers with multilingual support.
 - [ ] Time zone settings. Currently, reminders are sent according to a single time zone, set in the bot or server settings. It is expected that each user will be able to set their own alternative time zone, which will be taken into account when sending reminders.
 - [ ] Creating reminders for one user for another
 - [ ] Administrative module for cleaning up the reminder database
+## Screenshots
+<table>
+  <tr>
+	  <td>
+		  <img src="docs/assets/UI-Chat1-Dark.jpg" alt="First message" width="200px">
+	  </td>
+	  <td>
+		  <img src="docs/assets/UI-Chat2-Dark.jpg" alt="Interacting with the bot" width="200px">
+	  </td>
+	  <td>
+		  <img src="docs/assets/UI-List1-Dark.jpg" alt="New reminder notification in chats list" width="200px">
+	  </td>
+	  <td>
+		  <img src="docs/assets/UI-List2-Dark.jpg" alt="Missed reminders notification in chats list" width="200px">
+	  </td>
+  </tr>
+</table>
+
 ## Quick Start
 ### Docker
 ```
