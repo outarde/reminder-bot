@@ -54,7 +54,7 @@ pub async fn on_room_message(
         commands.push(&lang_cmd);
         regex_str.push_str(&regex::escape(&lang_cmd));
     };
-    regex_str.push_str(r")\s+(?:(?P<datetime>(?P<day>\d{1,2})(?:\s+|\.|\|-)(?P<month>[а-яёa-z]+|\d{2})(?:\s+|\.|\|-)?(?P<year>\d{4})?)|(?P<day_natural>сегодня|завтра|today|tomorrow))(?:\s+(?:в|at)?\s+(?P<hour>\d{2}):(?P<min>\d{2}))?\s+(?P<text>.+)$");
+    regex_str.push_str(r")\s+(?:(?P<datetime>(?P<day>\d{1,2})(?:\s+|\.|\|-)(?P<month>[а-яёa-z]+|\d{2})(?:\s+|\.|\|-)?(?P<year>\d{4})?)|(?P<day_natural>сегодня|завтра|today|tomorrow))(?:(?:\s+(?:в|at))?\s+(?P<hour>\d{2}):(?P<min>\d{2}))?\s+(?P<text>.+)$");
 
     // Regular expression
     let re = REMINDER_REGEX.get_or_init(|| {
