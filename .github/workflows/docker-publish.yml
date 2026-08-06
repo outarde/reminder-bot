@@ -3,7 +3,6 @@ name: Build and Push Docker Image
 on:
   push:
     branches: [ "main" ]
-    tags: [ "v*" ]
     paths-ignore:
         - '**.md'
         - 'docs/**'
@@ -11,6 +10,8 @@ on:
         - '.gitignore'
         - '.dockerignore'
         - '**.env'
+  push:
+    tags: [ "v*" ]
   workflow_dispatch:
 
 env:
