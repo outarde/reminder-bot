@@ -1,4 +1,5 @@
 /target
+/.cargo
 **/*.rs.bk
 Cargo.lock
 .env
@@ -6,3 +7,5 @@ Cargo.lock
 .DS_Store
 *.sublime-workspace
 *.sublime-project
+# temporary
+.github/workflows/build-edge.yml
