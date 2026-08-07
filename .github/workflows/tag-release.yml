@@ -1,0 +1,70 @@
+name: Tag Release
+
+on:
+  push:
+    tags: [ "v*" ]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag name'
+        required: true
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  retag:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v4
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v6
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=semver,pattern=v{{version}}
+            type=semver,pattern=v{{major}}.{{minor}}
+            type=raw,value=latest
+
+      - name: Promote Image using imagetools
+        run: |
+          SOURCE_IMAGE=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:edge
+          
+          TARGET_TAGS=""
+
+          # meta.outputs tags
+          while read -r tag; do
+            if [ -n "$tag" ]; then
+              TARGET_TAGS="$TARGET_TAGS --tag $tag"
+            fi
+          done <<EOF
+          ${{ steps.meta.outputs.tags }}
+          EOF
+
+          # event.input tag (if workflow_dispatch)
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            MANUAL_TAG="${{ github.event.inputs.tag }}"
+            if [ -n "$MANUAL_TAG" ]; then
+              echo "Adding manual tag: $MANUAL_TAG"
+              TARGET_TAGS="$TARGET_TAGS --tag $MANUAL_TAG"
+            fi
+          fi
+
+          echo "Promoting $SOURCE_IMAGE with tags: $TARGET_TAGS"
+          
+          docker buildx imagetools create $TARGET_TAGS $SOURCE_IMAGE
