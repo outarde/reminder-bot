@@ -1,8 +1,8 @@
 name: Tag Release
 
 on:
-  push:
-    tags: [ "v*" ]
+  # push:
+    # tags: [ "v*" ]
   workflow_dispatch:
     inputs:
       tag:
@@ -61,10 +61,9 @@ jobs:
             MANUAL_TAG="${{ github.event.inputs.tag }}"
             # make path to ghcr.io, not docker hub
             MANUAL_TAG_FULL="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:$MANUAL_TAG_RAW"
-            
+
             echo "Adding manual tag: $MANUAL_TAG_FULL"
             TARGET_TAGS="$TARGET_TAGS --tag $MANUAL_TAG_FULL"
-            fi
           fi
 
           echo "Promoting $SOURCE_IMAGE with tags: $TARGET_TAGS"
