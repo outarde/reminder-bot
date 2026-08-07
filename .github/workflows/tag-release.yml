@@ -59,6 +59,9 @@ jobs:
           # event.input tag (if workflow_dispatch)
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             MANUAL_TAG="${{ github.event.inputs.tag }}"
+            # make path to ghcr.io, not docker hub
+            MANUAL_TAG_FULL="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:$MANUAL_TAG_RAW"
+            
             if [ -n "$MANUAL_TAG" ]; then
               echo "Adding manual tag: $MANUAL_TAG"
               TARGET_TAGS="$TARGET_TAGS --tag $MANUAL_TAG"
