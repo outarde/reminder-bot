@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM rust:1.96-slim AS builder
+FROM --platform=$TARGETPLATFORM rust:1.96-slim AS builder
 
 RUN apt-get update && apt-get install -y \
     pkg-config libssl-dev libsqlite3-dev \
@@ -21,7 +21,7 @@ RUN cargo build --release --bin reminder-bot
 # RUN ls -lh /app/target/release/reminder-bot
 
 # ----------
-FROM --platform=$BUILDPLATFORM debian:trixie-slim
+FROM --platform=$TARGETPLATFORM debian:trixie-slim
 
 RUN apt-get update && apt-get install -y \
     ca-certificates libssl3 libsqlite3-0 \
