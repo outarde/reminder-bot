@@ -28,6 +28,19 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v7
 
+      - name: Cache Cargo dependencies
+        uses: actions/cache@v6
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-
+
       - name: Set up Rust toolchain
         uses: dtolnay/rust-toolchain@stable
         with:
@@ -68,6 +81,7 @@ jobs:
 
             type=raw,value=edge,enable=${{ github.ref == 'refs/heads/main' }}
       
+      # to avoid .dockerignore for /target folder
       - name: Prepare artifacts for Docker
         run: |
           mkdir -p artifacts/amd64 artifacts/arm64
