@@ -46,6 +46,13 @@ jobs:
       - name: Build for ARM64
         run: cargo zigbuild --release --target aarch64-unknown-linux-gnu
 
+      - name: Verify binaries
+        run: |
+          echo "Checking AMD64..."
+          find target/x86_64-unknown-linux-gnu/release -name "*reminder-bot*"
+          echo "Checking ARM64..."
+          find target/aarch64-unknown-linux-gnu/release -name "*reminder-bot*"
+
       - name: Log in to the Container registry
         uses: docker/login-action@v4
         with:
