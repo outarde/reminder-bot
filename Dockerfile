@@ -1,6 +1,6 @@
 FROM debian:trixie-slim
 
-RUN apt-get update && apt_get install -y \
+RUN apt-get update && apt-get install -y \
     ca-certificates libssl3 libsqlite3-0 \
     && rm -rf /var/lib/apt/lists/*
 
