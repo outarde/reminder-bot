@@ -33,8 +33,8 @@ jobs:
 
       - name: Install Zig and cargo-zigbuild
         run: |
-          wget https://codeberg.org/ziglang/zig/archive/0.16.0.tar.gz
-          tar -xf zig-linux-x86_64-0.16.0.tar.gz
+          wget https://ziglang.org/download/0.16.0/zig-x86_64-linux-0.16.0.tar.xz
+          tar -xf zig-linux-x86_64-0.16.0.tar.xz
           sudo cp -r zig-linux-x86_64-0.16.0/* /usr/local/bin/
           cargo install cargo-zigbuild
 
