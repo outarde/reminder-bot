@@ -1,29 +1,6 @@
-FROM --platform=$TARGETPLATFORM rust:1.96-slim AS builder
+FROM debian:trixie-slim
 
-RUN apt-get update && apt-get install -y \
-    pkg-config libssl-dev libsqlite3-dev \
-    && rm -rf /var/lib/apt/lists/*
-
-WORKDIR /app
-COPY Cargo.toml Cargo.lock* ./
-RUN mkdir src && echo "fn main() {}" > src/main.rs
-RUN cargo build --release
-
-COPY src ./src
-COPY locales ./locales
-
-RUN rm -f /app/target/release/reminder-bot
-RUN rm -rf /app/target/release/.fingerprint/reminder-bot-*
-
-RUN cargo build --release --bin reminder-bot
-
-# diagnostic
-# RUN ls -lh /app/target/release/reminder-bot
-
-# ----------
-FROM --platform=$TARGETPLATFORM debian:trixie-slim
-
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt_get install -y \
     ca-certificates libssl3 libsqlite3-0 \
     && rm -rf /var/lib/apt/lists/*
 
@@ -32,16 +9,13 @@ RUN groupadd -g 1000 appuser && \
 
 WORKDIR /app
 
-COPY --from=builder /app/target/release/reminder-bot /app/bot
-COPY --from=builder /app/locales /app/locales
+ARG BINARY_PATH
 
-# diagnostic
-# RUN ls -lh /app/bot
+COPY ${BINARY_PATH} /app/bot
+COPY locales ./locales
 
-# app folder
 RUN mkdir -p /app/data && chown -R appuser:appuser /app
 
-# for dirs::data_dir
 ENV XDG_DATA_HOME=/app/data
 ENV RUST_LOG=info
 
