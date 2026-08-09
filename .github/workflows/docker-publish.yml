@@ -32,11 +32,11 @@ jobs:
         uses: actions/cache@v6
         with:
           path: |
-            ~/.cargo/bin/
             ~/.cargo/registry/index/
             ~/.cargo/registry/cache/
             ~/.cargo/git/db/
-            target/
+            target/release/deps/
+            target/release/build/
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: |
             ${{ runner.os }}-cargo-
@@ -51,7 +51,7 @@ jobs:
           wget https://ziglang.org/download/0.16.0/zig-x86_64-linux-0.16.0.tar.xz
           tar -xf zig-x86_64-linux-0.16.0.tar.xz
           sudo cp -r zig-x86_64-linux-0.16.0/* /usr/local/bin/
-          cargo install cargo-zigbuild
+          cargo install cargo-zigbuild --force
 
       - name: Build for AMD64
         run: cargo zigbuild --release --target x86_64-unknown-linux-gnu
