@@ -1,10 +1,45 @@
 _version: 2
 welcome:
   en: >
-   I'm a reminder bot. Send me a reminder in this format:
-   !remind me %{date} [at] 15:30 <reminder text>. You can replace the month number with its name,
-   use words "today" or "tomorrow". If no time was specified the reminder will arrive at 09:00.
-   I'll send it to you in a shared or private chat.
+    I'm a reminder bot. Send me a reminder in this format:
+    !remind %{date} [at] 15:30 <reminder text>. You can replace the month number with its name,
+    use words "today" or "tomorrow". If no time was specified the reminder will arrive at 09:00.
+    I'll send it to you in a shared or private chat.
+  de: >
+    Ich bin ein Erinnerungs-Bot. Sende mir eine Erinnerung in diesem Format:
+    !remind %{date} [at] 15:30 <Erinnerungstext>. 
+    Du kannst die Monatsnummer durch den Monatsnamen ersetzen.
+    Verwende Wörter wie „heute“ oder „morgen“. Wenn keine Uhrzeit angegeben wurde, 
+    kommt die Erinnerung um 9:00 Uhr. Ich sende sie dir in einem gemeinsamen oder privaten Chat.
+  fr: >
+    Je suis un bot de rappels. Envoyez-moi un rappel au format suivant:
+    !remind %{date} [at] 15:30 <texte du rappel>. Vous pouvez remplacer le numéro du mois par son nom,
+    et utiliser les mots «aujourd'hui» ou «demain». Si aucune heure n'est précisée, le rappel sera envoyé à 9h00. 
+    Je vous l'enverrai dans une conversation partagée ou privée.
+  it: >
+    Sono un bot per i promemoria. Inviami un promemoria in questo formato:
+    `!remind %{date} [at] 15:30 <testo del promemoria>`. 
+    Puoi sostituire il numero del mese con il suo nome, usare le parole "oggi" o "domani". 
+    Se non viene specificato un orario, il promemoria arriverà alle 09:00. 
+    Te lo invierò in una chat condivisa o privata.
+  es: >
+    Soy un bot de recordatorios. Envíame un recordatorio con este formato: 
+    `!remind %{date} [at] 15:30 <texto del recordatorio>`. 
+    Puedes reemplazar el número del mes por su nombre, usar las palabras "hoy" o "mañana". 
+    Si no se especifica la hora, el recordatorio llegará a las 09:00. 
+    Te lo enviaré en un chat compartido o privado.
+  sv: >
+    Jag är en påminnelsebot. Skicka mig en påminnelse i det här formatet: `!remind %{date} [at] 15:30 <påminnelsetext>`. Du kan ersätta månadsnumret med dess namn, använda orden "idag" eller "imorgon". Om ingen tid har angetts kommer påminnelsen klockan 09:00. Jag skickar den till dig i en delad eller privat chatt.
+  pl: >
+    Jestem botem przypominającym. Wyślij mi przypomnienie w tym formacie: `!remind %{date} [at] 15:30 <treść przypomnienia>`. Możesz zastąpić numer miesiąca jego nazwą, używając słów „dzisiaj” lub „jutro”. Jeśli nie podano godziny, przypomnienie pojawi się o 09:00. Wyślę Ci je na czacie współdzielonym lub prywatnym.
+  cs: >
+    Jsem bot pro připomenutí. Pošlete mi připomenutí v tomto formátu: `!remind %{date} [at] 15:30 <text připomenutí>`. Číslo měsíce můžete nahradit jeho názvem, použít slova „dnes“ nebo „zítra“. Pokud nebyl zadán žádný čas, připomenutí dorazí v 9:00. Pošlu vám ho ve sdíleném nebo soukromém chatu.
+  fi: >
+    Olen muistutusbotti. Lähetä minulle muistutus tässä muodossa: `!remind %{date} [at] 15:30 <muistutuksen teksti>`. Voit korvata kuukauden numeron sen nimellä tai käyttää sanoja "tänään" tai "huomenna". Jos aikaa ei ole määritetty, muistutus saapuu klo 09:00. Lähetän sen sinulle jaetussa tai yksityisessä chatissa.
+  ja: >
+    私はリマインダーボットです。リマインダーは「!remind %{date} [at] 15:30 <リマインダーテキスト>」という形式で送信してください。月の番号は月の名前に置き換えたり、「今日」や「明日」などの単語を使用したりできます。時間が指定されていない場合は、午前9時にリマインダーが届きます。共有チャットまたはプライベートチャットで送信します。
+  zh: >
+    我是一个提醒机器人。请按以下格式发送提醒：`!remind %{date} [at] 15:30 <提醒内容>`。您可以将月份数字替换为月份名称，也可以使用“今天”或“明天”等词语。如果没有指定时间，提醒将在 09:00 发送。我会通过公共聊天或私聊发送给您。
   ru: >
     Я — бот-напоминалка. Отправьте мне напоминание в формате:
     !напомни %{date} [в] 15:30 <текст напоминания>. Вы можете заменить число месяца его названием,
@@ -13,28 +48,194 @@ welcome:
 reminder:
   command:
     en: remind
+    de: erinnern
+    fr: rappeler
+    it: ricordare
+    es: recordar
+    sv: påminna
+    pl: przypomnieć
+    cs: připomenout
+    fi: muistuttaa
+    ja: 思い出させる
+    zh: 忆
     ru: напомни
   saved:
-    en: ⏲️ Accepted! Remind you on %{date} at %{hour}:%{min}
-    ru: ⏲️ Принято! Напомню %{date} в %{hour}:%{min}
+    en: ⏲️ Remind you on %{date} at %{hour}:%{min}
+    de: ⏲️ Erinnerung am %{date} um %{hour}:%{min}
+    fr: ⏲️ Vous rappeler le %{date} à %{hour}:%{min}
+    it: ⏲️ Ti ricorderò il %{date} alle %{hour}:%{min}
+    es: ⏲️ Recordatorio el %{date} a las %{hour}:%{min}
+    sv: ⏲️ Påminnelse den %{date} kl. %{hour}:%{min}
+    pl: ⏲️ Przypomnij Ci w dniu %{date} o godzinie %{hour}:%{min}
+    cs: ⏲️ Připomenout vám %{date} v %{hour}:%{min}
+    fi: ⏲️ Muistutus sinulle %{date} klo %{hour}:%{min}
+    ja: ⏲️ %{date}の%{hour}:%{min}にリマインダーを送信します
+    zh: ⏲️ 提醒您于 %{date} 的 %{hour}:%{min}
+    ru: ⏲️ Напомню %{date} в %{hour}:%{min}
   list:
     en: >
       %{text} on %{date} at %{time}
+    de: >
+      %{text} am %{date} um %{time}
+    fr: >
+      %{text} le %{date} à %{time}
+    it: >
+      %{text} il %{date} alle %{time}
+    es: >
+      %{text} el %{date} a las %{time}
+    sv: >
+      %{text} den %{date} kl. %{time}
+    pl: >
+      %{text} w dniu %{date} o godzinie %{time}
+    cs: >
+      %{text} dne %{date} v %{time}
+    fi: >
+      %{text} päivänä %{date} kello %{time}
+    ja: >
+      %{text} %{date} %{time}
+    zh: >
+      %{text} %{date} %{time}
     ru: >
       %{text} (%{date} в %{time})
   new:
     en: >
       🟢 Reminder for you: %{text}
+    de: >
+      🟢 Zur Erinnerung: %{text}
+    fr: >
+      🟢 Petit rappel: %{text}
+    it: >
+      🟢 Promemoria per te: %{text}
+    es: >
+      🟢 Recordatorio para ti: %{text}
+    sv: >
+      🟢 Påminnelse till dig: %{text}
+    pl: >
+      🟢 Przypomnienie dla Ciebie: %{text}
+    cs: >
+      🟢 Připomínka pro vás: %{text}
+    fi: >
+      🟢 Muistutus sinulle: %{text}
+    ja: >
+      🟢 あなたへのリマインダー：%{text}
+    zh: >
+      🟢温馨提示：%{text}
     ru: >
       🟢 Вам напоминание: %{text}
   summary:
     en: |
       ⚠️ Missed reminders in this room: 
       %{sum}
+    de: |
+      ⚠️ Verpasste Erinnerungen in diesem Raum:
+      %{sum}
+    fr: |
+      ⚠️ Rappels manqués dans cette pièce:
+      %{sum}
+    it: |
+      ⚠️ Promemoria non visualizzati in questa stanza:
+      %{sum}
+    es: |
+      ⚠️ Recordatorios omitidos en esta sala:
+      %{sum}
+    sv: |
+      ⚠️ Missade påminnelser i det här rummet:
+      %{sum}
+    pl: |
+      ⚠️ Pominięte przypomnienia w tym pokoju:
+      %{sum}
+    cs: |
+      ⚠️ Zmeškané připomínky v této místnosti:
+      %{sum}
+    fi: |
+      ⚠️ Tässä huoneessa olevat muistutukset, jotka eivät ole tulleet mieleen:
+      %{sum}
+    ja: |
+      ⚠️ この部屋で見逃したリマインダー:
+      %{sum}
+    zh: |
+      ⚠️ 本房间未收到的提醒:
+      %{sum}
     ru: |
       ⚠️ Пропущенные напоминания в этой комнате: 
       %{sum}
-recovery:
-  verification-with-key-failure:
-    en: Can not verify device with this key
-    ru: Ни один из источников не предоставил recovery key
+dates:
+  today:
+    en: today
+    de: heute
+    fr: aujourd'hui
+    it: oggi
+    es: hoy
+    sv: idag
+    pl: dzisiaj
+    cs: dnes
+    fi: tänään
+    ja: 今日
+    zh: 今天
+    ru: сегодня
+  tomorrow:
+    en: tomorrow
+    de: morgen
+    fr: demain
+    it: domani
+    es: mañana
+    sv: morgondag
+    pl: jutro
+    cs: zítra
+    fi: huomenna
+    ja: 明日
+    zh: 明天
+    ru: завтра
+  morning:
+    en: morning
+    de: morgen
+    fr: matin
+    it: mattina
+    es: mañana
+    sv: morgon
+    pl: poranek
+    cs: ráno
+    fi: aamu
+    ja: 朝
+    zh: 早晨
+    ru: утром
+  afternoon:
+    en: afternoon
+    de: nachmittag
+    fr: après-midi
+    it: pomeriggio
+    es: tarde
+    sv: eftermiddag
+    pl: popołudnie
+    cs: odpoledne
+    fi: iltapäivällä
+    ja: 午後
+    zh: 下午
+    ru: днем
+  evening:
+    en: evening
+    de: abend
+    fr: soir
+    it: sera
+    es: noche
+    sv: kväll
+    pl: wieczór
+    cs: večer
+    fi: ilta
+    ja: 夕方
+    zh: 晚上
+    ru: вечером
+  months:
+    en: january february march april may june july august september october november december
+    de: januar februar märz april mai juni juli august september oktober november dezember
+    fr: janvier février mars avril mai juin juillet août septembre octobre novembre décembre
+    it: gennaio febbraio marzo aprile maggio giugno luglio agosto settembre ottobre novembre dicembre
+    es: enero febrero marzo abril mayo junio julio agosto septiembre octubre noviembre diciembre
+    sv: januari februari mars april maj juni juli augusti september oktober november december
+    pl: styczeń luty marzec kwiecień maj czerwiec lipiec sierpień wrzesień październik listopad grudzień
+    cs: leden únor březen duben květen červen červenec srpen září říjen listopad prosinec
+    fi: tammi helmi maaliskuu huhtikuu touko kesäkuu heinäkuu elokuu syyskuu syyskuu lokakuu marraskuu joulukuu
+    ja: 1月 2月 3月 4月 5月 6月 7月 8月 9月 10月 11月 12月
+    zh: 一月 二月 三月 四月 五月 六月 七月 八月 九月 十月 十一月 十二月
+    ru: января февраля марта апреля мая июня июля августа сентября октября ноября декабря
+

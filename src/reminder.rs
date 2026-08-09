@@ -32,9 +32,9 @@ pub enum ReminderStatus {
     Pending = 0,
     Sent = 1,
     // missed can be when bot was offline
-    Missed = 2,
-    Recurring = 3,
-    Cancelled = 4,
+    // Missed = 2,
+    // Recurring = 3,
+    // Cancelled = 4,
 }
 
 /*

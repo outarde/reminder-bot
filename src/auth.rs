@@ -469,7 +469,7 @@ pub async fn reset_recovery(client: Client) -> anyhow::Result<()> {
             tracing::info!("You new recovery key is {}", new_recovery_key.bold().bright_blue());
         }
         Err(error) => {
-            tracing::error!("{}", t!("recovery.verification-with-key-failure"));
+            tracing::error!("Can not verify device with this key");
             // RecoveryError
             return Err(error.into())
         }
@@ -503,7 +503,7 @@ pub async fn reset_recovery_with_backup(
             tracing::info!("You new recovery key is {}", new_recovery_key.bold().bright_blue());
         }
         Err(error) => {
-            tracing::error!("{}", t!("recovery.verification-with-key-failure"));
+            tracing::error!("Can not verify device with this key");
             // RecoveryError type of Error
             return Err(error.into())
         }

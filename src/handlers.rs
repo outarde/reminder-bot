@@ -18,7 +18,7 @@ use std::sync::OnceLock;
 use rust_i18n::t;
 
 // app crates
-use crate::config;
+use crate::config::I18nConfig;
 
 // Compile regex only once
 static REMINDER_REGEX: OnceLock<Regex> = OnceLock::new();
@@ -26,13 +26,52 @@ static REMINDER_REGEX: OnceLock<Regex> = OnceLock::new();
 /// Default command
 pub const DEFAULT_BOT_COMMAND: &str = "remind";
 
+/// Day options in natural language.
+enum NaturalDay {
+    Today,
+    Tomorrow,
+}
+
+impl NaturalDay {
+    fn from_str(text: &str, i18n_today: &str, i18n_tomorrow: &str) -> Option<Self> {
+        if text == i18n_today {
+            Some(NaturalDay::Today)
+        } else if text == i18n_tomorrow {
+            Some(NaturalDay::Tomorrow)
+        } else {
+            None
+        }
+    }
+}
+
+/// Time options in natural language.
+enum NaturalTime {
+    Morning,
+    Afternoon,
+    Evening,
+}
+
+impl NaturalTime {
+    fn from_str(text: &str, i18n_morning: &str, i18n_afternoon: &str, i18n_evening: &str) -> Option<Self> {
+        if text == i18n_morning {
+            Some(NaturalTime::Morning)
+        } else if text == i18n_afternoon {
+            Some(NaturalTime::Afternoon)
+        } else if text == i18n_evening {
+            Some(NaturalTime::Evening)
+        } else {
+            None
+        }
+    }
+}
+
 ///
 pub async fn on_room_message(
     event: OriginalSyncRoomMessageEvent, 
     room: Room, 
     client: Client, 
     db: Connection,
-    i18n_config: config::I18nConfig,
+    i18n_config: I18nConfig,
 ) {
     // We only want to log text messages in joined rooms.
     if room.state() != RoomState::Joined {
@@ -48,13 +87,30 @@ pub async fn on_room_message(
 
     // Command for regular expression
     let mut regex_str = String::with_capacity(256); 
-    regex_str.push_str(&format!("^!(?:{}|", &commands.join("|")));
+    regex_str.push_str(&format!("^(?i)!(?:{}|", &commands.join("|")));
     
     if let Some(lang_cmd) = &i18n_config.bot_command {
         commands.push(&lang_cmd);
         regex_str.push_str(&regex::escape(&lang_cmd));
     };
-    regex_str.push_str(r")\s+(?:(?P<datetime>(?P<day>\d{1,2})(?:\s+|\.|\|-)(?P<month>[а-яёa-z]+|\d{2})(?:\s+|\.|\|-)?(?P<year>\d{4})?)|(?P<day_natural>сегодня|завтра|today|tomorrow))(?:(?:\s+(?:в|at))?\s+(?P<hour>\d{2}):(?P<min>\d{2}))?\s+(?P<text>.+)$");
+    regex_str.push_str(r")\s+(?:(?P<datetime>(?P<day>\d{1,2})(?:\s+|\.|\|-)(?P<month>.+|\d{2})(?:\s+|\.|\|-)?(?P<year>\d{4})?)|(?P<day_natural>");
+
+    // natural language expressions
+    // date
+    let i18n_today = t!("dates.today");
+    let i18n_tomorrow = t!("dates.tomorrow");
+    let i18n_days = vec![i18n_today.as_ref(), &i18n_tomorrow.as_ref()];
+    regex_str.push_str(&i18n_days.join("|"));
+    // time
+    let i18n_morning = t!("dates.morning");
+    let i18n_afternoon = t!("dates.afternoon");
+    let i18n_evening = t!("dates.evening");
+    let i18n_times = vec![i18n_morning.as_ref(), i18n_afternoon.as_ref(), i18n_evening.as_ref()];
+
+    // natural time for regex
+    regex_str.push_str(r"))(?:(?:\s+(?:в|at))?\s+((?P<hour>\d{2}):(?P<min>\d{2})|(?P<time_natural>");
+    regex_str.push_str(&i18n_times.join("|"));
+    regex_str.push_str(r")))?\s+(?P<text>.+)$");
 
     // Regular expression
     let re = REMINDER_REGEX.get_or_init(|| {
@@ -64,63 +120,105 @@ pub async fn on_room_message(
     // Check command word
     if let Some(caps) = re.captures(body) {
         let mut day: &str = &(Local::now().format("%d").to_string());
-        let mut month_str: &str = &(Local::now().format("%m").to_string());
+        let mut month_str: String = Local::now().format("%m").to_string();
 
         let today = Local::now().date_naive();
         let tomorrow_date = today + Days::new(1);
         let tomorrow = tomorrow_date.format("%d").to_string();
 
-        // Named groups
+        // Day and month
         if let (Some(day_match), Some(month_match)) = (caps.name("day"), caps.name("month")) {
             day = day_match.as_str();
-            month_str = month_match.as_str();
-            //month_str = &caps["month"];
+            // to_lowercase() returns String
+            month_str = month_match.as_str().to_lowercase(); 
         } else if let Some(day_natural_match) = caps.name("day_natural") {
             let day_natural = day_natural_match.as_str();
 
-            day = match day_natural {
-                "сегодня" | "today" => &day, 
-                "завтра" | "tomorrow" => &tomorrow,
-                _ => {
-                    room.send(RoomMessageEventContent::text_plain("Day error, sorry")).await.unwrap();
-                    println!("day_natural error");
+            let natural_day = match NaturalDay::from_str(day_natural, &i18n_today, &i18n_tomorrow) {
+                Some(d) => d,
+                None => {
+                    tracing::error!("day_natural error 1");
                     return;
                 }
             };
 
-            //month_str = "07";
+            day = match natural_day {
+                NaturalDay::Today => &day,
+                NaturalDay::Tomorrow => &tomorrow,
+                _ => {
+                    tracing::error!("day_natural error 2");
+                    return;
+                }
+            };            
         } else {
-            room.send(RoomMessageEventContent::text_plain("Date error, sorry")).await.unwrap();
-            println!("day_natural 2 error");
+            tracing::error!("Error matching date");
             return;
         };
-        //let day = &caps["day"];
-        //let month_str = &caps["month"];
-        //let year = &caps["year"];
 
         let year_string = Local::now().format("%Y").to_string();
         let year_slice: &str = &year_string;
         let year = caps.name("year").map_or(year_slice, |m| m.as_str());
         
-        // Time or default 09:00
+        // Time
+        let mut hour: &str;
+        let mut min: &str = "00";
         // Todo: change default time via .env or even special for user
-        let hour = caps.name("hour").map_or("09", |m| m.as_str());
-        let min = caps.name("min").map_or("00", |m| m.as_str());
+        if let (Some(hour_match), Some(min_match)) = (caps.name("hour"), caps.name("min")) {
+            hour = hour_match.as_str();
+            min = min_match.as_str();
+        } else if let Some(time_natural_match) = caps.name("time_natural") {
+            let time_natural = time_natural_match.as_str().to_lowercase();
+
+            let natural_time = match NaturalTime::from_str(&time_natural, &i18n_morning, &i18n_afternoon, &i18n_afternoon) {
+                Some(d) => d,
+                None => {
+                    tracing::error!("time_natural error 1");
+                    return;
+                }
+            };
+
+            hour = match natural_time {
+                NaturalTime::Morning => "09",
+                NaturalTime::Afternoon => "14",
+                NaturalTime::Evening => "19",
+                _ => {
+                    tracing::error!("time_natural error 2");
+                    return;
+                }
+            };  
+
+        } else {
+            tracing::error!("Error matching time");
+            return;
+        };
+
+        // let hour = caps.name("hour").map_or("09", |m| m.as_str());
+        // let min = caps.name("min").map_or("00", |m| m.as_str());
         
         let reminder_text = &caps["text"];
         // shadowing
         let reminder_text = reminder_text.to_owned();
 
-        // Todo: change
-        let month = match month_str {
-            "января" | "january" => "01", "февраля" | "february" => "02", "марта" | "march" => "03", "апреля" | "april" => "04",
-            "мая" | "may" => "05", "июня" | "june" => "06", "июля" | "july" => "07", "августа" | "august" => "08",
-            "сентября" | "september" => "09", "октября" | "october" => "10", "ноября" | "november" => "11", "декабря" | "december" => "12",
-            "01" => "01", "02" => "02", "03" => "03", "04" => "04", "05" => "05", "06" => "06", 
-            "07" => "07", "08" => "08", "09" => "09", "10" => "10", "11" => "11", "12" => "12",
+        // Vec of months names and Vec for months numbers matching
+        let i18n_months_str = t!("dates.months");
+        let i18n_months: Vec<&str> = i18n_months_str.split_whitespace().collect();
+        let month_numbers = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
+
+        // &* - reborrow; like Deref
+        // https://stackoverflow.com/questions/41273041/what-does-combined-together-do-in-rust
+        let month = match &*month_str {
+            "01" | "1" => "01", "02" | "2" => "02", "03" | "3" => "03", "04" | "4" => "04", 
+            "05" | "5" => "05", "06" | "6" => "06", "07" | "7" => "07", "08" | "8" => "08", 
+            "09" | "9" => "09", "10" => "10", "11" => "11", "12" => "12",
             _ => {
-                let _ = room.send(RoomMessageEventContent::text_plain("Unrecognizable month!")).await.unwrap();
-                return;
+                if let Some(m) = i18n_months.iter().position(|&name| name == month_str)
+                    .map(|idx| month_numbers[idx]) {
+                    m
+                } else {
+                    let _ = room.send(RoomMessageEventContent::text_plain("Unrecognizable month!")).await.unwrap();
+                    tracing::error!("Month error");
+                    return;
+                }
             }
         };
 
@@ -200,12 +298,12 @@ pub async fn on_room_message(
         } else {
             let _ = room.send(RoomMessageEventContent::text_plain("Format error.")).await.unwrap();
         }
-    } else if (body.starts_with("!")) {
+    } else if body.starts_with("!") {
         let body_content = body.strip_prefix("!").unwrap_or(body);
         let found = commands.iter().any(|&cmd| body_content.starts_with(cmd));
         if found {
             let tomorrow = Local::now().date_naive() + Days::new(1);
-            let date = tomorrow.format("%Y.%m.%d").to_string();
+            let date = tomorrow.format("%d.%m.%Y").to_string();
 
             let _ = room.send(RoomMessageEventContent::text_plain(t!("welcome", date = date))).await.unwrap();
         }
