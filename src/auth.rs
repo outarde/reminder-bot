@@ -536,25 +536,8 @@ async fn save_recovery_key(recovery_key: &str) -> anyhow::Result<()> {
     Ok(())
 }
 
-/// Internal pulling recovery key from the file if it exists. 
-// Legacy.
-async fn get_recovery_key() -> anyhow::Result<Option<config::RecoveryConfig>> {
-    let data_dir = dirs::data_dir().context("No data_dir directory found")?.join(super::APP_FOLDER);
-    let recovery_file = data_dir.join("recovery.json");
-
-    if recovery_file.exists() {
-        let serialized_recovery_file = fs::read_to_string(recovery_file).await
-            .context("Error reading recovery.json")?;
-        let data: config::RecoveryConfig = serde_json::from_str(&serialized_recovery_file)
-            .context("File recovery.json has invalid JSON")?;
-        return Ok(Some(data));
-    } else {
-        return Ok(None);
-    }
-}
-
-/// Updated version of get_recovery_key() function. Checking AppConfig with preloaded .env
-/// and recovery.json and additional first-priority key (as planned, from CLI in most cases).
+/// Checking AppConfig with preloaded .env and recovery.json 
+/// and additional first-priority key (as planned, from CLI in most cases).
 pub async fn pick_recovery_key(
     cli_key: Option<&str>,
     auth_config: &config::MatrixConfig, 
