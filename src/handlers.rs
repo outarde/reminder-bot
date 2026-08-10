@@ -20,7 +20,7 @@ use rust_i18n::t;
 use pulldown_cmark::{Parser, html};
 
 // app crates
-use crate::config::I18nConfig;
+use crate::config::BotConfig;
 
 // Compile regex only once
 static REMINDER_REGEX: OnceLock<Regex> = OnceLock::new();
@@ -67,13 +67,13 @@ impl NaturalTime {
     }
 }
 
-///
+/// Reply to incoming message
 pub async fn on_room_message(
     event: OriginalSyncRoomMessageEvent, 
     room: Room, 
     client: Client, 
     db: Connection,
-    i18n_config: I18nConfig,
+    bot_config: BotConfig,
 ) {
     // We only want to log text messages in joined rooms.
     if room.state() != RoomState::Joined {
@@ -91,7 +91,7 @@ pub async fn on_room_message(
     let mut regex_str = String::with_capacity(256); 
     regex_str.push_str(&format!("^(?i)!(?:{}|", &commands.join("|")));
     
-    if let Some(lang_cmd) = &i18n_config.bot_command {
+    if let Some(lang_cmd) = &bot_config.command {
         commands.push(&lang_cmd);
         regex_str.push_str(&regex::escape(&lang_cmd));
     };
@@ -180,9 +180,9 @@ pub async fn on_room_message(
             };
 
             hour = match natural_time {
-                NaturalTime::Morning => "09",
-                NaturalTime::Afternoon => "14",
-                NaturalTime::Evening => "19",
+                NaturalTime::Morning => &bot_config.morning_time,
+                NaturalTime::Afternoon => &bot_config.afternoon_time,
+                NaturalTime::Evening => &bot_config.evening_time,
                 _ => {
                     tracing::error!("time_natural error 2");
                     return;
@@ -345,6 +345,49 @@ pub async fn on_stripped_state_member(
         println!("Successfully joined room {}", room.room_id());
     });
 }
+
+/// Build regular expression
+/*
+async fn build_reminder_regex(i18n_today: &str, i18n_tomorrow: &str) -> Regex {
+    // Vec of commands to activate bot
+    let mut commands = vec![DEFAULT_BOT_COMMAND];
+    let i18n_command = t!("reminder.command");
+    commands.push(&i18n_command);
+
+    // Command for regular expression
+    let mut regex_str = String::with_capacity(256); 
+    regex_str.push_str(&format!("^(?i)!(?:{}|", &commands.join("|")));
+    
+    if let Some(lang_cmd) = &bot_config.command {
+        commands.push(&lang_cmd);
+        regex_str.push_str(&regex::escape(&lang_cmd));
+    };
+    regex_str.push_str(r")\s+(?:(?P<datetime>(?P<day>\d{1,2})(?:\s+|\.|\|-)(?P<month>.+|\d{2})(?:\s+|\.|\|-)?(?P<year>\d{4})?)|(?P<day_natural>");
+
+    // natural language expressions
+    // date
+    let i18n_today = t!("dates.today");
+    let i18n_tomorrow = t!("dates.tomorrow");
+    let i18n_days = vec![i18n_today.as_ref(), &i18n_tomorrow.as_ref()];
+    regex_str.push_str(&i18n_days.join("|"));
+    // time
+    let i18n_morning = t!("dates.morning");
+    let i18n_afternoon = t!("dates.afternoon");
+    let i18n_evening = t!("dates.evening");
+    let i18n_times = vec![i18n_morning.as_ref(), i18n_afternoon.as_ref(), i18n_evening.as_ref()];
+
+    // natural time for regex
+    regex_str.push_str(r"))(?:(?:\s+(?:в|at))?\s+((?P<hour>\d{2}):(?P<min>\d{2})|(?P<time_natural>");
+    regex_str.push_str(&i18n_times.join("|"));
+    regex_str.push_str(r")))?\s+(?P<text>.+)$");
+
+    // Regular expression
+    let re = REMINDER_REGEX.get_or_init(|| {
+        Regex::new(&regex_str).unwrap()
+    });
+    return re
+}
+*/
 
 /// Parse markdown i18n str to html String for matrix format
 async fn markdown_to_html(markdown: &str) -> String {

@@ -6,14 +6,19 @@ use anyhow::{Context, Result};
 use serde::{Deserialize, Serialize};
 
 /// Default language for bot messages.
-pub const DEFAULT_LANG_APP: &str = "en";
+pub const DEFAULT_LANG: &str = "en";
+/// Default times
+pub const DEFAULT_MORNING_TIME: &str = "09";
+pub const DEFAULT_AFTERNOON_TIME: &str = "14";
+pub const DEFAULT_EVENING_TIME: &str = "19";
+
 
 /// Config for AppContext
 #[derive(Debug, Deserialize)]
 pub struct AppConfig {
     pub auth: MatrixConfig,
     pub recovery: Option<RecoveryConfig>,
-    pub i18n: I18nConfig,
+    pub bot: BotConfig,
 }
 
 /// Config for matrix server authentication
@@ -35,18 +40,35 @@ pub struct RecoveryConfig {
     pub created_at: String,
 }
 
-/// Language
+/// Bot config
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
-pub struct I18nConfig {
-    #[serde(default = "I18nConfig::default_app")]
-    pub app: String,
-    pub bot_command: Option<String>,
+pub struct BotConfig {
+    #[serde(default = "BotConfig::default_lang")]
+    pub lang: String,
+    pub command: Option<String>,
+    pub on_command: Option<bool>,
+    pub on_mention: Option<bool>,
+    #[serde(default = "BotConfig::default_morning_time")]
+    pub morning_time: String,
+    #[serde(default = "BotConfig::default_afternoon_time")]
+    pub afternoon_time: String,
+    #[serde(default = "BotConfig::default_evening_time")]
+    pub evening_time: String,
 }
 
-impl I18nConfig {
-    fn default_app() -> String {
-        DEFAULT_LANG_APP.to_string()
+impl BotConfig {
+    fn default_lang() -> String {
+        DEFAULT_LANG.to_string()
+    }
+    fn default_morning_time() -> String {
+        DEFAULT_MORNING_TIME.to_string()
+    }
+    fn default_afternoon_time() -> String {
+        DEFAULT_AFTERNOON_TIME.to_string()
+    }
+    fn default_evening_time() -> String {
+        DEFAULT_EVENING_TIME.to_string()
     }
 }
 
@@ -71,10 +93,10 @@ impl AppConfig {
             None
         };
 
-        let i18n: I18nConfig = envy::prefixed("LANG_")
+        let bot: BotConfig = envy::prefixed("BOT_")
             .from_env()
             .map_err(|e| anyhow::anyhow!("Environment error: {}", e))?;
 
-        Ok(Self { auth, recovery, i18n })
+        Ok(Self { auth, recovery, bot })
     }
 }

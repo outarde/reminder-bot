@@ -106,7 +106,7 @@ impl AppContext {
     async fn new() -> Result<Self> {
         let config = config::AppConfig::load().await?;
 
-        rust_i18n::set_locale(&config.i18n.app);
+        rust_i18n::set_locale(&config.bot.lang);
 
         let data_dir = dirs::data_dir().expect("No data_dir directory found").join(APP_FOLDER);
         let session_file = data_dir.join("session.json");
@@ -245,9 +245,9 @@ impl AppContext {
         // Handlers
         let client_clone = client.clone();
         let db_clone = self.db_conn.as_ref().unwrap().clone();
-        let i18n_clone = self.config.i18n.clone();
+        let bot_clone = self.config.bot.clone();
         client.add_event_handler(move |event, room| {
-            handlers::on_room_message(event, room, client_clone, db_clone, i18n_clone)
+            handlers::on_room_message(event, room, client_clone, db_clone, bot_clone)
         });
         client.add_event_handler(handlers::on_stripped_state_member);
 
