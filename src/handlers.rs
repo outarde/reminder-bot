@@ -17,6 +17,8 @@ use regex::Regex;
 use std::sync::OnceLock;
 use rust_i18n::t;
 
+use pulldown_cmark::{Parser, html};
+
 // app crates
 use crate::config::I18nConfig;
 
@@ -305,7 +307,9 @@ pub async fn on_room_message(
             let tomorrow = Local::now().date_naive() + Days::new(1);
             let date = tomorrow.format("%d.%m.%Y").to_string();
 
-            let _ = room.send(RoomMessageEventContent::text_plain(t!("welcome", date = date))).await.unwrap();
+            let welcome_msg = t!("welcome", date = date);
+            let welcome_msg_html = markdown_to_html(&welcome_msg).await;
+            let _ = room.send(RoomMessageEventContent::text_html(welcome_msg, welcome_msg_html.as_str())).await.unwrap();
         }
     }
 }
@@ -340,4 +344,12 @@ pub async fn on_stripped_state_member(
         }
         println!("Successfully joined room {}", room.room_id());
     });
+}
+
+/// Parse markdown i18n str to html String for matrix format
+async fn markdown_to_html(markdown: &str) -> String {
+    let parser = Parser::new(&markdown);
+    let mut buffer = String::new();
+    html::push_html(&mut buffer, parser);
+    buffer
 }

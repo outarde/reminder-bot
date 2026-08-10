@@ -1,23 +1,23 @@
 _version: 2
 welcome:
   en: >
-    I'm a reminder bot. Send me a reminder in this format:
-    !remind %{date} [at] 15:30 <reminder text>. You can replace the month number with its name,
-    use words "today" or "tomorrow". If no time was specified the reminder will arrive at 09:00.
+    I'm a reminder bot. Send me a reminder in this format: 
+    `!remind %{date} [at] 15:30 <reminder text>`. You can replace the month number with its name,
+    use words `today` or `tomorrow`. If no time was specified the reminder will arrive at 09:00.
     I'll send it to you in a shared or private chat.
   de: >
-    Ich bin ein Erinnerungs-Bot. Sende mir eine Erinnerung in diesem Format:
-    !remind %{date} [at] 15:30 <Erinnerungstext>. 
+    Ich bin ein Erinnerungs-Bot. Sende mir eine Erinnerung in diesem Format: 
+    `!remind %{date} [at] 15:30 <Erinnerungstext>`. 
     Du kannst die Monatsnummer durch den Monatsnamen ersetzen.
     Verwende Wörter wie „heute“ oder „morgen“. Wenn keine Uhrzeit angegeben wurde, 
     kommt die Erinnerung um 9:00 Uhr. Ich sende sie dir in einem gemeinsamen oder privaten Chat.
   fr: >
-    Je suis un bot de rappels. Envoyez-moi un rappel au format suivant:
-    !remind %{date} [at] 15:30 <texte du rappel>. Vous pouvez remplacer le numéro du mois par son nom,
+    Je suis un bot de rappels. Envoyez-moi un rappel au format suivant: 
+    `!remind %{date} [at] 15:30 <texte du rappel>`. Vous pouvez remplacer le numéro du mois par son nom,
     et utiliser les mots «aujourd'hui» ou «demain». Si aucune heure n'est précisée, le rappel sera envoyé à 9h00. 
     Je vous l'enverrai dans une conversation partagée ou privée.
   it: >
-    Sono un bot per i promemoria. Inviami un promemoria in questo formato:
+    Sono un bot per i promemoria. Inviami un promemoria in questo formato: 
     `!remind %{date} [at] 15:30 <testo del promemoria>`. 
     Puoi sostituire il numero del mese con il suo nome, usare le parole "oggi" o "domani". 
     Se non viene specificato un orario, il promemoria arriverà alle 09:00. 
@@ -41,9 +41,9 @@ welcome:
   zh: >
     我是一个提醒机器人。请按以下格式发送提醒：`!remind %{date} [at] 15:30 <提醒内容>`。您可以将月份数字替换为月份名称，也可以使用“今天”或“明天”等词语。如果没有指定时间，提醒将在 09:00 发送。我会通过公共聊天或私聊发送给您。
   ru: >
-    Я — бот-напоминалка. Отправьте мне напоминание в формате:
-    !напомни %{date} [в] 15:30 <текст напоминания>. Вы можете заменить число месяца его названием,
-    дату — на слова "сегодня" или "завтра" и не указывать время — тогда напоминание придет в 09:00.
+    Я — бот-напоминалка. Отправьте мне напоминание в формате: 
+    `!напомни %{date} [в] 15:30 <текст напоминания>`. Вы можете заменить число месяца его названием,
+    дату — на слова `сегодня` или `завтра` и не указывать время — тогда напоминание придет в 09:00.
     Я отправлю вам его в общем или личном чате.
 reminder:
   command:

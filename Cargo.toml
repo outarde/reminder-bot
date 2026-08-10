@@ -1,6 +1,6 @@
 [package]
 name = "reminder-bot"
-version = "0.2.2"
+version = "0.4.0"
 edition = "2024"
 license = "MIT OR Apache-2.0"
 
@@ -25,6 +25,7 @@ colored = "^3.1.1"
 #temps = { version = "^4", features = ["chrono"] }
 #human-date-parser = "^0.3.1"
 rust-i18n = "^4.2.0"
+pulldown-cmark = "0.13"
 
 [package.metadata.i18n]
 available-locales = ["en", "ru"]
