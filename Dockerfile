@@ -9,11 +9,8 @@ RUN groupadd -g 1000 appuser && \
 
 WORKDIR /app
 
-ARG AMD64_BINARY
-ARG ARM64_BINARY
-
-COPY --platform=linux/amd64 ${AMD64_BINARY} /app/bot
-COPY --platform=linux/arm64 ${ARM64_BINARY} /app/bot
+ARG TARGETARCH
+COPY artifacts/bot-${TARGETARCH} /app/bot
 COPY locales ./locales
 
 RUN mkdir -p /app/data && chown -R appuser:appuser /app

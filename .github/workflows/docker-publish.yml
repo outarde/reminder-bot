@@ -85,7 +85,7 @@ jobs:
       - name: Prepare artifacts for Docker
         run: |
           mkdir -p artifacts
-          cp target/x86_64-unknown-linux-gnu/release/reminder-bot artifacts/bot
+          cp target/x86_64-unknown-linux-gnu/release/reminder-bot artifacts/bot-amd64
           cp target/aarch64-unknown-linux-gnu/release/reminder-bot artifacts/bot-arm64
 
       - name: Set up QEMU
@@ -98,9 +98,6 @@ jobs:
         uses: docker/build-push-action@v7
         with:
           context: .
-          build-args: |
-            AMD64_BINARY=artifacts/bot
-            ARM64_BINARY=artifacts/bot-arm64
           platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ steps.meta.outputs.tags }}
