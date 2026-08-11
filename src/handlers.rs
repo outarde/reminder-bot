@@ -164,8 +164,10 @@ pub async fn on_room_message(
         match save_reminder_to_db(&db, room.room_id(), reminder_data.text, datetime_str.clone()).await {
             Ok(new_reminder) => {
                 super::reminder::schedule_reminder(client, db.clone(), new_reminder).await;
-                
-                let date_str = format!("{}.{}.{}", reminder_data.day, reminder_data.month, reminder_data.year);
+
+                let parsed_datetime = NaiveDateTime::parse_from_str(&datetime_str, "%Y-%m-%d %H:%M:%S").unwrap();
+                let date_str = parsed_datetime.format("%d.%m.%Y");
+
                 let reminder_mes = t!("reminder.saved", date = date_str, hour = reminder_data.hour, min = reminder_data.min);
                 let _ = room.send(RoomMessageEventContent::text_plain(reminder_mes)).await;
             }
@@ -286,11 +288,10 @@ fn parse_reminder_data(
         };
         (h.to_string(), m.to_string())
     } else {
-        // Return +1 hour
-        // TODO: check day transition
-        let f_t = Local::now().checked_add_signed(TimeDelta::hours(1)).unwrap();
-        (f_t.format("%H").to_string(), f_t.format("%M").to_string())
-        // (super::config::DEFAULT_MORNING_TIME.to_string(), "00".to_string())
+        // TODO: Return +1 hour if day, month are today
+        // let f_t = Local::now().checked_add_signed(TimeDelta::hours(1)).unwrap();
+        // (f_t.format("%H").to_string(), f_t.format("%M").to_string())
+        (super::config::DEFAULT_MORNING_TIME.to_string(), "00".to_string())
     };
 
     // Reminder's text
@@ -323,7 +324,7 @@ fn build_datetime_str(data: &ParsedReminder) -> Result<String, ReminderDateError
 
     let datetime_string = format!("{}-{}-{} {}:{}:00", data.year, month.as_str(), data.day, data.hour, data.min);
     
-    // Check if time is in the future
+    // Check if time can be parsed and in the future
     if let Ok(target_time) = NaiveDateTime::parse_from_str(&datetime_string, "%Y-%m-%d %H:%M:%S") {
         if target_time <= Local::now().naive_local() {
             return Err(ReminderDateError::TimeInPast); 
