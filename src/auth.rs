@@ -1,26 +1,24 @@
 use std::{
-    io::{self, Write},
+    //io::{self, Write},
     path::{Path, PathBuf},
 };
 
 use matrix_sdk::{
-    Client, Error, LoopCtrl, Room, RoomState,
+    Client, Error, LoopCtrl,
     authentication::matrix::MatrixSession,
-    encryption::{CrossSigningResetAuthType, recovery::RecoveryState, EncryptionSettings},
+    encryption::{recovery::RecoveryState, EncryptionSettings},
     config::SyncSettings,
     ruma::{
         api::client::filter::FilterDefinition,
-        events::room::message::{MessageType, OriginalSyncRoomMessageEvent},
         device_id,
     },
 };
-use anyhow::{Context, Result};
+//use anyhow::{Context, Result};
 use rand::{RngExt, distr::Alphanumeric, rng};
 use serde::{Deserialize, Serialize};
 use tokio::fs;
 use chrono::{Local};
 use colored::Colorize;
-use rust_i18n::t;
 
 // app crates
 use crate::config;
@@ -161,7 +159,7 @@ pub async fn login(
                     )
                 }
             } else {
-                tracing::warn!("Recovery key is not presented and verification failed. Please try again using CLI");
+                tracing::warn!("Verification failed and recovery key is not presented: {:?}", error);
             }
         }
     }

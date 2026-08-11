@@ -1,6 +1,6 @@
 use std::{
     //io::{self, Write},
-    path::{Path, PathBuf},
+    path::{PathBuf},
 };
 use matrix_sdk::{
     Client, 
@@ -8,13 +8,13 @@ use matrix_sdk::{
 };
 use anyhow::{Context, Result};
 use tracing_subscriber;
-use tracing::{info, warn, error, instrument, Level};
+use tracing::{info, warn};
 //use dotenvy::dotenv;
 //use std::env;
 use tokio::signal;
 use tokio_rusqlite::Connection;
 use clap::{Parser, Subcommand};
-use rust_i18n::t;
+//use rust_i18n::t;
 
 rust_i18n::i18n!("locales", fallback = "en");
 

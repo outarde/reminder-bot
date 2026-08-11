@@ -1,8 +1,7 @@
 use matrix_sdk::{
     Client, Room, RoomState,
-    config::SyncSettings,
     ruma::{
-        OwnedRoomId, RoomId,
+        RoomId,
         events::room::{
             member::StrippedRoomMemberEvent,
             message::{MessageType, OriginalSyncRoomMessageEvent, RoomMessageEventContent},
@@ -10,7 +9,7 @@ use matrix_sdk::{
     }
 };
 use tokio::time::{Duration, sleep};
-use chrono::{Local, Days, NaiveDateTime, NaiveDate, TimeDelta};
+use chrono::{Local, Days, NaiveDateTime};
 use tokio_rusqlite::Connection;
 
 use regex::Regex;

@@ -1,6 +1,3 @@
-use std::{
-    path::{Path, PathBuf},
-};
 use tokio::fs;
 use anyhow::{Context, Result};
 use serde::{Deserialize, Serialize};
@@ -59,16 +56,16 @@ pub struct BotConfig {
 
 impl BotConfig {
     fn default_lang() -> String {
-        DEFAULT_LANG.to_string()
+        DEFAULT_LANG.into()
     }
     fn default_morning_time() -> String {
-        DEFAULT_MORNING_TIME.to_string()
+        DEFAULT_MORNING_TIME.into()
     }
     fn default_afternoon_time() -> String {
-        DEFAULT_AFTERNOON_TIME.to_string()
+        DEFAULT_AFTERNOON_TIME.into()
     }
     fn default_evening_time() -> String {
-        DEFAULT_EVENING_TIME.to_string()
+        DEFAULT_EVENING_TIME.into()
     }
 }
 

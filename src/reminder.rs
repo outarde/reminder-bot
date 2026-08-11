@@ -1,10 +1,8 @@
 use matrix_sdk::{
-    Client, Error, LoopCtrl, Room, RoomState,
-    config::SyncSettings,
+    Client,
     ruma::{
         OwnedRoomId, RoomId,
-        api::client::filter::FilterDefinition,
-        events::room::message::{MessageType, OriginalSyncRoomMessageEvent, RoomMessageEventContent},
+        events::room::message::{RoomMessageEventContent},
     },
 };
 use tokio_rusqlite::Connection;
@@ -294,12 +292,13 @@ async fn summary_missed(
     Ok(())
 }
 
-/// Remove reminder
+// Remove reminder
 // just reminder id? or array of ids?
+/*
 async fn _remove_reminders(db: Connection, reminder: Vec<Reminder>) -> anyhow::Result<()> {
     Ok(())
 }
-
+*/
 //
 /*
 fn bulk_insert(conn: &Connection, items: &[(String, i32)]) -> Result<()> {
