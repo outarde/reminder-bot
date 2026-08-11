@@ -80,6 +80,7 @@ impl ReminderDateError {
         match self {
             ReminderDateError::InvalidMonth => "reminder.date-error",
             ReminderDateError::TimeInPast => "reminder.time-past-error",
+            ReminderDateError::InvalidTime => "reminder.time-error",
         }
     }
 }
@@ -227,6 +228,7 @@ fn build_reminder_regex(
         let mut regex_str = String::with_capacity(256); 
         regex_str.push_str(&format!("^(?i)!(?:{}", &commands.join("|")));
         
+        // [^\.\-\s]{1,15} in ?P<month> can be replaced with white list of months names
         regex_str.push_str(r")\s+(?:(?P<datetime>(?P<day>\d{1,2})(?:\s+|\.|\|-)(?P<month>[^\.\-\s]{1,15}|\d{2})(?:\s?|\.|\|-)(?P<year>\d{4})?)|(?P<day_natural>");
         regex_str.push_str(&i18n_days.join("|"));
 
@@ -276,12 +278,12 @@ fn parse_reminder_data(
         (h.as_str().to_string(), m.as_str().to_string())
     } else if let Some(t_nat) = caps.name("time_natural") {
         let natural_time = NaturalTime::from_str(&t_nat.as_str().to_lowercase(), i18n_morning, i18n_afternoon, i18n_evening)?;
-        let h = match natural_time {
-            NaturalTime::Morning => &bot_config.morning_time,
-            NaturalTime::Afternoon => &bot_config.afternoon_time,
-            NaturalTime::Evening => &bot_config.evening_time,
+        let (h, m) = match natural_time {
+            NaturalTime::Morning => &bot_config.morning_time.split_once(":")?,
+            NaturalTime::Afternoon => &bot_config.afternoon_time.split_once(":")?,
+            NaturalTime::Evening => &bot_config.evening_time.split_once(":")?,
         };
-        (h.to_string(), "00".to_string())
+        (h.to_string(), m.to_string())
     } else {
         return None;
     };
@@ -319,6 +321,8 @@ fn build_datetime_str(data: &ParsedReminder) -> Result<String, ReminderDateError
         if target_time <= Local::now().naive_local() {
             return Err(ReminderDateError::TimeInPast); 
         }
+    } else {
+        return Err(ReminderDateError::InvalidTime);
     }
 
     Ok(datetime_string)

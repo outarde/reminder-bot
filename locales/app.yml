@@ -45,6 +45,11 @@ welcome:
     `!напомни %{date} [в] 15:30 <текст напоминания>`. Вы можете заменить число месяца его названием,
     дату — на слова `сегодня` или `завтра` и не указывать время — тогда напоминание придет в 09:00.
     Я отправлю вам его в общем или личном чате.
+  uk: >
+    Я – бот-нагадувач. Надішліть мені нагадування у форматі: 
+    `!нагади %{date} [в] 15:30 <текст нагадування>`. Ви можете замінити число місяця його назвою, 
+    дату - на слова "сьогодні" або "завтра" і не вказувати час - тоді нагадування прийде о 09:00. 
+    Я надішлю вам його в загальному або особистому чаті.
 reminder:
   command:
     en: remind
@@ -59,6 +64,7 @@ reminder:
     ja: 思い出させる
     zh: 忆
     ru: напомни
+    uk: нагадай
   saved:
     en: ⏲️ Remind you on %{date} at %{hour}:%{min}
     de: ⏲️ Erinnerung am %{date} um %{hour}:%{min}
@@ -72,6 +78,7 @@ reminder:
     ja: ⏲️ %{date}の%{hour}:%{min}にリマインダーを送信します
     zh: ⏲️ 提醒您于 %{date} 的 %{hour}:%{min}
     ru: ⏲️ Напомню %{date} в %{hour}:%{min}
+    uk: ⏲️ Нагадаю %{date} у %{hour}:%{min}
   list:
     en: >
       %{text} on %{date} at %{time}
@@ -97,6 +104,8 @@ reminder:
       %{text} %{date} %{time}
     ru: >
       %{text} (%{date} в %{time})
+    uk: >
+      %{text} (%{date} у %{time})
   new:
     en: >
       🟢 Reminder for you: %{text}
@@ -122,6 +131,8 @@ reminder:
       🟢温馨提示：%{text}
     ru: >
       🟢 Вам напоминание: %{text}
+    uk: >
+      🟢 Вам нагадування: %{text}
   summary:
     en: |
       ⚠️ Missed reminders in this room: 
@@ -159,6 +170,9 @@ reminder:
     ru: |
       ⚠️ Пропущенные напоминания в этой комнате: 
       %{sum}
+    uk: |
+      ⚠️ Пропущені нагадування у цій кімнаті: 
+      %{sum}
   date-error:
     en: Unable to determine the reminder month.
     de: Der Erinnerungsmonat kann nicht ermittelt werden.
@@ -172,6 +186,7 @@ reminder:
     ja: リマインダー月を決定できません。
     zh: 无法确定提醒月份。
     ru: Не получилось определить месяц напоминания.
+    uk: Не вдалося визначити місяць нагадування.
   time-past-error:
     en: The reminder time has already passed.
     de: Die Erinnerungsfrist ist bereits abgelaufen.
@@ -185,6 +200,21 @@ reminder:
     ja: 通知時間はすでに過ぎています。
     zh: 提醒时间已过。
     ru: Время напоминания уже прошло.
+    uk: Час нагадування вже минув.
+  time-error:
+    en: Wrong time.
+    de: Falsche Zeit.
+    fr: Mauvais moment.
+    it: Non era il momento giusto.
+    es: Momento inoportuno.
+    sv: Fel tidpunkt.
+    pl: Zły czas.
+    cs: Špatný čas.
+    fi: Väärä aika.
+    ja: 時間が間違っています。
+    zh: 时间不对。
+    ru: Неправильное время.
+    uk: Неправильний час.
 dates:
   today:
     en: today
@@ -199,6 +229,7 @@ dates:
     ja: 今日
     zh: 今天
     ru: сегодня
+    uk: сьогодні
   tomorrow:
     en: tomorrow
     de: morgen
@@ -212,6 +243,7 @@ dates:
     ja: 明日
     zh: 明天
     ru: завтра
+    uk: завтра
   morning:
     en: morning
     de: morgen
@@ -225,6 +257,7 @@ dates:
     ja: 朝
     zh: 早晨
     ru: утром
+    uk: вранці
   afternoon:
     en: afternoon
     de: nachmittag
@@ -238,6 +271,7 @@ dates:
     ja: 午後
     zh: 下午
     ru: днем
+    uk: вдень
   evening:
     en: evening
     de: abend
@@ -251,6 +285,7 @@ dates:
     ja: 夕方
     zh: 晚上
     ru: вечером
+    uk: вечір
   months:
     en: january february march april may june july august september october november december
     de: januar februar märz april mai juni juli august september oktober november dezember
@@ -264,4 +299,4 @@ dates:
     ja: 1月 2月 3月 4月 5月 6月 7月 8月 9月 10月 11月 12月
     zh: 一月 二月 三月 四月 五月 六月 七月 八月 九月 十月 十一月 十二月
     ru: января февраля марта апреля мая июня июля августа сентября октября ноября декабря
-
+    uk: січня лютого березня квітня травня червня липня серпня вересня жовтня листопада грудня

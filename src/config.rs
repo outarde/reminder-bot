@@ -5,9 +5,9 @@ use serde::{Deserialize, Serialize};
 /// Default language for bot messages.
 pub const DEFAULT_LANG: &str = "en";
 /// Default times
-pub const DEFAULT_MORNING_TIME: &str = "09";
-pub const DEFAULT_AFTERNOON_TIME: &str = "14";
-pub const DEFAULT_EVENING_TIME: &str = "19";
+pub const DEFAULT_MORNING_TIME: &str = "09:00";
+pub const DEFAULT_AFTERNOON_TIME: &str = "14:00";
+pub const DEFAULT_EVENING_TIME: &str = "19:00";
 
 
 /// Config for AppContext
