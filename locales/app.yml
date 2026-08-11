@@ -161,7 +161,30 @@ reminder:
       %{sum}
   date-error:
     en: Unable to determine the reminder month.
+    de: Der Erinnerungsmonat kann nicht ermittelt werden.
+    fr: Impossible de déterminer le mois de rappel.
+    it: Impossibile determinare il mese del promemoria.
+    es: No se puede determinar el mes del recordatorio.
+    sv: Det gick inte att fastställa påminnelsemånaden.
+    pl: Nie można określić miesiąca przypomnienia.
+    cs: Nelze určit měsíc připomenutí.
+    fi: Muistutuskuukautta ei voida määrittää.
+    ja: リマインダー月を決定できません。
+    zh: 无法确定提醒月份。
     ru: Не получилось определить месяц напоминания.
+  time-past-error:
+    en: The reminder time has already passed.
+    de: Die Erinnerungsfrist ist bereits abgelaufen.
+    fr: L'heure de rappel est déjà passée.
+    it: Il tempo del promemoria è già trascorso.
+    es: El tiempo del recordatorio ya pasó.
+    sv: Påminnelsetiden har redan passerat.
+    pl: Czas przypomnienia już minął.
+    cs: Čas připomenutí již uplynul.
+    fi: Muistutusaika on jo kulunut.
+    ja: 通知時間はすでに過ぎています。
+    zh: 提醒时间已过。
+    ru: Время напоминания уже прошло.
 dates:
   today:
     en: today

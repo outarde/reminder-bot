@@ -20,6 +20,7 @@ use rust_i18n::t;
 use pulldown_cmark::{Parser, html};
 
 // app crates
+use crate::reminder::{Reminder, ReminderStatus};
 use crate::config::BotConfig;
 
 // Compile regex only once
@@ -63,6 +64,23 @@ impl NaturalTime {
             Some(NaturalTime::Evening)
         } else {
             None
+        }
+    }
+}
+
+/// Errors for build_datetime_str
+#[derive(Debug)]
+enum ReminderDateError {
+    InvalidMonth,
+    TimeInPast,
+}
+
+/// i18n keys
+impl ReminderDateError {
+    fn as_i18n_key(&self) -> &'static str {
+        match self {
+            ReminderDateError::InvalidMonth => "reminder.date-error",
+            ReminderDateError::TimeInPast => "reminder.time-past-error",
         }
     }
 }
@@ -132,10 +150,12 @@ pub async fn on_room_message(
         };
 
         let datetime_str = match build_datetime_str(&reminder_data) {
-            Some(dt) => dt,
-            None => {
-                let _ = room.send(RoomMessageEventContent::text_plain(t!("reminder.date-error"))).await;
-                tracing::error!("Unrecognizable month in parsed reminder data: {:?}", reminder_data);
+            Ok(dt) => dt,
+            Err(err) => {
+                let err_msg = t!(err.as_i18n_key()); 
+                let _ = room.send(RoomMessageEventContent::text_plain(err_msg)).await;
+                
+                tracing::error!("Date and time validation error: {:?} for {:?}", err, reminder_data);
                 return;
             }
         };
@@ -271,8 +291,8 @@ fn parse_reminder_data(
     Some(ParsedReminder { text, year, month, day, hour, min })
 }
 
-/// Build final string for DB
-fn build_datetime_str(data: &ParsedReminder) -> Option<String> {
+/// Build final string for DB and validate its time in the future
+fn build_datetime_str(data: &ParsedReminder) -> Result<String, ReminderDateError> {
     let i18n_months_str = t!("dates.months");
     let i18n_months: Vec<&str> = i18n_months_str.split_whitespace().collect();
     let month_numbers = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
@@ -282,12 +302,22 @@ fn build_datetime_str(data: &ParsedReminder) -> Option<String> {
         "05" | "5" => "05", "06" | "6" => "06", "07" | "7" => "07", "08" | "8" => "08", 
         "09" | "9" => "09", "10" => "10", "11" => "11", "12" => "12",
         _ => {
-            let idx = i18n_months.iter().position(|&name| name == data.month)?;
+            let idx = i18n_months.iter().position(|&name| name == data.month)
+                .ok_or(ReminderDateError::InvalidMonth)?;
             month_numbers[idx]
         }
     };
 
-    Some(format!("{}-{}-{} {}:{}:00", data.year, month, data.day, data.hour, data.min))
+    let datetime_string = format!("{}-{}-{} {}:{}:00", data.year, month, data.day, data.hour, data.min);
+    
+    // Check if time is in the future
+    if let Ok(target_time) = NaiveDateTime::parse_from_str(&datetime_string, "%Y-%m-%d %H:%M:%S") {
+        if target_time <= Local::now().naive_local() {
+            return Err(ReminderDateError::TimeInPast); 
+        }
+    }
+
+    Ok(datetime_string)
 }
 
 /// Save reminder to DB
@@ -313,12 +343,12 @@ async fn save_reminder_to_db(
         let target_time = NaiveDateTime::parse_from_str(&datetime_str, "%Y-%m-%d %H:%M:%S")
             .map_err(|err| tokio_rusqlite::rusqlite::Error::ToSqlConversionFailure(Box::new(err)))?;
 
-        Ok(super::reminder::Reminder {
+        Ok(Reminder {
             id: reminder_id,
             room_id: parsed_room_id,
             text,
             target_time,
-            status: super::reminder::ReminderStatus::Pending,
+            status: ReminderStatus::Pending,
         })
     }).await
 }
