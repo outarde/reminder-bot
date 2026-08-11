@@ -204,17 +204,17 @@ pub async fn on_stripped_state_member(
             // retry autojoin due to synapse sending invites, before the
             // invited user can join for more information see
             // https://github.com/matrix-org/synapse/issues/4345
-            eprintln!("Failed to join room {} ({err:?}), retrying in {delay}s", room.room_id());
+            tracing::error!("Failed to join room {} ({err:?}), retrying in {delay}s", room.room_id());
 
             sleep(Duration::from_secs(delay)).await;
             delay *= 2;
 
             if delay > 3600 {
-                eprintln!("Can't join room {} ({err:?})", room.room_id());
+                tracing::error!("Can't join room {} ({err:?})", room.room_id());
                 break;
             }
         }
-        println!("Successfully joined room {}", room.room_id());
+        tracing::info!("Successfully joined room {}", room.room_id());
     });
 }
 
@@ -223,18 +223,20 @@ fn build_reminder_regex(
     commands: &[&str],
     i18n_days: &[&str],
     i18n_times: &[&str]
-) -> Regex {
-    let mut regex_str = String::with_capacity(256); 
-    regex_str.push_str(&format!("^(?i)!(?:{}", &commands.join("|")));
-    
-    regex_str.push_str(r")\s+(?:(?P<datetime>(?P<day>\d{1,2})(?:\s+|\.|\|-)(?P<month>.+|\d{2})(?:\s+|\.|\|-)?(?P<year>\d{4})?)|(?P<day_natural>");
-    regex_str.push_str(&i18n_days.join("|"));
+) -> &'static Regex {
+    REMINDER_REGEX.get_or_init(|| {
+        let mut regex_str = String::with_capacity(256); 
+        regex_str.push_str(&format!("^(?i)!(?:{}", &commands.join("|")));
+        
+        regex_str.push_str(r")\s+(?:(?P<datetime>(?P<day>\d{1,2})(?:\s+|\.|\|-)(?P<month>[^\.\-\s]{1,15}|\d{2})(?:\s?|\.|\|-)(?P<year>\d{4})?)|(?P<day_natural>");
+        regex_str.push_str(&i18n_days.join("|"));
 
-    regex_str.push_str(r"))(?:(?:\s+(?:в|at))?\s+((?P<hour>\d{2}):(?P<min>\d{2})|(?P<time_natural>");
-    regex_str.push_str(&i18n_times.join("|"));
-    regex_str.push_str(r")))?\s+(?P<text>.+)$");
+        regex_str.push_str(r"))(?:(?:\s+(?:в|at))?\s+((?P<hour>\d{2}):(?P<min>\d{2})|(?P<time_natural>");
+        regex_str.push_str(&i18n_times.join("|"));
+        regex_str.push_str(r")))?\s+(?P<text>.+)$");
 
-    Regex::new(&regex_str).unwrap()
+        Regex::new(&regex_str).unwrap()
+    })
 }
 
 /// Parse regex captions to ParsedReminder
@@ -293,22 +295,25 @@ fn parse_reminder_data(
 
 /// Build final string for DB and validate its time in the future
 fn build_datetime_str(data: &ParsedReminder) -> Result<String, ReminderDateError> {
-    let i18n_months_str = t!("dates.months");
-    let i18n_months: Vec<&str> = i18n_months_str.split_whitespace().collect();
-    let month_numbers = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
+    let mut month: String = String::from("");
 
-    let month = match data.month.as_str() {
-        "01" | "1" => "01", "02" | "2" => "02", "03" | "3" => "03", "04" | "4" => "04", 
-        "05" | "5" => "05", "06" | "6" => "06", "07" | "7" => "07", "08" | "8" => "08", 
-        "09" | "9" => "09", "10" => "10", "11" => "11", "12" => "12",
-        _ => {
-            let idx = i18n_months.iter().position(|&name| name == data.month)
-                .ok_or(ReminderDateError::InvalidMonth)?;
-            month_numbers[idx]
+    // Check if number
+    if let Ok(m) = data.month.as_str().parse::<u32>() {
+        if (1..=12).contains(&m) {
+            month = format!("{:02}", m);
         }
-    };
+    }
+    // If word
+    else {
+        let i18n_months_str = t!("dates.months");
+        let i18n_months: Vec<&str> = i18n_months_str.split_whitespace().collect();
+        let month_numbers = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
 
-    let datetime_string = format!("{}-{}-{} {}:{}:00", data.year, month, data.day, data.hour, data.min);
+        let idx = i18n_months.iter().position(|&name| name == data.month).ok_or(ReminderDateError::InvalidMonth)?;
+        month = month_numbers[idx].to_string();
+    }
+
+    let datetime_string = format!("{}-{}-{} {}:{}:00", data.year, month.as_str(), data.day, data.hour, data.min);
     
     // Check if time is in the future
     if let Ok(target_time) = NaiveDateTime::parse_from_str(&datetime_string, "%Y-%m-%d %H:%M:%S") {
