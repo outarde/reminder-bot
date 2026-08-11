@@ -9,7 +9,7 @@ use matrix_sdk::{
     }
 };
 use tokio::time::{Duration, sleep};
-use chrono::{Local, Days, NaiveDateTime};
+use chrono::{Local, Days, NaiveDateTime, TimeDelta};
 use tokio_rusqlite::Connection;
 
 use regex::Regex;
@@ -72,6 +72,7 @@ impl NaturalTime {
 enum ReminderDateError {
     InvalidMonth,
     TimeInPast,
+    InvalidTime,
 }
 
 /// i18n keys
@@ -285,7 +286,11 @@ fn parse_reminder_data(
         };
         (h.to_string(), m.to_string())
     } else {
-        return None;
+        // Return +1 hour
+        // TODO: check day transition
+        let f_t = Local::now().checked_add_signed(TimeDelta::hours(1)).unwrap();
+        (f_t.format("%H").to_string(), f_t.format("%M").to_string())
+        // (super::config::DEFAULT_MORNING_TIME.to_string(), "00".to_string())
     };
 
     // Reminder's text
@@ -310,7 +315,9 @@ fn build_datetime_str(data: &ParsedReminder) -> Result<String, ReminderDateError
         let i18n_months: Vec<&str> = i18n_months_str.split_whitespace().collect();
         let month_numbers = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
 
-        let idx = i18n_months.iter().position(|&name| name == data.month).ok_or(ReminderDateError::InvalidMonth)?;
+        let idx = i18n_months.iter().position(|&name| {
+            (name == data.month || name.starts_with(&data.month)) && data.month.len() >= 3
+        }).ok_or(ReminderDateError::InvalidMonth)?;
         month = month_numbers[idx].to_string();
     }
 
