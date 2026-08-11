@@ -159,6 +159,9 @@ reminder:
     ru: |
       ⚠️ Пропущенные напоминания в этой комнате: 
       %{sum}
+  date-error:
+    en: Unable to determine the reminder month.
+    ru: Не получилось определить месяц напоминания.
 dates:
   today:
     en: today

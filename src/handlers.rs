@@ -67,6 +67,18 @@ impl NaturalTime {
     }
 }
 
+/// Parsed data of user message for newly reminder
+ #[derive(Debug)]
+struct ParsedReminder {
+    text: String,
+    year: String,
+    month: String,
+    day: String,
+    hour: String,
+    min: String,
+}
+
+
 /// Reply to incoming message
 pub async fn on_room_message(
     event: OriginalSyncRoomMessageEvent, 
@@ -82,223 +94,63 @@ pub async fn on_room_message(
     let MessageType::Text(text_content) = &event.content.msgtype else { return };
     let body = text_content.body.trim();
 
-    // Vec of commands to activate bot
-    let mut commands = vec![DEFAULT_BOT_COMMAND];
+    // i18n
     let i18n_command = t!("reminder.command");
-    commands.push(&i18n_command);
-
-    // Command for regular expression
-    let mut regex_str = String::with_capacity(256); 
-    regex_str.push_str(&format!("^(?i)!(?:{}|", &commands.join("|")));
-    
-    if let Some(lang_cmd) = &bot_config.command {
-        commands.push(&lang_cmd);
-        regex_str.push_str(&regex::escape(&lang_cmd));
-    };
-    regex_str.push_str(r")\s+(?:(?P<datetime>(?P<day>\d{1,2})(?:\s+|\.|\|-)(?P<month>.+|\d{2})(?:\s+|\.|\|-)?(?P<year>\d{4})?)|(?P<day_natural>");
-
-    // natural language expressions
-    // date
     let i18n_today = t!("dates.today");
     let i18n_tomorrow = t!("dates.tomorrow");
-    let i18n_days = vec![i18n_today.as_ref(), &i18n_tomorrow.as_ref()];
-    regex_str.push_str(&i18n_days.join("|"));
-    // time
     let i18n_morning = t!("dates.morning");
     let i18n_afternoon = t!("dates.afternoon");
     let i18n_evening = t!("dates.evening");
+
+    // Vecs for i18n
+    let mut commands = vec![DEFAULT_BOT_COMMAND, &i18n_command];
+    if let Some(lang_cmd) = &bot_config.command {
+        commands.push(lang_cmd);
+    }
+
+    let i18n_days = vec![i18n_today.as_ref(), i18n_tomorrow.as_ref()];
     let i18n_times = vec![i18n_morning.as_ref(), i18n_afternoon.as_ref(), i18n_evening.as_ref()];
 
-    // natural time for regex
-    regex_str.push_str(r"))(?:(?:\s+(?:в|at))?\s+((?P<hour>\d{2}):(?P<min>\d{2})|(?P<time_natural>");
-    regex_str.push_str(&i18n_times.join("|"));
-    regex_str.push_str(r")))?\s+(?P<text>.+)$");
+    // Make regular expression
+    let re = build_reminder_regex(&commands, &i18n_days, &i18n_times);
 
-    // Regular expression
-    let re = REMINDER_REGEX.get_or_init(|| {
-        Regex::new(&regex_str).unwrap()
-    });
-
-    // Check command word
     if let Some(caps) = re.captures(body) {
-        let mut day: &str = &(Local::now().format("%d").to_string());
-        let mut month_str: String = Local::now().format("%m").to_string();
-
-        let today = Local::now().date_naive();
-        let tomorrow_date = today + Days::new(1);
-        let tomorrow = tomorrow_date.format("%d").to_string();
-
-        // Day and month
-        if let (Some(day_match), Some(month_match)) = (caps.name("day"), caps.name("month")) {
-            day = day_match.as_str();
-            // to_lowercase() returns String
-            month_str = month_match.as_str().to_lowercase(); 
-        } else if let Some(day_natural_match) = caps.name("day_natural") {
-            let day_natural = day_natural_match.as_str();
-
-            let natural_day = match NaturalDay::from_str(day_natural, &i18n_today, &i18n_tomorrow) {
-                Some(d) => d,
-                None => {
-                    tracing::error!("day_natural error 1");
-                    return;
-                }
-            };
-
-            day = match natural_day {
-                NaturalDay::Today => &day,
-                NaturalDay::Tomorrow => &tomorrow,
-                _ => {
-                    tracing::error!("day_natural error 2");
-                    return;
-                }
-            };            
-        } else {
-            tracing::error!("Error matching date");
-            return;
-        };
-
-        let year_string = Local::now().format("%Y").to_string();
-        let year_slice: &str = &year_string;
-        let year = caps.name("year").map_or(year_slice, |m| m.as_str());
-        
-        // Time
-        let mut hour: &str;
-        let mut min: &str = "00";
-        // Todo: change default time via .env or even special for user
-        if let (Some(hour_match), Some(min_match)) = (caps.name("hour"), caps.name("min")) {
-            hour = hour_match.as_str();
-            min = min_match.as_str();
-        } else if let Some(time_natural_match) = caps.name("time_natural") {
-            let time_natural = time_natural_match.as_str().to_lowercase();
-
-            let natural_time = match NaturalTime::from_str(&time_natural, &i18n_morning, &i18n_afternoon, &i18n_afternoon) {
-                Some(d) => d,
-                None => {
-                    tracing::error!("time_natural error 1");
-                    return;
-                }
-            };
-
-            hour = match natural_time {
-                NaturalTime::Morning => &bot_config.morning_time,
-                NaturalTime::Afternoon => &bot_config.afternoon_time,
-                NaturalTime::Evening => &bot_config.evening_time,
-                _ => {
-                    tracing::error!("time_natural error 2");
-                    return;
-                }
-            };  
-
-        } else {
-            tracing::error!("Error matching time");
-            return;
-        };
-
-        // let hour = caps.name("hour").map_or("09", |m| m.as_str());
-        // let min = caps.name("min").map_or("00", |m| m.as_str());
-        
-        let reminder_text = &caps["text"];
-        // shadowing
-        let reminder_text = reminder_text.to_owned();
-
-        // Vec of months names and Vec for months numbers matching
-        let i18n_months_str = t!("dates.months");
-        let i18n_months: Vec<&str> = i18n_months_str.split_whitespace().collect();
-        let month_numbers = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
-
-        // &* - reborrow; like Deref
-        // https://stackoverflow.com/questions/41273041/what-does-combined-together-do-in-rust
-        let month = match &*month_str {
-            "01" | "1" => "01", "02" | "2" => "02", "03" | "3" => "03", "04" | "4" => "04", 
-            "05" | "5" => "05", "06" | "6" => "06", "07" | "7" => "07", "08" | "8" => "08", 
-            "09" | "9" => "09", "10" => "10", "11" => "11", "12" => "12",
-            _ => {
-                if let Some(m) = i18n_months.iter().position(|&name| name == month_str)
-                    .map(|idx| month_numbers[idx]) {
-                    m
-                } else {
-                    let _ = room.send(RoomMessageEventContent::text_plain("Unrecognizable month!")).await.unwrap();
-                    tracing::error!("Month error");
-                    return;
-                }
+        let reminder_data = match parse_reminder_data(
+            &caps, 
+            &bot_config, 
+            &i18n_today, 
+            &i18n_tomorrow, 
+            &i18n_morning, 
+            &i18n_afternoon, 
+            &i18n_evening
+        ) {
+            Some(data) => data,
+            None => {
+                tracing::error!("Error parsing regex: {:?}", caps);
+                return;
             }
         };
 
-        // Final date string
-        let datetime_str = format!("{}-{}-{} {}:{}:00", year, month, day, hour, min);
-
-        // Parse date
-        if let Ok(target_time) = NaiveDateTime::parse_from_str(&datetime_str, "%Y-%m-%d %H:%M:%S") {
-            
-            let room_id_str = room.room_id().to_string();
-            let text_for_db = reminder_text.clone().to_string();
-            let time_for_db = datetime_str.clone();
-            // chenge &RoomId to OwnedRoomId,
-            // to_owned(): &str to String, Path to PathBuf
-            let _owned_room_id: OwnedRoomId = room.room_id().to_owned();
-
-            // 1. Save to SQLite
-            let new_reminder = db.call(move |c| -> Result<super::reminder::Reminder, tokio_rusqlite::Error> {
-                c.execute(
-                    "INSERT INTO reminders (room_id, text, target_time) VALUES (?1, ?2, ?3)",
-                    [&room_id_str, &text_for_db, &time_for_db],
-                )?;
-                
-                // Reminder ID
-                let reminder_id = c.last_insert_rowid();
-
-                let room_id = RoomId::parse(&room_id_str)
-                    .map_err(|err| tokio_rusqlite::rusqlite::Error::ToSqlConversionFailure(Box::new(err)))?;
-                
-                let target_time = NaiveDateTime::parse_from_str(&time_for_db, "%Y-%m-%d %H:%M:%S")
-                    .map_err(|err| tokio_rusqlite::rusqlite::Error::ToSqlConversionFailure(Box::new(err)))?;
-
-                /*
-                let reminder = super::reminder::Reminder {
-                    id: reminder_id,
-                    room_id: room_id,
-                    text: text_for_db,
-                    target_time: target_time,
-                };
-                Ok::<_, tokio_rusqlite::Error>(reminder)
-                */
-                /*
-                Ok::<_, tokio_rusqlite::Error>(super::reminder::Reminder {
-                    id: reminder_id,
-                    room_id: room_id,
-                    text: text_for_db,
-                    target_time: target_time,
-                })
-                */
-                Ok(super::reminder::Reminder {
-                    id: reminder_id,
-                    room_id: room_id,
-                    text: text_for_db,
-                    target_time: target_time,
-                    status: super::reminder::ReminderStatus::Pending,
-                })
-            }).await;
-
-            // 2. Tokio timer
-            match new_reminder {
-                Ok(new_reminder) => {
-                    super::reminder::schedule_reminder(
-                        client,
-                        db.clone(),
-                        new_reminder,
-                    ).await;
-                }
-                Err(err) => {
-                    println!("SQLite error: {:?}", err);
-                    let _ = room.send(RoomMessageEventContent::text_plain("DB error in handlers.rs, sorry.")).await.unwrap();
-                }
+        let datetime_str = match build_datetime_str(&reminder_data) {
+            Some(dt) => dt,
+            None => {
+                let _ = room.send(RoomMessageEventContent::text_plain(t!("reminder.date-error"))).await;
+                tracing::error!("Unrecognizable month in parsed reminder data: {:?}", reminder_data);
+                return;
             }
+        };
 
-            let date_str = format!("{}.{}.{}", day, month, year);
-            let reminder_mes = t!("reminder.saved", date = date_str, hour = hour, min = min);
-            let _ = room.send(RoomMessageEventContent::text_plain(reminder_mes)).await.unwrap();
-        } else {
-            let _ = room.send(RoomMessageEventContent::text_plain("Format error.")).await.unwrap();
+        match save_reminder_to_db(&db, room.room_id(), reminder_data.text, datetime_str.clone()).await {
+            Ok(new_reminder) => {
+                super::reminder::schedule_reminder(client, db.clone(), new_reminder).await;
+                
+                let date_str = format!("{}.{}.{}", reminder_data.day, reminder_data.month, reminder_data.year);
+                let reminder_mes = t!("reminder.saved", date = date_str, hour = reminder_data.hour, min = reminder_data.min);
+                let _ = room.send(RoomMessageEventContent::text_plain(reminder_mes)).await;
+            }
+            Err(err) => {
+                tracing::error!("SQLite error: {:?}", err);
+            }
         }
     } else if body.starts_with("!") {
         let body_content = body.strip_prefix("!").unwrap_or(body);
@@ -347,47 +199,129 @@ pub async fn on_stripped_state_member(
 }
 
 /// Build regular expression
-/*
-async fn build_reminder_regex(i18n_today: &str, i18n_tomorrow: &str) -> Regex {
-    // Vec of commands to activate bot
-    let mut commands = vec![DEFAULT_BOT_COMMAND];
-    let i18n_command = t!("reminder.command");
-    commands.push(&i18n_command);
-
-    // Command for regular expression
+fn build_reminder_regex(
+    commands: &[&str],
+    i18n_days: &[&str],
+    i18n_times: &[&str]
+) -> Regex {
     let mut regex_str = String::with_capacity(256); 
-    regex_str.push_str(&format!("^(?i)!(?:{}|", &commands.join("|")));
+    regex_str.push_str(&format!("^(?i)!(?:{}", &commands.join("|")));
     
-    if let Some(lang_cmd) = &bot_config.command {
-        commands.push(&lang_cmd);
-        regex_str.push_str(&regex::escape(&lang_cmd));
-    };
     regex_str.push_str(r")\s+(?:(?P<datetime>(?P<day>\d{1,2})(?:\s+|\.|\|-)(?P<month>.+|\d{2})(?:\s+|\.|\|-)?(?P<year>\d{4})?)|(?P<day_natural>");
-
-    // natural language expressions
-    // date
-    let i18n_today = t!("dates.today");
-    let i18n_tomorrow = t!("dates.tomorrow");
-    let i18n_days = vec![i18n_today.as_ref(), &i18n_tomorrow.as_ref()];
     regex_str.push_str(&i18n_days.join("|"));
-    // time
-    let i18n_morning = t!("dates.morning");
-    let i18n_afternoon = t!("dates.afternoon");
-    let i18n_evening = t!("dates.evening");
-    let i18n_times = vec![i18n_morning.as_ref(), i18n_afternoon.as_ref(), i18n_evening.as_ref()];
 
-    // natural time for regex
     regex_str.push_str(r"))(?:(?:\s+(?:в|at))?\s+((?P<hour>\d{2}):(?P<min>\d{2})|(?P<time_natural>");
     regex_str.push_str(&i18n_times.join("|"));
     regex_str.push_str(r")))?\s+(?P<text>.+)$");
 
-    // Regular expression
-    let re = REMINDER_REGEX.get_or_init(|| {
-        Regex::new(&regex_str).unwrap()
-    });
-    return re
+    Regex::new(&regex_str).unwrap()
 }
-*/
+
+/// Parse regex captions to ParsedReminder
+fn parse_reminder_data(
+    caps: &regex::Captures,
+    bot_config: &BotConfig,
+    i18n_today: &str,
+    i18n_tomorrow: &str,
+    i18n_morning: &str,
+    i18n_afternoon: &str,
+    i18n_evening: &str,
+) -> Option<ParsedReminder> {
+    let today_date = Local::now().date_naive();
+    
+    // Day and month
+    let (day, month) = if let (Some(d), Some(m)) = (caps.name("day"), caps.name("month")) {
+        (d.as_str().to_string(), m.as_str().to_lowercase())
+    } else if let Some(d_nat) = caps.name("day_natural") {
+        let natural_day = NaturalDay::from_str(d_nat.as_str(), i18n_today, i18n_tomorrow)?;
+        match natural_day {
+            NaturalDay::Today => (today_date.format("%d").to_string(), today_date.format("%m").to_string()),
+            NaturalDay::Tomorrow => {
+                let tomorrow = today_date + Days::new(1);
+                (tomorrow.format("%d").to_string(), tomorrow.format("%m").to_string())
+            }
+        }
+    } else {
+        return None;
+    };
+
+    // Year
+    let year = caps.name("year")
+        .map(|y| y.as_str().to_string())
+        .unwrap_or_else(|| today_date.format("%Y").to_string());
+
+    // Time
+    let (hour, min) = if let (Some(h), Some(m)) = (caps.name("hour"), caps.name("min")) {
+        (h.as_str().to_string(), m.as_str().to_string())
+    } else if let Some(t_nat) = caps.name("time_natural") {
+        let natural_time = NaturalTime::from_str(&t_nat.as_str().to_lowercase(), i18n_morning, i18n_afternoon, i18n_evening)?;
+        let h = match natural_time {
+            NaturalTime::Morning => &bot_config.morning_time,
+            NaturalTime::Afternoon => &bot_config.afternoon_time,
+            NaturalTime::Evening => &bot_config.evening_time,
+        };
+        (h.to_string(), "00".to_string())
+    } else {
+        return None;
+    };
+
+    // Reminder's text
+    let text = caps.name("text")?.as_str().to_string();
+
+    Some(ParsedReminder { text, year, month, day, hour, min })
+}
+
+/// Build final string for DB
+fn build_datetime_str(data: &ParsedReminder) -> Option<String> {
+    let i18n_months_str = t!("dates.months");
+    let i18n_months: Vec<&str> = i18n_months_str.split_whitespace().collect();
+    let month_numbers = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
+
+    let month = match data.month.as_str() {
+        "01" | "1" => "01", "02" | "2" => "02", "03" | "3" => "03", "04" | "4" => "04", 
+        "05" | "5" => "05", "06" | "6" => "06", "07" | "7" => "07", "08" | "8" => "08", 
+        "09" | "9" => "09", "10" => "10", "11" => "11", "12" => "12",
+        _ => {
+            let idx = i18n_months.iter().position(|&name| name == data.month)?;
+            month_numbers[idx]
+        }
+    };
+
+    Some(format!("{}-{}-{} {}:{}:00", data.year, month, data.day, data.hour, data.min))
+}
+
+/// Save reminder to DB
+// TODO: move to reminder.rs; use it in reminder.rs
+async fn save_reminder_to_db(
+    db: &Connection,
+    room_id: &RoomId,
+    text: String,
+    datetime_str: String,
+) -> Result<super::reminder::Reminder, tokio_rusqlite::Error> {
+    let room_id_str = room_id.to_string();
+    
+    db.call(move |c| {
+        c.execute(
+            "INSERT INTO reminders (room_id, text, target_time) VALUES (?1, ?2, ?3)",
+            [&room_id_str, &text, &datetime_str],
+        )?;
+        
+        let reminder_id = c.last_insert_rowid();
+        let parsed_room_id = RoomId::parse(&room_id_str)
+            .map_err(|err| tokio_rusqlite::rusqlite::Error::ToSqlConversionFailure(Box::new(err)))?;
+        
+        let target_time = NaiveDateTime::parse_from_str(&datetime_str, "%Y-%m-%d %H:%M:%S")
+            .map_err(|err| tokio_rusqlite::rusqlite::Error::ToSqlConversionFailure(Box::new(err)))?;
+
+        Ok(super::reminder::Reminder {
+            id: reminder_id,
+            room_id: parsed_room_id,
+            text,
+            target_time,
+            status: super::reminder::ReminderStatus::Pending,
+        })
+    }).await
+}
 
 /// Parse markdown i18n str to html String for matrix format
 async fn markdown_to_html(markdown: &str) -> String {
