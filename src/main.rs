@@ -88,6 +88,9 @@ enum Commands {
         /// Level of cleanup. From 1 to 5
         level: String,
     },
+
+    /// Generate config.yaml configuration file with current variables
+    GenerateConfig,
 }
 
 // ===== App Context =====
@@ -320,6 +323,10 @@ async fn main() -> Result<()> {
         Some(Commands::Cleanup { level }) => {
             // without init_client
             app.cleanup(&level).await?;
+        }
+        Some(Commands::GenerateConfig) => {
+            app.config.bot.save_to_file().await?;
+            return Ok(());
         }
         None => {
             app.run_bot().await?;
