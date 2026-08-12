@@ -79,10 +79,9 @@ pub async fn init_db() -> anyhow::Result<Connection> {
 
     // Path for DB file
     let path = dirs::data_dir().expect("No data_dir directory found").join(super::APP_FOLDER).join("reminders.db");
-    let path_string: String = path.to_string_lossy().into_owned();
 
     // Open or create DB file
-    let conn = Connection::open(&path_string).await?;
+    let conn = Connection::open(&path).await?;
     
     // Create table
     // todo: table for rooms to customize timezone

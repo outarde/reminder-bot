@@ -9,7 +9,7 @@ use matrix_sdk::{
     }
 };
 use tokio::time::{Duration, sleep};
-use chrono::{Local, Days, NaiveDateTime, TimeDelta};
+use chrono::{Local, Days, NaiveDateTime};
 use tokio_rusqlite::Connection;
 
 use regex::Regex;
@@ -150,7 +150,7 @@ pub async fn on_room_message(
             }
         };
 
-        let datetime_str = match build_datetime_str(&reminder_data) {
+        let target_time = match build_datetime_str(&reminder_data) {
             Ok(dt) => dt,
             Err(err) => {
                 let err_msg = t!(err.as_i18n_key()); 
@@ -161,13 +161,11 @@ pub async fn on_room_message(
             }
         };
 
-        match save_reminder_to_db(&db, room.room_id(), reminder_data.text, datetime_str.clone()).await {
+        match save_reminder_to_db(&db, room.room_id(), reminder_data.text, target_time.clone()).await {
             Ok(new_reminder) => {
                 super::reminder::schedule_reminder(client, db.clone(), new_reminder).await;
 
-                let parsed_datetime = NaiveDateTime::parse_from_str(&datetime_str, "%Y-%m-%d %H:%M:%S").unwrap();
-                let date_str = parsed_datetime.format("%d.%m.%Y");
-
+                let date_str = target_time.format("%d.%m.%Y");
                 let reminder_mes = t!("reminder.saved", date = date_str, hour = reminder_data.hour, min = reminder_data.min);
                 let _ = room.send(RoomMessageEventContent::text_plain(reminder_mes)).await;
             }
@@ -301,7 +299,7 @@ fn parse_reminder_data(
 }
 
 /// Build final string for DB and validate its time in the future
-fn build_datetime_str(data: &ParsedReminder) -> Result<String, ReminderDateError> {
+fn build_datetime_str(data: &ParsedReminder) -> Result<NaiveDateTime, ReminderDateError> {
     let mut month: String = String::from("");
 
     // Check if number
@@ -325,15 +323,14 @@ fn build_datetime_str(data: &ParsedReminder) -> Result<String, ReminderDateError
     let datetime_string = format!("{}-{}-{} {}:{}:00", data.year, month.as_str(), data.day, data.hour, data.min);
     
     // Check if time can be parsed and in the future
-    if let Ok(target_time) = NaiveDateTime::parse_from_str(&datetime_string, "%Y-%m-%d %H:%M:%S") {
-        if target_time <= Local::now().naive_local() {
-            return Err(ReminderDateError::TimeInPast); 
-        }
-    } else {
-        return Err(ReminderDateError::InvalidTime);
+    let target_time = NaiveDateTime::parse_from_str(&datetime_string, "%Y-%m-%d %H:%M:%S")
+        .map_err(|_| ReminderDateError::InvalidTime)?;
+        
+    if target_time <= Local::now().naive_local() {
+        return Err(ReminderDateError::TimeInPast); 
     }
 
-    Ok(datetime_string)
+    Ok(target_time)
 }
 
 /// Save reminder to DB
@@ -342,9 +339,10 @@ async fn save_reminder_to_db(
     db: &Connection,
     room_id: &RoomId,
     text: String,
-    datetime_str: String,
+    target_time: NaiveDateTime,
 ) -> Result<super::reminder::Reminder, tokio_rusqlite::Error> {
     let room_id_str = room_id.to_string();
+    let datetime_str = target_time.format("%Y-%m-%d %H:%M:%S").to_string();
     
     db.call(move |c| {
         c.execute(
@@ -354,9 +352,6 @@ async fn save_reminder_to_db(
         
         let reminder_id = c.last_insert_rowid();
         let parsed_room_id = RoomId::parse(&room_id_str)
-            .map_err(|err| tokio_rusqlite::rusqlite::Error::ToSqlConversionFailure(Box::new(err)))?;
-        
-        let target_time = NaiveDateTime::parse_from_str(&datetime_str, "%Y-%m-%d %H:%M:%S")
             .map_err(|err| tokio_rusqlite::rusqlite::Error::ToSqlConversionFailure(Box::new(err)))?;
 
         Ok(Reminder {
