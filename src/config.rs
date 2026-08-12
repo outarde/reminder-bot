@@ -5,6 +5,8 @@ use tracing::{info, warn, error};
 
 /// Default language for bot messages.
 pub const DEFAULT_LANG: &str = "en";
+/// Default bot command.
+pub const DEFAULT_COMMAND: &str = "remind";
 /// Default times
 pub const DEFAULT_MORNING_TIME: &str = "09:00";
 pub const DEFAULT_AFTERNOON_TIME: &str = "14:00";
@@ -45,6 +47,8 @@ pub struct BotConfig {
     #[serde(default = "BotConfig::default_lang")]
     pub lang: String,
     pub command: Option<String>,
+    #[serde(default = "BotConfig::default_commands")]
+    pub commands: Vec<String>,
     pub on_command: Option<bool>,
     pub on_mention: Option<bool>,
     #[serde(default = "BotConfig::default_morning_time")]
@@ -58,6 +62,11 @@ pub struct BotConfig {
 impl BotConfig {
     fn default_lang() -> String {
         DEFAULT_LANG.into()
+    }
+    fn default_commands() -> Vec<String> {
+        vec![DEFAULT_COMMAND.to_string()]
+        // DEFAULT_COMMANDS.push("remind".as_string()).into()
+        // commands.into()
     }
     fn default_morning_time() -> String {
         DEFAULT_MORNING_TIME.into()
@@ -147,6 +156,8 @@ impl AppConfig {
                 .from_env()
                 .map_err(|e| anyhow::anyhow!("Environment error: {}", e))?
         };
+
+        println!("{:?}", bot);
 
         Ok(Self { auth, recovery, bot })
     }
