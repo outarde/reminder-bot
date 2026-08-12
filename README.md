@@ -25,13 +25,16 @@ A lightweight chatbot for reminders on Matrix servers with multilingual support.
 - Reset all verification settings with the ability to save or delete the backup and receive a new recovery key
 ## Feature Roadmap
 - [x] Alternative text for the bot activation command
+- [ ] Optional activation of the bot without a command
+- [ ] Optional requirement to mention the bot in general chats
 - [ ] Sending a summary of sent and scheduled room or chat reminders on user command
 - [ ] Deleting reminders
 - [ ] Recurring reminders
 - [ ] More advanced parsing of reminder date and time from user messages
-- [x] Adding European languages
-- [ ] Adding other languages
-- [ ] Time zone settings. Currently, reminders are sent according to a single time zone, set in the bot or server settings. It is expected that each user will be able to set their own alternative time zone, which will be taken into account when sending reminders.
+- [ ] Pro mode
+- [x] Adding languages
+- [ ] Upload your own translation
+- [ ] Time zone settings
 - [ ] Creating reminders for one user for another
 - [ ] Administrative module for cleaning up the reminder database
 ## Screenshots
@@ -70,20 +73,23 @@ Set the environment variables as shown in [example.env](https://github.com/outar
 
 > [!IMPORTANT]
 >  Make sure the bot's data folder is forwarded to the host in `volumes` section. Otherwise, the bot will create a new session each time it's started.
+### Required Environment Variables
+| Variable            | Description                                                                                                   | Default                               |
+| :------------------ | :------------------------------------------------------------------------------------------------------------ | :------------------------------------ |
+| `MATRIX_HOMESERVER` | Matrix homeserver address.                                                                                    | `Required`                            |
+| `MATRIX_USERNAME`   | Bot's account username.                                                                                       | `Required`, or `MATRIX_TOKEN` instead |
+| `MATRIX_PASSWORD`   | Bot's account password.                                                                                       | `Required`, or `MATRIX_TOKEN` instead |
+| `MATRIX_TOKEN`      | Authentication token instead of a username and password. Generate a token via Element Admin or other service. | `None`                                |
 ### Optional Variables
-| Variable             | Description                                                                                                                                                                       | Default                               |
-| :------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------------------------------------ |
-| `MATRIX_HOMESERVER`  | Matrix homeserver address.                                                                                                                                                        | `Required`                            |
-| `MATRIX_USERNAME`    | Bot's account username.                                                                                                                                                           | `Required`, or `MATRIX_TOKEN` instead |
-| `MATRIX_PASSWORD`    | Bot's account password.                                                                                                                                                           | `Required`, or `MATRIX_TOKEN` instead |
-| `MATRIX_TOKEN`       | Authentication token instead of a username and password. Generate a token via Element Admin or other service.                                                                     | `None`                                |
-| `MATRIX_DEVICE`      | An arbitrary name for the bot's device, which will be visible in the server's admin panel and in the bot's device list.                                                           | `reminder-bot-device`                 |
-| `TZ`                 | Timezone (e.g. `Europe/Paris`). Use values from the [list](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones#List).                                                    | `UTC`                                 |
-| `BOT_LANG`           | Language for bot commands and messages. See below for a list of available languages. Applies to all users.                                                                        | `en`                                  |
-| `BOT_COMMAND`        | An alternative command to call the bot in rooms in addition to default and localized remind commands that will always work. It should be specified without the exclamation point. | `None`                                |
-| `BOT_MORNING_TIME`   | The hour that is considered morning. Please follow the format `%H:%M`, otherwise you will see a general error `Error parsing regex` only when the bot tries to access the variables.                                                                                                                                              | `09:00`                               |
-| `BOT_AFTERNOON_TIME` | The hour that is considered afternoon.                                                                                                                                            | `14:00`                               |
-| `BOT_EVENING_TIME`   | The hour that is considered evening.                                                                                                                                              | `19:00`                               |
+| Variable             | Description                                                                                                                                                                          | Default                               |
+| :------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------------------------------------ |
+| `MATRIX_DEVICE`      | An arbitrary name for the bot's device, which will be visible in the server's admin panel and in the bot's device list.                                                              | `reminder-bot-device`                 |
+| `TZ`                 | Timezone (e.g. `Europe/Paris`). Use values from the [list](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones#List).                                                       | `UTC`                                 |
+| `BOT_LANG`           | Language for bot commands and messages. See below for a list of available languages. Applies to all users.                                                                           | `en`                                  |
+| `BOT_COMMAND`        | An alternative command to call the bot in rooms in addition to default and localized remind commands that will always work. It should be specified without the exclamation point.    | `None`                                |
+| `BOT_MORNING_TIME`   | The time that is considered morning. Please follow the format `%H:%M`, otherwise you will see a general error `Error parsing regex` only when the bot tries to access the variables. | `09:00`                               |
+| `BOT_AFTERNOON_TIME` | The time that is considered afternoon.                                                                                                                                               | `14:00`                               |
+| `BOT_EVENING_TIME`   | The time that is considered evening.                                                                                                                                                 | `19:00`                               |
 #### Available Languages
 `en` English 🇬🇧, `de` German 🇩🇪, `fr` French 🇫🇷, `it` Italian 🇮🇹, `es` Spanish 🇪🇸, `sv` Swedish, aka IKEAish 🇸🇪, `pl` Polish 🇵🇱, `cs` Czech 🇨🇿, `fi` Finnish 🇫🇮, `ja` Japanese 🇯🇵,  `zh` Chinese Simplified 🇨🇳, `ru` Russian 🇷🇺, `uk` Ukrainian 🇺🇦.
 
