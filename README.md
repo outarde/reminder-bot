@@ -11,7 +11,7 @@
 [![GitHub License](https://img.shields.io/github/license/outarde/reminder-bot)](https://github.com/outarde/reminder-bot/blob/main/LICENSE) [![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/outarde/reminder-bot/docker-publish.yml)](https://github.com/outarde/reminder-bot/actions) [![GitHub Tag](https://img.shields.io/github/v/tag/outarde/reminder-bot)](https://github.com/outarde/reminder-bot/releases) [![GitHub commit activity](https://img.shields.io/github/commit-activity/m/outarde/reminder-bot)](https://github.com/outarde/reminder-bot/commits/main/)
 
 # Reminder Bot
-A lightweight chatbot for reminders on Matrix servers with multilingual support. Schedule reminders without leaving the messenger in personal or group rooms.
+A lightweight chatbot for reminders on Matrix servers with multilingual support. Schedule reminders on the go in personal or group rooms.
 ## Key Features
 - ⏲️ Create reminders with the `!remind` command
 - 📆 Basic date and time variability with the words 'today', 'tomorrow', 'morning', 'afternoon', 'evening' omitting the year and time
