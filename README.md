@@ -24,18 +24,22 @@ A lightweight chatbot for reminders on Matrix servers with multilingual support.
 - Verification of other devices on which the bot is authorized
 - Reset all verification settings with the ability to save or delete the backup and receive a new recovery key
 ## Feature Roadmap
-- [x] Alternative text for the bot activation command
+__Reminders Preferences:__
 - [ ] Optional activation of the bot without a command
-- [ ] Optional requirement to mention the bot in general chats
-- [ ] Sending a summary of sent and scheduled room or chat reminders on user command
+- [ ] Optional requirement to mention the bot in group chats
+- [ ] Time zone settings
+__Commands:__
+- [x] Alternative text for the bot activation command
 - [ ] Deleting reminders
 - [ ] Recurring reminders
-- [ ] More advanced parsing of reminder date and time from user messages
-- [ ] Pro mode
+- [ ] Sending a summary of sent and scheduled room or chat reminders on user command
+- [ ] Creating reminders for one user for another
+__Language and Translation:__
 - [x] Adding languages
 - [ ] Upload your own translation
-- [ ] Time zone settings
-- [ ] Creating reminders for one user for another
+- [ ] More advanced parsing of reminder date and time from user messages
+- [ ] Pro mode for parsing
+__Other:__
 - [ ] Administrative module for cleaning up the reminder database
 ## Screenshots
 <table>
