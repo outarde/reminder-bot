@@ -8,7 +8,7 @@ use matrix_sdk::{
 use tokio_rusqlite::Connection;
 use chrono::{Local, TimeZone, NaiveDateTime};
 use std::{
-    //sync::Arc, 
+    // sync::Arc, 
     collections::HashMap
 };
 use rust_i18n::t;
@@ -148,7 +148,7 @@ pub async fn schedule_reminder(
 }
 
 /// Restores all future (or missed) reminders from the database.
-pub async fn restore_reminders(client: Client, db: Connection) -> anyhow::Result<()> {
+pub async fn restore_reminders(client: Client, db: &Connection /*ctx: Arc<super::BotContext>*/) -> anyhow::Result<()> {
     // Get reminders
 
     /*
@@ -173,6 +173,9 @@ pub async fn restore_reminders(client: Client, db: Connection) -> anyhow::Result
         Ok::<_, tokio_rusqlite::Error>(res)
     }).await?;
     */
+
+    // let db = ctx.db_conn;
+    // let client = ctx.client;
 
     let reminders: Vec<Reminder> = db.call(|c| {
         let mut stmt = c.prepare("SELECT id, room_id, text, target_time FROM reminders WHERE status = 0")?;

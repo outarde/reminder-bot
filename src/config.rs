@@ -7,6 +7,10 @@ use tracing::{info, warn, error};
 pub const DEFAULT_LANG: &str = "en";
 /// Default bot command.
 pub const DEFAULT_COMMAND: &str = "remind";
+/// Default bot command.
+pub const DEFAULT_LIST_COMMAND: &str = "list";
+/// Default bot command.
+pub const DEFAULT_TIMEZONE_COMMAND: &str = "tz";
 /// Default times
 pub const DEFAULT_MORNING_TIME: &str = "09:00";
 pub const DEFAULT_AFTERNOON_TIME: &str = "14:00";
@@ -46,11 +50,16 @@ pub struct RecoveryConfig {
 pub struct BotConfig {
     #[serde(default = "BotConfig::default_lang")]
     pub lang: String,
-    pub command: Option<String>,
-    #[serde(default = "BotConfig::default_commands")]
-    pub commands: Vec<String>,
-    pub on_command: Option<bool>,
-    pub on_mention: Option<bool>,
+    #[serde(default = "BotConfig::default_remind_command")]
+    pub remind_commands: Vec<String>,
+    #[serde(default = "BotConfig::default_list_command")]
+    pub list_commands: Vec<String>,
+    #[serde(default = "BotConfig::default_tz_command")]
+    pub tz_commands: Vec<String>,
+    #[serde(default = "BotConfig::default_on_command")]
+    pub on_command: bool,
+    #[serde(default = "BotConfig::default_on_mention")]
+    pub on_mention: bool,
     #[serde(default = "BotConfig::default_morning_time")]
     pub morning_time: String,
     #[serde(default = "BotConfig::default_afternoon_time")]
@@ -63,10 +72,29 @@ impl BotConfig {
     fn default_lang() -> String {
         DEFAULT_LANG.into()
     }
-    fn default_commands() -> Vec<String> {
+    fn default_on_command() -> bool {
+        true
+    }
+    fn default_on_mention() -> bool {
+        false
+    }
+    fn default_remind_command() -> Vec<String> {
         vec![DEFAULT_COMMAND.to_string()]
-        // DEFAULT_COMMANDS.push("remind".as_string()).into()
-        // commands.into()
+        // let mut map = HashMap::new();
+
+        // for serde_yaml_ng::Value type: HashMap<String, serde_yaml_ng::Value>
+        // map.insert("remind".to_string(), vec![serde_yaml_ng::Value::String(DEFAULT_COMMAND.to_string())].into());
+
+        // map.insert("remind".to_string(), vec![DEFAULT_COMMAND.to_string()]);
+        // map.insert("list".to_string(), vec![DEFAULT_LIST_COMMAND.to_string()]);
+        // map.insert("tz".to_string(), vec![DEFAULT_TIMEZONE_COMMAND.to_string()]);
+        // map
+    }
+    fn default_list_command() -> Vec<String> {
+        vec![DEFAULT_LIST_COMMAND.to_string()]
+    }
+    fn default_tz_command() -> Vec<String> {
+        vec![DEFAULT_TIMEZONE_COMMAND.to_string()]
     }
     fn default_morning_time() -> String {
         DEFAULT_MORNING_TIME.into()
@@ -156,8 +184,6 @@ impl AppConfig {
                 .from_env()
                 .map_err(|e| anyhow::anyhow!("Environment error: {}", e))?
         };
-
-        println!("{:?}", bot);
 
         Ok(Self { auth, recovery, bot })
     }

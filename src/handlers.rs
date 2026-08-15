@@ -13,10 +13,8 @@ use chrono::{Local, Days, NaiveDateTime};
 use tokio_rusqlite::Connection;
 
 use regex::Regex;
-use std::sync::OnceLock;
+use std::sync::{OnceLock, Arc};
 use rust_i18n::t;
-
-use pulldown_cmark::{Parser, html};
 
 // app crates
 use crate::reminder::{Reminder, ReminderStatus};
@@ -24,9 +22,47 @@ use crate::config::BotConfig;
 
 // Compile regex only once
 static REMINDER_REGEX: OnceLock<Regex> = OnceLock::new();
+static MENTION_REGEX: OnceLock<Regex> = OnceLock::new();
 
-/// Default command
-pub const DEFAULT_BOT_COMMAND: &str = "remind";
+enum BotCommand {
+    Remind,
+    List,
+    Tz,
+}
+
+impl BotCommand {
+    fn parse(text: &str, bot_config: BotConfig) -> Option<(Self, String)> {
+        if !text.starts_with('!') {
+            // Return None if bot can be activated only with command
+            // and return "remind" command if can be activated without command
+            if bot_config.on_command {
+                return None;
+            } else {
+                return Some((BotCommand::Remind, text.to_string()))
+            }
+        }
+        
+        let remaining: String = text.chars().skip(1).collect();
+        let mut parts = remaining.splitn(2, ' ');
+
+        // command and args from text
+        let cmd_str = parts.next()?.to_lowercase();
+        let args = parts.next().unwrap_or("").to_string();
+
+        // i18n aliases for commands
+        let i18n_command = t!("reminder.command");
+
+        if bot_config.remind_commands.contains(&cmd_str) || &i18n_command == &cmd_str {
+            Some((BotCommand::Remind, args))
+        } else if bot_config.list_commands.contains(&cmd_str) {
+            Some((BotCommand::List, args))
+        } else if bot_config.tz_commands.contains(&cmd_str) {
+            Some((BotCommand::Tz, args))
+        } else {
+            None
+        }
+    }
+}
 
 /// Day options in natural language.
 enum NaturalDay {
@@ -97,41 +133,121 @@ struct ParsedReminder {
     min: String,
 }
 
-
 /// Reply to incoming message
 pub async fn on_room_message(
+    event: OriginalSyncRoomMessageEvent, 
+    room: Room, 
+    ctx: Arc<super::BotContext>
+) {
+    // check if we joined the room
+    if room.state() != RoomState::Joined { return; }
+    // check if message is not from bot account
+    // can be changed if multi-step interaction with bot will be presented
+    if event.sender == ctx.bot_id { return; }
+
+    // check for text type of message
+    let MessageType::Text(text_content) = &event.content.msgtype else { return };
+    let body = text_content.body.trim();
+
+    // check for ctx.bot_config_on_mention
+    // to activate bot only when it mentioned
+    if ctx.bot_config.on_mention {
+        if let Some(mentions) = &event.content.mentions {
+            // clean body from makrdown if there is mention
+            if mentions.user_ids.contains(&ctx.bot_id) {
+                let body = clean_from_mention(&body);
+            }
+            else {
+                return;
+            }
+        } else {
+            return;
+        }
+    }
+
+    // Parse command
+    let Some((command, args)) = BotCommand::parse(body, ctx.bot_config.clone()) else { 
+        return;
+    };
+
+    match command {
+        BotCommand::Remind => {
+            handle_remind(&args, room, &ctx.client, &ctx.db_conn, &ctx.bot_config).await;
+        }
+        BotCommand::List => {
+            // handle_list(&room, &db).await;
+            return;
+        }
+        BotCommand::Tz => {
+            // handle_settings(&room, &bot_config).await;
+            return;
+        }
+    }
+}
+
+/*
+/// Reply to incoming message
+pub async fn on_room_message_re(
     event: OriginalSyncRoomMessageEvent, 
     room: Room, 
     client: Client, 
     db: Connection,
     bot_config: BotConfig,
 ) {
-    // We only want to log text messages in joined rooms.
-    if room.state() != RoomState::Joined {
-        return;
-    }
+    // check if we joined the room
+    if room.state() != RoomState::Joined { return; }
+    // check if message is not from bot account
+    // can be changed if multi-step interaction with bot will be presented
+    let sender = event.sender;
+    let bot_id = client.user_id().unwrap();
+    // let bot_id = owned_user_id!("@example:localhost");
+    if sender == bot_id { return; }
+
+
     let MessageType::Text(text_content) = &event.content.msgtype else { return };
     let body = text_content.body.trim();
 
+    // Parse command
+    let Some((command, args)) = BotCommand::parse(body, bot_config.clone()) else { 
+        return;
+    };
+
+    match command {
+        BotCommand::Remind => {
+            handle_remind(&args, room, client, db, bot_config).await;
+        }
+        BotCommand::List => {
+            // handle_list(&room, &db).await;
+            return;
+        }
+        BotCommand::Tz => {
+            // handle_settings(&room, &bot_config).await;
+            return;
+        }
+    }
+}
+*/
+
+/// New reminder
+pub async fn handle_remind(
+    body: &str, 
+    room: Room, 
+    client: &Client, 
+    db: &Connection,
+    bot_config: &BotConfig,
+) {
     // i18n
-    let i18n_command = t!("reminder.command");
     let i18n_today = t!("dates.today");
     let i18n_tomorrow = t!("dates.tomorrow");
     let i18n_morning = t!("dates.morning");
     let i18n_afternoon = t!("dates.afternoon");
     let i18n_evening = t!("dates.evening");
 
-    // Vecs for i18n
-    let mut commands = vec![DEFAULT_BOT_COMMAND, &i18n_command];
-    if let Some(lang_cmd) = &bot_config.command {
-        commands.push(lang_cmd);
-    }
-
     let i18n_days = vec![i18n_today.as_ref(), i18n_tomorrow.as_ref()];
     let i18n_times = vec![i18n_morning.as_ref(), i18n_afternoon.as_ref(), i18n_evening.as_ref()];
 
     // Make regular expression
-    let re = build_reminder_regex(&commands, &i18n_days, &i18n_times);
+    let re = build_reminder_regex(&i18n_days, &i18n_times);
 
     if let Some(caps) = re.captures(body) {
         let reminder_data = match parse_reminder_data(
@@ -163,7 +279,7 @@ pub async fn on_room_message(
 
         match save_reminder_to_db(&db, room.room_id(), reminder_data.text, target_time.clone()).await {
             Ok(new_reminder) => {
-                super::reminder::schedule_reminder(client, db.clone(), new_reminder).await;
+                super::reminder::schedule_reminder(client.clone(), db.clone(), new_reminder).await;
 
                 let date_str = target_time.format("%d.%m.%Y");
                 let reminder_mes = t!("reminder.saved", date = date_str, hour = reminder_data.hour, min = reminder_data.min);
@@ -173,17 +289,15 @@ pub async fn on_room_message(
                 tracing::error!("SQLite error: {:?}", err);
             }
         }
-    } else if body.starts_with("!") {
-        let body_content = body.strip_prefix("!").unwrap_or(body);
-        let found = commands.iter().any(|&cmd| body_content.starts_with(cmd));
-        if found {
-            let tomorrow = Local::now().date_naive() + Days::new(1);
-            let date = tomorrow.format("%d.%m.%Y").to_string();
+    } else {
+        let tomorrow = Local::now().date_naive() + Days::new(1);
+        let date = tomorrow.format("%d.%m.%Y").to_string();
 
-            let welcome_msg = t!("welcome", date = date);
-            let welcome_msg_html = markdown_to_html(&welcome_msg).await;
-            let _ = room.send(RoomMessageEventContent::text_html(welcome_msg, welcome_msg_html.as_str())).await.unwrap();
-        }
+        let welcome_msg = t!("welcome", date = date);
+        // for markdonw to text_html: use pulldown_cmark::{Parser, html};
+        // let welcome_msg_html = markdown_to_html(&welcome_msg).await;
+
+        let _ = room.send(RoomMessageEventContent::text_markdown(welcome_msg)).await.unwrap();
     }
 }
 
@@ -221,16 +335,14 @@ pub async fn on_stripped_state_member(
 
 /// Build regular expression
 fn build_reminder_regex(
-    commands: &[&str],
     i18n_days: &[&str],
     i18n_times: &[&str]
 ) -> &'static Regex {
     REMINDER_REGEX.get_or_init(|| {
         let mut regex_str = String::with_capacity(256); 
-        regex_str.push_str(&format!("^(?i)!(?:{}", &commands.join("|")));
         
         // [^\.\-\s]{1,15} in ?P<month> can be replaced with white list of months names
-        regex_str.push_str(r")\s+(?:(?P<datetime>(?P<day>\d{1,2})(?:\s+|\.|\|-)(?P<month>[^\.\-\s]{1,15}|\d{2})(?:\s?|\.|\|-)(?P<year>\d{4})?)|(?P<day_natural>");
+        regex_str.push_str(r"^(?i)(?:(?P<datetime>(?P<day>\d{1,2})(?:\s+|\.|\|-)(?P<month>[^\.\-\s]{1,15}|\d{2})(?:\s?|\.|\|-)(?P<year>\d{4})?)|(?P<day_natural>");
         regex_str.push_str(&i18n_days.join("|"));
 
         regex_str.push_str(r"))(?:(?:\s+(?:в|at))?\s+((?P<hour>\d{2}):(?P<min>\d{2})|(?P<time_natural>");
@@ -364,10 +476,22 @@ async fn save_reminder_to_db(
     }).await
 }
 
+/*
 /// Parse markdown i18n str to html String for matrix format
 async fn markdown_to_html(markdown: &str) -> String {
     let parser = Parser::new(&markdown);
     let mut buffer = String::new();
     html::push_html(&mut buffer, parser);
     buffer
+}
+*/
+
+/// Clean message from makrdown link with user mention
+// or can be implemented with input.strip_prefix()
+fn clean_from_mention(text: &str) -> String {
+    let re = MENTION_REGEX.get_or_init(|| {
+        Regex::new(r"\[@[^\]]+\]\(https://matrix\.to/#/[^)]+\)").unwrap()
+    });
+
+    re.replace(text, "").trim().to_string()
 }

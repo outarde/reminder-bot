@@ -1,0 +1,12 @@
+lang: en
+
+remind_commands: [ "remind" ]
+list_commands: [ "list" ]
+tz_commands: [ "tz" ]
+
+on_command: true
+on_mention: false
+
+morning: "09:00"
+afternoon: "14:00"
+evening: "19:00"

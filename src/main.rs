@@ -1,10 +1,11 @@
 use std::{
-    //io::{self, Write},
+    sync::Arc,
     path::{PathBuf},
 };
 use matrix_sdk::{
     Client, 
     config::SyncSettings,
+    ruma::{OwnedUserId}
 };
 use anyhow::{Context, Result};
 use tracing_subscriber;
@@ -93,21 +94,28 @@ enum Commands {
     GenerateConfig,
 }
 
-// ===== App Context =====
+// ===== Bot Context =====
+#[derive(Clone)]
+pub struct BotContext {
+    pub client: Client,
+    pub bot_id: OwnedUserId,
+    pub db_conn: Arc<Connection>,
+    pub bot_config: config::BotConfig,
+}
 
+// ===== App Context =====
 struct AppContext {
-    config: config::AppConfig,
+    config: Arc<config::AppConfig>,
     data_dir: PathBuf,
     session_file: PathBuf,
     client: Option<Client>,
     sync_settings: Option<SyncSettings>,
     sync_token: Option<String>,
-    db_conn: Option<Connection>
 }
 
 impl AppContext {
     async fn new() -> Result<Self> {
-        let config = config::AppConfig::load().await?;
+        let config = Arc::new(config::AppConfig::load().await?);
 
         rust_i18n::set_locale(&config.bot.lang);
 
@@ -121,7 +129,6 @@ impl AppContext {
             client: None,
             sync_settings: None,
             sync_token: None,
-            db_conn: None,
         })
     }
 
@@ -236,27 +243,33 @@ impl AppContext {
         if self.client.is_none() {
             self.init_client().await?;
         }
+
         let client = self.client.as_ref().unwrap();
+        let bot_id = client.user_id().unwrap().to_owned();
+        let db_conn = Arc::new(reminder::init_db().await?);
+        let sync_settings = self.sync_settings.as_ref().unwrap();
+
+        let context = Arc::new(BotContext {
+            client: client.clone(),
+            bot_id,
+            db_conn: db_conn.clone(),
+            bot_config: self.config.bot.clone(),
+        });
 
         // DB
-        let db_conn = reminder::init_db().await?;
-        self.db_conn = Some(db_conn);
+        // let db_conn_old = Some(reminder::init_db().await?);
+        // self.db_conn = Some(db_conn_old);
 
         // Restore reminders
-        reminder::restore_reminders(client.clone(), self.db_conn.as_ref().unwrap().clone()).await?;
+        reminder::restore_reminders(client.clone(), &db_conn).await?;
 
         // Handlers
-        let client_clone = client.clone();
-        let db_clone = self.db_conn.as_ref().unwrap().clone();
-        let bot_clone = self.config.bot.clone();
+        let ctx_for_handler = Arc::clone(&context);
+
         client.add_event_handler(move |event, room| {
-            handlers::on_room_message(event, room, client_clone, db_clone, bot_clone)
+            handlers::on_room_message(event, room, ctx_for_handler.clone())
         });
         client.add_event_handler(handlers::on_stripped_state_member);
-
-        // Getting synchronization settings
-        //let sync_settings = auth::get_sync(client, &self.sync_token, &self.session_file).await?;
-        let sync_settings = self.sync_settings.as_ref().unwrap();
 
         // Synchronization and Ctrl+C break-up
         tokio::select! {
