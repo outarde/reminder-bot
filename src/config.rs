@@ -1,4 +1,5 @@
 use tokio::fs;
+use std::fs as std_fs;
 use anyhow::{Context, Result};
 use serde::{Deserialize, Serialize};
 use tracing::{info, warn, error};
@@ -108,11 +109,11 @@ impl BotConfig {
     }
 
     /// Create config.yaml from loaded BotConfig
-    pub async fn save_to_file(&self) -> anyhow::Result<()> {
+    fn save_to_file(&self, overwrite: bool) -> anyhow::Result<()> {
         let yaml_path = dirs::data_dir()
             .context("No data_dir directory found")?
             .join(super::APP_FOLDER).join("config.yaml");
-        if yaml_path.exists() {
+        if yaml_path.exists() && !overwrite {
             warn!("Configuration file already exists at {}", yaml_path.display());
             return Ok(());
         }
@@ -120,13 +121,14 @@ impl BotConfig {
         let yaml_str = serde_yaml_ng::to_string(&self)
             .context("Failed to serialize bot config")?;
 
-        fs::write(&yaml_path, yaml_str).await.context("Failed to write config.yaml")?;
+        std_fs::write(&yaml_path, yaml_str)?;
 
-        info!(file = %yaml_path.display(), "Created config.yaml");
+        info!(file = %yaml_path.display(), "The data has been written to config.yaml.");
 
         Ok(())
     }
 
+    /// Interactive setup config
     pub fn setup_config(&mut self) -> anyhow::Result<()> {
         let languages = vec!["en", "de", "fr", "it", "es", "sv", "pl", "cs", "fi", "ja", "zh", "ru", "uk"];
         self.lang = Select::new("Select language:", languages).prompt()?.to_string();
@@ -151,7 +153,9 @@ impl BotConfig {
         self.afternoon = Text::new("Set afternoon time (HH:MM):").with_default(DEFAULT_AFTERNOON_TIME).prompt()?.to_string();
         self.evening = Text::new("Set evening time (HH:MM):").with_default(DEFAULT_EVENING_TIME).prompt()?.to_string();
 
-        print!("{:?}", self);
+        let overwrite = Confirm::new("Overwrite current configuration if any?").with_default(true).prompt()?;
+        
+        self.save_to_file(overwrite)?;
 
         Ok(())
     }
