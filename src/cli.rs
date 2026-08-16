@@ -1,7 +1,6 @@
 use anyhow::Result;
 use clap::{Parser, Subcommand};
 use tracing::{info, warn};
-
 use matrix_sdk::Client;
 
 use crate::{AppConfig, BotRuntime, BotManager};
@@ -140,7 +139,7 @@ pub async fn run(config: &mut AppConfig) -> Result<()> {
             return Ok(());
         }
         Some(Commands::SetupConfig) => {
-            config.bot.setup_config()?;
+            config.bot.setup_config(&config.data_dir)?;
             return Ok(());
         }
         

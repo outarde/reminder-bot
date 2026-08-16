@@ -1,5 +1,8 @@
 use tokio::fs;
-use std::fs as std_fs;
+use std::{
+    fs as std_fs, 
+    path::PathBuf
+};
 use anyhow::{Context, Result};
 use serde::{Deserialize, Serialize};
 use tracing::{info, warn, error};
@@ -109,10 +112,8 @@ impl BotConfig {
     }
 
     /// Create config.yaml from loaded BotConfig
-    fn save_to_file(&self, overwrite: bool) -> anyhow::Result<()> {
-        let yaml_path = dirs::data_dir()
-            .context("No data_dir directory found")?
-            .join(super::APP_FOLDER).join("config.yaml");
+    fn save_to_file(&self, overwrite: bool, data_dir: &PathBuf) -> anyhow::Result<()> {
+        let yaml_path = data_dir.join("config.yaml");
         if yaml_path.exists() && !overwrite {
             warn!("Configuration file already exists at {}", yaml_path.display());
             return Ok(());
@@ -129,8 +130,9 @@ impl BotConfig {
     }
 
     /// Interactive setup config
-    pub fn setup_config(&mut self) -> anyhow::Result<()> {
-        let languages = vec!["en", "de", "fr", "it", "es", "sv", "pl", "cs", "fi", "ja", "zh", "ru", "uk"];
+    pub fn setup_config(&mut self, data_dir: &PathBuf) -> anyhow::Result<()> {
+        // let languages = vec!["en", "de", "fr", "it", "es", "sv", "pl", "cs", "fi", "ja", "zh", "ru", "uk"];
+        let languages = rust_i18n::available_locales!();
         self.lang = Select::new("Select language:", languages).prompt()?.to_string();
 
         let remind_commands = Text::new("Aliases for the reminder creation command:")
@@ -155,14 +157,14 @@ impl BotConfig {
 
         let overwrite = Confirm::new("Overwrite current configuration if any?").with_default(true).prompt()?;
         
-        self.save_to_file(overwrite)?;
+        self.save_to_file(overwrite, &data_dir)?;
 
         Ok(())
     }
 }
 
 impl AppConfig {
-    pub async fn load() -> Result<Self> {
+    pub async fn load(data_dir: &PathBuf) -> Result<Self> {
         //dotenvy::dotenv().ok();
 
         // .env
@@ -171,7 +173,7 @@ impl AppConfig {
             .map_err(|e| anyhow::anyhow!("Environment error: {}", e))?;
 
         // recovery.json
-        let data_dir = dirs::data_dir().context("No data_dir directory found")?.join(super::APP_FOLDER);
+        // let data_dir = dirs::data_dir().context("No data_dir directory found")?.join(super::APP_FOLDER);
         let recovery_file = data_dir.join("recovery.json");
 
         let recovery = if recovery_file.exists() {
