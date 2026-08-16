@@ -147,15 +147,15 @@ pub async fn on_room_message(
 
     // check for text type of message
     let MessageType::Text(text_content) = &event.content.msgtype else { return };
-    let body = text_content.body.trim();
+    let mut body = text_content.body.trim().to_string();
 
-    // check for ctx.bot_config_on_mention
-    // to activate bot only when it mentioned
-    if ctx.bot_config.on_mention {
+    // if ctx.bot_config.on_mention is true, 
+    // check for if bot was mentioned in public rooms (where more than 2 members joined or invited)
+    if ctx.bot_config.on_mention && room.active_members_count() > 2 {
         if let Some(mentions) = &event.content.mentions {
             // clean body from makrdown if there is mention
             if mentions.user_ids.contains(&ctx.bot_id) {
-                let body = clean_from_mention(&body);
+                body = clean_from_mention(&body);
             }
             else {
                 return;
@@ -166,7 +166,7 @@ pub async fn on_room_message(
     }
 
     // Parse command
-    let Some((command, args)) = BotCommand::parse(body, ctx.bot_config.clone()) else { 
+    let Some((command, args)) = BotCommand::parse(&body, ctx.bot_config.clone()) else { 
         return;
     };
 
@@ -392,9 +392,9 @@ fn parse_reminder_data(
     } else if let Some(t_nat) = caps.name("time_natural") {
         let natural_time = NaturalTime::from_str(&t_nat.as_str().to_lowercase(), i18n_morning, i18n_afternoon, i18n_evening)?;
         let (h, m) = match natural_time {
-            NaturalTime::Morning => &bot_config.morning_time.split_once(":")?,
-            NaturalTime::Afternoon => &bot_config.afternoon_time.split_once(":")?,
-            NaturalTime::Evening => &bot_config.evening_time.split_once(":")?,
+            NaturalTime::Morning => &bot_config.morning.split_once(":")?,
+            NaturalTime::Afternoon => &bot_config.afternoon.split_once(":")?,
+            NaturalTime::Evening => &bot_config.evening.split_once(":")?,
         };
         (h.to_string(), m.to_string())
     } else {

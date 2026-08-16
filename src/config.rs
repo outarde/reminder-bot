@@ -2,6 +2,7 @@ use tokio::fs;
 use anyhow::{Context, Result};
 use serde::{Deserialize, Serialize};
 use tracing::{info, warn, error};
+use inquire::{Text, Confirm, Select};
 
 /// Default language for bot messages.
 pub const DEFAULT_LANG: &str = "en";
@@ -61,11 +62,11 @@ pub struct BotConfig {
     #[serde(default = "BotConfig::default_on_mention")]
     pub on_mention: bool,
     #[serde(default = "BotConfig::default_morning_time")]
-    pub morning_time: String,
+    pub morning: String,
     #[serde(default = "BotConfig::default_afternoon_time")]
-    pub afternoon_time: String,
+    pub afternoon: String,
     #[serde(default = "BotConfig::default_evening_time")]
-    pub evening_time: String,
+    pub evening: String,
 }
 
 impl BotConfig {
@@ -122,6 +123,35 @@ impl BotConfig {
         fs::write(&yaml_path, yaml_str).await.context("Failed to write config.yaml")?;
 
         info!(file = %yaml_path.display(), "Created config.yaml");
+
+        Ok(())
+    }
+
+    pub fn setup_config(&mut self) -> anyhow::Result<()> {
+        let languages = vec!["en", "de", "fr", "it", "es", "sv", "pl", "cs", "fi", "ja", "zh", "ru", "uk"];
+        self.lang = Select::new("Select language:", languages).prompt()?.to_string();
+
+        let remind_commands = Text::new("Aliases for the reminder creation command:")
+            .with_help_message("The command in your chosen language will always be available.")
+            .with_placeholder("separated by spaces")
+            .with_default("remind").prompt()?.to_string();
+        self.remind_commands = remind_commands
+            .split_whitespace()
+            .map(String::from)
+            .collect();
+
+        self.on_command = Confirm::new("Activate the bot only on command?")
+            .with_help_message("If you select \"no\", the bot will attempt to create a reminder whenever it receives a message.")
+            .with_default(true).prompt()?;
+        self.on_mention = Confirm::new("Activate the bot only when mentioned in group rooms?")
+            .with_help_message("In rooms with only two people, the bot will respond regardless of whether it is mentioned.")
+            .with_default(false).prompt()?;
+
+        self.morning = Text::new("Set morning time (HH:MM):").with_default(DEFAULT_MORNING_TIME).prompt()?.to_string();
+        self.afternoon = Text::new("Set afternoon time (HH:MM):").with_default(DEFAULT_AFTERNOON_TIME).prompt()?.to_string();
+        self.evening = Text::new("Set evening time (HH:MM):").with_default(DEFAULT_EVENING_TIME).prompt()?.to_string();
+
+        print!("{:?}", self);
 
         Ok(())
     }
