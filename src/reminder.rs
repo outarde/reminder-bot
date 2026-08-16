@@ -6,7 +6,7 @@ use matrix_sdk::{
     },
 };
 use tokio_rusqlite::Connection;
-use chrono::{Local, TimeZone, NaiveDateTime};
+use chrono::{Local, TimeZone, NaiveDateTime, NaiveTime};
 use std::{
     // sync::Arc, 
     collections::HashMap
@@ -294,30 +294,6 @@ async fn summary_missed(
     Ok(())
 }
 
-// Remove reminder
-// just reminder id? or array of ids?
-/*
-async fn _remove_reminders(db: Connection, reminder: Vec<Reminder>) -> anyhow::Result<()> {
-    Ok(())
+pub fn is_time_valid(time_str: &str, time_format: &str) -> bool {
+    NaiveTime::parse_from_str(time_str, time_format).is_ok()
 }
-*/
-//
-/*
-fn bulk_insert(conn: &Connection, items: &[(String, i32)]) -> Result<()> {
-    // 1. Create transaction
-    let tx = conn.transaction()?;
-
-    // 2. Statement prepare
-    let mut stmt = tx.prepare("INSERT INTO users (name, age) VALUES (?1, ?2)")?;
-
-    // 3. Insert in cycle
-    for item in items {
-        stmt.execute(params![item.0, item.1])?;
-    }
-
-    // 4. Commit transaction
-    tx.commit()?;
-
-    Ok(())
-}
-*/

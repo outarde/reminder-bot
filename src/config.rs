@@ -6,7 +6,9 @@ use std::{
 use anyhow::{Context, Result};
 use serde::{Deserialize, Serialize};
 use tracing::{info, warn, error};
-use inquire::{Text, Confirm, Select};
+use inquire::{Text, Confirm, Select, validator::Validation};
+
+use crate::reminder::is_time_valid;
 
 /// Default language for bot messages.
 pub const DEFAULT_LANG: &str = "en";
@@ -151,9 +153,18 @@ impl BotConfig {
             .with_help_message("In rooms with only two people, the bot will respond regardless of whether it is mentioned.")
             .with_default(false).prompt()?;
 
-        self.morning = Text::new("Set morning time (HH:MM):").with_default(DEFAULT_MORNING_TIME).prompt()?.to_string();
-        self.afternoon = Text::new("Set afternoon time (HH:MM):").with_default(DEFAULT_AFTERNOON_TIME).prompt()?.to_string();
-        self.evening = Text::new("Set evening time (HH:MM):").with_default(DEFAULT_EVENING_TIME).prompt()?.to_string();
+        self.morning = Text::new("Set morning time (HH:MM):")
+            .with_default(DEFAULT_MORNING_TIME)
+            .with_validator(validate_config_time)
+            .prompt()?.to_string();
+        self.afternoon = Text::new("Set afternoon time (HH:MM):")
+            .with_default(DEFAULT_AFTERNOON_TIME)
+            .with_validator(validate_config_time)
+            .prompt()?.to_string();
+        self.evening = Text::new("Set evening time (HH:MM):")
+            .with_default(DEFAULT_EVENING_TIME)
+            .with_validator(validate_config_time)
+            .prompt()?.to_string();
 
         let overwrite = Confirm::new("Overwrite current configuration if any?").with_default(true).prompt()?;
         
@@ -225,3 +236,12 @@ impl AppConfig {
     }
 }
 
+// Validate default time for CLI setup
+// also as error: Box<dyn std::error::Error + Send + Sync>
+fn validate_config_time(input: &str) -> Result<Validation, inquire::error::CustomUserError> {
+    if is_time_valid(input, "%H:%M") {
+        Ok(Validation::Valid)
+    } else {
+        Ok(Validation::Invalid("Use %H:%M format, like 09:00.".into()))
+    }
+}
