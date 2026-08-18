@@ -6,9 +6,6 @@ use std::{
 use anyhow::{Context, Result};
 use serde::{Deserialize, Serialize};
 use tracing::{info, warn, error};
-use inquire::{Text, Confirm, Select, validator::Validation};
-
-use crate::reminder::is_time_valid;
 
 /// Default language for bot messages.
 pub const DEFAULT_LANG: &str = "en";
@@ -113,16 +110,20 @@ impl BotConfig {
         DEFAULT_EVENING_TIME.into()
     }
 
-    /// Create config.yaml from loaded BotConfig
-    fn save_to_file(&self, overwrite: bool, data_dir: &PathBuf) -> anyhow::Result<()> {
+    /// Create config.yaml from config variable
+    pub fn save_setup(&self, overwrite: bool, data_dir: &PathBuf, config: Option<BotConfig>) -> anyhow::Result<()> {
         let yaml_path = data_dir.join("config.yaml");
         if yaml_path.exists() && !overwrite {
             warn!("Configuration file already exists at {}", yaml_path.display());
             return Ok(());
         }
 
-        let yaml_str = serde_yaml_ng::to_string(&self)
-            .context("Failed to serialize bot config")?;
+        let yaml_str = if let Some(c) = config {
+            serde_yaml_ng::to_string(&c).context("Failed to serialize bot config")?
+        }
+        else {
+            serde_yaml_ng::to_string(&self).context("Failed to serialize bot config")?
+        };
 
         std_fs::write(&yaml_path, yaml_str)?;
 
@@ -131,6 +132,7 @@ impl BotConfig {
         Ok(())
     }
 
+    /*
     /// Interactive setup config
     pub fn setup_config(&mut self, data_dir: &PathBuf) -> anyhow::Result<()> {
         // let languages = vec!["en", "de", "fr", "it", "es", "sv", "pl", "cs", "fi", "ja", "zh", "ru", "uk"];
@@ -172,6 +174,7 @@ impl BotConfig {
 
         Ok(())
     }
+    */
 }
 
 impl AppConfig {
@@ -233,15 +236,5 @@ impl AppConfig {
         };
 
         Ok(Self { auth, recovery, bot })
-    }
-}
-
-// Validate default time for CLI setup
-// also as error: Box<dyn std::error::Error + Send + Sync>
-fn validate_config_time(input: &str) -> Result<Validation, inquire::error::CustomUserError> {
-    if is_time_valid(input, "%H:%M") {
-        Ok(Validation::Valid)
-    } else {
-        Ok(Validation::Invalid("Use %H:%M format, like 09:00.".into()))
     }
 }

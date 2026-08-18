@@ -2,9 +2,12 @@ use anyhow::Result;
 use clap::{Parser, Subcommand};
 use tracing::{info, warn};
 use matrix_sdk::Client;
+use inquire::{Text, Confirm, Select, validator::Validation};
 
 use crate::{AppConfig, BotRuntime, BotManager};
 use crate::auth;
+use crate::config;
+use crate::reminder::is_time_valid;
 
 /// Reminder Bot will send reminders for anything you ask 
 /// at any time on your [matrix] server
@@ -129,6 +132,57 @@ fn cleanup(level: &str) -> Result<()> {
     Ok(())
 }
 
+/// Interactive config setup witn inquire crate
+fn config_setup() -> Result<(config::BotConfig, bool)> {
+    let languages = rust_i18n::available_locales!();
+    let lang = Select::new("Select language:", languages).prompt()?.to_string();
+
+    let remind_commands = Text::new("Aliases for the reminder creation command:")
+        .with_help_message("The command in your chosen language will always be available.")
+        .with_placeholder("separated by spaces")
+        .with_default("remind").prompt()?.to_string();
+    let bot_remind_commands = remind_commands
+        .split_whitespace()
+        .map(String::from)
+        .collect();
+
+    let on_command = Confirm::new("Activate the bot only on command?")
+        .with_help_message("If you select \"no\", the bot will attempt to create a reminder whenever it receives a message.")
+        .with_default(true).prompt()?;
+    let on_mention = Confirm::new("Activate the bot only when mentioned in group rooms?")
+        .with_help_message("In rooms with only two people, the bot will respond regardless of whether it is mentioned.")
+        .with_default(false).prompt()?;
+
+    let morning = Text::new("Set morning time (HH:MM):")
+        .with_default(config::DEFAULT_MORNING_TIME)
+        .with_validator(validate_config_time)
+        .prompt()?.to_string();
+    let afternoon = Text::new("Set afternoon time (HH:MM):")
+        .with_default(config::DEFAULT_AFTERNOON_TIME)
+        .with_validator(validate_config_time)
+        .prompt()?.to_string();
+    let evening = Text::new("Set evening time (HH:MM):")
+        .with_default(config::DEFAULT_EVENING_TIME)
+        .with_validator(validate_config_time)
+        .prompt()?.to_string();
+
+    let new_config = config::BotConfig {
+        lang,
+        remind_commands: bot_remind_commands,
+        list_commands: vec![config::DEFAULT_LIST_COMMAND.to_string()],
+        tz_commands: vec![config::DEFAULT_TIMEZONE_COMMAND.to_string()],
+        on_command,
+        on_mention,
+        morning,
+        afternoon,
+        evening
+    };
+
+    let overwrite = Confirm::new("Overwrite current configuration if any?").with_default(true).prompt()?;
+
+    Ok((new_config, overwrite))
+}
+
 pub async fn run(config: &mut AppConfig) -> Result<()> {
     let cli = Cli::parse();
 
@@ -139,7 +193,11 @@ pub async fn run(config: &mut AppConfig) -> Result<()> {
             return Ok(());
         }
         Some(Commands::SetupConfig) => {
-            config.bot.setup_config(&config.data_dir)?;
+            let (new_config, overwrite) = config_setup()?;
+            // Currently, after setup, the application terminates, and the mutable config is redundant. 
+            // If we remove it, we'd have to remove &mut and send the new BotConfig to the save_setup() instead of None.
+            config.bot = new_config;
+            config.bot.save_setup(overwrite, &config.data_dir, None)?;
             return Ok(());
         }
         
@@ -188,4 +246,14 @@ pub async fn run(config: &mut AppConfig) -> Result<()> {
     }
 
     Ok(())
+}
+
+/// Validate default time for CLI setup
+// also as error: Box<dyn std::error::Error + Send + Sync>
+fn validate_config_time(input: &str) -> Result<Validation, inquire::error::CustomUserError> {
+    if is_time_valid(input, "%H:%M") {
+        Ok(Validation::Valid)
+    } else {
+        Ok(Validation::Invalid("Use %H:%M format, like 09:00.".into()))
+    }
 }

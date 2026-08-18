@@ -1,3 +1,8 @@
+/*
+#[macro_use]
+extern crate rust_i18n;
+*/
+
 use std::{
     sync::Arc,
     path::{PathBuf},
@@ -9,17 +14,20 @@ use matrix_sdk::{
 };
 use anyhow::Result;
 use tracing_subscriber;
-use tracing::{info};
+use tracing::info;
 use tokio::signal;
 use tokio_rusqlite::Connection;
-
-rust_i18n::i18n!("locales", fallback = "en");
 
 mod cli;
 mod config;
 mod auth;
 mod handlers;
 mod reminder;
+mod remote_i18n;
+
+use crate::remote_i18n::RemoteI18n;
+
+rust_i18n::i18n!("locales", fallback = "en", backend = RemoteI18n::new());
 
 /// Folder for storing session files: session.json, database for persist session. recovery.json
 /// and app sqlite database: reminders.db
@@ -36,15 +44,18 @@ pub struct AppConfig {
 
 impl AppConfig {
     pub async fn load() -> Result<Self> {
-        let config = config::AppConfig::load().await?;
         let data_dir = dirs::data_dir().expect("No data_dir directory found").join(APP_FOLDER);
         let session_file = data_dir.join("session.json");
+
+        let config = config::AppConfig::load(&data_dir).await?;
+        rust_i18n::set_locale(&config.bot.lang);
 
         Ok(Self {
             bot: config.bot, 
             auth: config.auth, 
             recovery: config.recovery, 
-            data_dir, session_file,
+            data_dir, 
+            session_file,
         })
     }
 }
