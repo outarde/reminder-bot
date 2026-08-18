@@ -33,7 +33,7 @@ pub struct AppConfig {
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub struct MatrixConfig {
-    pub homeserver: String,
+    pub homeserver: Option<String>,
     pub username: Option<String>,
     pub password: Option<String>,
     pub token: Option<String>,

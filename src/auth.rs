@@ -95,7 +95,15 @@ pub async fn login(
 ) -> anyhow::Result<Client> {
     println!("No previous session found, logging in…");
 
-    let (client, client_session) = build_client(data_dir, config.homeserver.as_str()).await?;
+    let homeserver = if let Some(hs) = &config.homeserver {
+        hs
+    }
+    else {
+        tracing::error!("Empty matrix homeserver URL.");
+        return Err(anyhow::anyhow!("Enter your matrix homeserver URL."));
+    };
+
+    let (client, client_session) = build_client(data_dir, &homeserver).await?;
     let matrix_auth = client.matrix_auth();
 
     let device_name = config.device.as_deref().unwrap_or(DEVICE_NAME);
