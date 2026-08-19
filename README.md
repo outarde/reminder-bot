@@ -14,10 +14,10 @@
 A lightweight chatbot for reminders on Matrix servers focused on multilingual support and clear user experience. Schedule reminders on the go in personal or group rooms.
 ## Key Features
 - ⏲️ Create reminders with the `!remind` command
-- 📆 Basic date and time variability with the words 'today', 'tomorrow', 'morning', 'afternoon', 'evening' omitting the year and time
-- 🔤 Multilingual support for commands and messages
-- 📋 Send a summary of missed reminders in each chat and room
-- 🎹 Alternative command to call bot
+- 📆 Basic date and time variability with the words `today`, `tomorrow`, `morning`, `afternoon`, `evening`, omitting the year and month
+- 🔤 Multilingual support for user input and bot responses, with the capability to upload custom translations
+- 📋 Send a summary of missed reminders in each room
+- 🎹 Aliases for calling the bot and the ability to call the bot without a command or only by mention
 ## Matrix Account Features
 - Login to the bot's Matrix account with a password and token, automatic device verification and backup if this is the first device for the account, and receiving a recovery key
 - Manual verification with a recovery key if the bot account has been logged in to before, and backup enabled via the command line (CLI)
@@ -25,8 +25,8 @@ A lightweight chatbot for reminders on Matrix servers focused on multilingual su
 - Reset all verification settings with the ability to save or delete the backup and receive a new recovery key
 ## Feature Roadmap
 #### Reminders Preferences:
-- [ ] Optional activation of the bot without a command
-- [ ] Optional requirement to mention the bot in group chats
+- [x] Optional activation of the bot without a command
+- [x] Optional requirement to mention the bot in group chats
 - [ ] Time zone settings
 #### Commands:
 - [x] Alternative text for the bot activation command
@@ -36,9 +36,9 @@ A lightweight chatbot for reminders on Matrix servers focused on multilingual su
 - [ ] Creating reminders for one user for another
 #### Language and Translation:
 - [x] Adding languages
-- [ ] Upload your own translation
+- [x] Upload your own translation
 - [ ] More advanced parsing of reminder date and time from user messages
-- [ ] Pro mode for parsing
+- [ ] Pro/CLI mode for user input
 #### Other:
 - [ ] Administrative module for cleaning up the reminder database
 ## Screenshots
@@ -57,62 +57,65 @@ A lightweight chatbot for reminders on Matrix servers focused on multilingual su
 		  <img src="docs/assets/UI-List2-Dark.jpg" alt="Missed reminders notification in chats list" width="200px">
 	  </td>
   </tr>
+  <tr>
+    <td>
+      <p align="center"><i>Welcome message</i></p>
+    </td>
+    <td>
+      <p align="center"><i>Interaction with the bot</i></p>
+    </td>
+    <td>
+      <p align="center"><i>New reminder</i></p>
+    </td>
+    <td>
+      <p align="center"><i>Summary of missed reminders</i></p>
+    </td>
+  </tr>
 </table>
 
 ## Quick Start
-### Docker
+### Docker Run
 ```
 docker run -d --name reminder-bot --restart unless-stopped \
-  -v reminder-bot:/app/data \
+  -v reminder-bot:/app/data/reminder_bot \
   -e MATRIX_HOMESERVER=homeserver-url \
   -e MATRIX_TOKEN=your-token \
   ghcr.io/outarde/reminder-bot:latest
 ```
-
+### Docker Compose
 For more persistent setup use [docker-compose.yml](https://github.com/outarde/reminder-bot/blob/main/docker/docker-compose.yml).
 
 Set the environment variables as shown in [example.env](https://github.com/outarde/reminder-bot/blob/main/docker/example.env):
-1. `MATRIX_HOMESERVER` — Matrix server address
+1. `MATRIX_HOMESERVER` — Matrix homeserver address.
 2. `MATRIX_USERNAME` and `MATRIX_PASSWORD` — bot's username and password. Create a user via Matrix Authentication Service (MAS): `docker exec matrix-auth mas-cli manage register-user USERNAME --password PASSWORD`.
+3. `MATRIX_TOKEN` — specify this variable when authenticating via token rather than username and password.
 
 > [!IMPORTANT]
->  Make sure the bot's data folder is forwarded to the host in `volumes` section. Otherwise, the bot will create a new session each time it's started.
-### Required Environment Variables
-| Variable            | Description                                                                                                   | Default                               |
-| :------------------ | :------------------------------------------------------------------------------------------------------------ | :------------------------------------ |
-| `MATRIX_HOMESERVER` | Matrix homeserver address.                                                                                    | `Required`                            |
-| `MATRIX_USERNAME`   | Bot's account username.                                                                                       | `Required`, or `MATRIX_TOKEN` instead |
-| `MATRIX_PASSWORD`   | Bot's account password.                                                                                       | `Required`, or `MATRIX_TOKEN` instead |
-| `MATRIX_TOKEN`      | Authentication token instead of a username and password. Generate a token via Element Admin or other service. | `None`                                |
-### Optional Variables
-| Variable             | Description                                                                                                                                                                          | Default                               |
-| :------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------------------------------------ |
-| `MATRIX_DEVICE`      | An arbitrary name for the bot's device, which will be visible in the server's admin panel and in the bot's device list.                                                              | `reminder-bot-device`                 |
-| `TZ`                 | Timezone (e.g. `Europe/Paris`). Use values from the [list](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones#List).                                                       | `UTC`                                 |
-| `BOT_LANG`           | Language for bot commands and messages. See below for a list of available languages. Applies to all users.                                                                           | `en`                                  |
-| `BOT_COMMAND`        | An alternative command to call the bot in rooms in addition to default and localized remind commands that will always work. It should be specified without the exclamation point.    | `None`                                |
-| `BOT_MORNING_TIME`   | The time that is considered morning. Please follow the format `%H:%M`, otherwise you will see a general error `Error parsing regex` only when the bot tries to access the variables. | `09:00`                               |
-| `BOT_AFTERNOON_TIME` | The time that is considered afternoon.                                                                                                                                               | `14:00`                               |
-| `BOT_EVENING_TIME`   | The time that is considered evening.                                                                                                                                                 | `19:00`                               |
+>  Make sure the bot's data folder `/app/data/reminder_bot` is bound to the host in `volumes` section. Otherwise, the bot will create a new session each time it's started.
+
+### Optional Configuration
+Language and other additional settings are stored in a `config.yml` file in a folder or volume that you have bound to the `/app/data/reminder_bot` folder inside the container. Use [config.example.yml](https://github.com/outarde/reminder-bot/blob/main/docker/config.example.yml) as a starting point. 
+
 #### Available Languages
 `en` English 🇬🇧, `de` German 🇩🇪, `fr` French 🇫🇷, `it` Italian 🇮🇹, `es` Spanish 🇪🇸, `sv` Swedish, aka IKEAish 🇸🇪, `pl` Polish 🇵🇱, `cs` Czech 🇨🇿, `fi` Finnish 🇫🇮, `ja` Japanese 🇯🇵,  `zh` Chinese Simplified 🇨🇳, `ru` Russian 🇷🇺, `uk` Ukrainian 🇺🇦.
 
-> [!NOTE]
-> Translations of month and time of day keywords often don't take case into account. To compensate for this, three-letter abbreviations of months can be used. If you notice an incorrect translation or would like to request an other language, please [report it](https://github.com/outarde/reminder-bot/issues).
+You can also upload your [custom translation](https://github.com/outarde/reminder-bot/blob/main/docs/configuration.md#using-a-custom-translation-file).
+
+### Beyond the Quick Start
+For a full description of all bot settings, see [the configuration help page](https://github.com/outarde/reminder-bot/blob/main/docs/configuration.md).
 
 ## Usage
 ### Start a Chat
 Create a conversation with the bot or add it to a room. Send the `!remind` command to get help:
->I'm a reminder bot. Send me a reminder in this format: !remind me \<date and time\> \<reminder text\> You can replace the month number with its name, use words "today" or "tomorrow". If no time was specified the reminder will arrive at 09:00. I'll send it to you in a shared or private chat.
+>I'm a reminder bot. Send me a reminder in this format: `!remind 19.08.2026 [at] 15:30 <reminder text>`. You can replace the month number with its name, use words `today` or `tomorrow`. If no time was specified the reminder will arrive at 09:00. I'll send it to you in a group or private room.
 
-> [!TIP]
-> You can omit the preposition "at" between the date and time.
 ### Create a Reminder
 Example commands:
-- `!remind 19.08.2026 at 10:00 Buy milk`
-- `!remind 19-08 Pet a cactus` — creates a reminder for August 19th of this year at 9am.
+- `!remind 19.08.2026 at 10:00 buy milk`
+- `!remind 19/08 pet a cactus` - create a reminder for August 19th of this year at 9am.
 - `!remind 19 August 21:30 plant a tree`
-- `!remind tomorrow be kind with people`
+- `!remind tomorrow evening be kind with people` - create a reminder with predefined `afternoon` time.
+- `19 feb afternoon to have a fantasy` - create a reminder if the creation of reminders only on command (`on_command` in `config.yml`) is `false`.
 
 > [!WARNING]
 > Currently, the American format of writing the month and then the day are not supported, as is the 12-hour system.

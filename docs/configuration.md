@@ -5,7 +5,7 @@ Required settings are stored as environment variables. These are the parameters 
 | Variable            | Description                                                                                                   | Example                    |
 | :------------------ | :------------------------------------------------------------------------------------------------------------ | :------------------------- |
 | `MATRIX_HOMESERVER` | Matrix homeserver address.                                                                                    | `https://matrix.org`       |
-| `MATRIX_USERNAME`   | Bot's account username.                                                                                       | `@reminder-bot:matrix.org` |
+| `MATRIX_USERNAME`   | Bot's account username. Create a user via Matrix Authentication Service (MAS): `docker exec matrix-auth mas-cli manage register-user USERNAME --password PASSWORD`                                                                                       | `@reminder-bot:matrix.org` |
 | `MATRIX_PASSWORD`   | Bot's account password.                                                                                       | `mypassword`               |
 | `MATRIX_TOKEN`      | Authentication token instead of a username and password. Generate a token via [Element Admin](https://github.com/element-hq/element-admin) or other service. | `mpt_mytoken`              |
 | `MATRIX_RECOVERY`      | A recovery key that you enter only when you want to verify your account and then keep in a safe place. For more information, see the dedicated [Matrix account page](https://github.com/outarde/reminder-bot/tree/main/docs/matrix.md). | `recovery_key`              |
@@ -76,7 +76,7 @@ Confirm that you want to create or overwrite a settings file.
 - `ru` Russian 🇷🇺,
 - `uk` Ukrainian 🇺🇦.
 
-If you notice an incorrect translation or would like to request an other language, please [report it.](https://github.com/outarde/reminder-bot/issues)
+If you notice an incorrect translation or would like to request an other language, please [report it](https://github.com/outarde/reminder-bot/issues).
 ### Using a Custom Translation File
 A custom translation file is a great way to add a language that isn't yet in the bot, or to customize an existing translation to suit your needs, for a themed homeserver or special occasion 🎃!
 
@@ -84,7 +84,7 @@ A custom translation file is a great way to add a language that isn't yet in the
 
 **Step two.** Create an `app.yml` file inside it. 
 
-**Step three.** Add your translations, checking the keys from the [default localization file](https://github.com/outarde/reminder-bot/blob/main/locales/app.yml) and using the [standard language codes.](https://en.wikipedia.org/wiki/List_of_ISO_639_language_codes)
+**Step three.** Add your translations, checking the keys from the [default localization file](https://github.com/outarde/reminder-bot/blob/main/locales/app.yml) and using the [standard language codes](https://en.wikipedia.org/wiki/List_of_ISO_639_language_codes).
 
 Example:
 ```yaml
@@ -129,7 +129,7 @@ times.evening:
 # months: 
 #  en: january february march april may june july august september october november december
 ```
-> [!NOTE]
+> [!TIP]
 >  The `>` symbol means to remove all line breaks, the `|` symbol means to keep line breaks.
 
 The bot will first search for a translation in your file, and then in the standard one.
