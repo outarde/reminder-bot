@@ -2,8 +2,10 @@ use rust_i18n::Backend;
 use std::{
     fs, 
     borrow::Cow, 
-    collections::HashMap
+    collections::{HashMap, HashSet}
+
 };
+
 
 pub struct RemoteI18n {
     trs: HashMap<String, HashMap<String, String>>,
@@ -41,11 +43,24 @@ impl RemoteI18n {
 
 impl Backend for RemoteI18n {
     fn available_locales(&self) -> Vec<Cow<'_, str>> {
-        return self.trs.keys().map(|k| Cow::from(k.as_str())).collect();
+        // for <language: key> localization file structure as: 
+        // en: 
+        //   welcome: hello
+        // de:
+        //   welcome: ...
+        // return self.trs.keys().map(|k| Cow::from(k.as_str())).collect();
+
+        // for <key: language> structure
+        let locales: HashSet<&String> = self.trs.values()
+            .flat_map(|m| m.keys())
+            .collect();
+        locales.into_iter()
+            .map(|k| Cow::from(k.as_str()))
+            .collect()
     }
 
     fn translate(&self, locale: &str, key: &str) -> Option<Cow<'_, str>> {
-        return self.trs.get(locale)?.get(key).map(|k| Cow::from(k.as_str()));
+        return self.trs.get(key)?.get(locale).map(|k| Cow::from(k.as_str()));
     }
 
     fn messages_for_locale(&self, locale: &str) -> Option<Vec<(Cow<'static, str>, Cow<'static, str>)>> {

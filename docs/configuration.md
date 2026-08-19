@@ -82,50 +82,59 @@ A custom translation file is a great way to add a language that isn't yet in the
 
 **Step one.** Create a `locales` folder in the folder already bound to `/app/data/reminder_bot`.
 
-**Step two.** Create an `app.yml` file inside it or download alternative translation files from the `/docs/locales` folder of this repository. File [app.flat.yml](https://github.com/outarde/reminder-bot/blob/main/docs/locales/app.flat.yml) contains default translation in a proper flat structure.
+**Step two.** Create an `app.yml` file inside it. 
 
-**Step three.** Add your translations, checking the keys from the [standard localization file](https://github.com/outarde/reminder-bot/blob/main/locales/app.yml).
-
-> [!IMPORTANT]
->  Use the format of a custom translation file, where **the language code comes first**, and then the keys. For the language code, use the [standard language codes](https://en.wikipedia.org/wiki/List_of_ISO_639_language_codes).
+**Step three.** Add your translations, checking the keys from the [default localization file](https://github.com/outarde/reminder-bot/blob/main/locales/app.yml) and using the [standard language codes.](https://en.wikipedia.org/wiki/List_of_ISO_639_language_codes)
 
 Example:
 ```yaml
-en:
-  welcome: >
+welcome: 
+  en: >
     I'm a reminder bot. Creating a reminder is easy: 
     `!remind %{date} [at] 15:30 <reminder text>`. 
     I'll take care of the rest!
-  reminder.command: remind
-  reminder.saved: ⏲️ Remind you on %{date} at %{hour}:%{min}
-  reminder.list: >
+reminder.command: 
+  en: remind
+reminder.saved: 
+  en: ⏲️ Remind you on %{date} at %{hour}:%{min}
+reminder.list: 
+  en: >
     %{text} on %{date} at %{time}
-  reminder.new: >
+reminder.new: 
+  en: >
     🟢 Don't forget: %{text}
-  reminder.missed: |
+reminder.missed: 
+  en: |
     ⚠️ You missed something: 
     %{sum}
-  reminder.error.month: The thirteenth month!
-  reminder.error.time: Oh, the times!
-  reminder.error.past-time: Time is in the past, no reminder needed!
+reminder.error.month: 
+  en: The thirteenth month!
+reminder.error.time: 
+  en: Oh, the times!
+reminder.error.past-time: 
+  en: Time is in the past, no reminder needed!
 
-  dates.today: today
-  dates.tomorrow: tomorrow
-  times.morning: morning
-  times.afternoon: afternoon
-  times.evening: evening
+dates.today: 
+  en: today
+dates.tomorrow: 
+  en: tomorrow
+times.morning: 
+  en: morning
+times.afternoon: 
+  en: afternoon
+times.evening: 
+  en: evening
 
-  # we want to use default English month names
-  # months: january february march april may june july august september october november december
-de:
-  welcome: ...
+# we want to use default English month names
+# months: 
+#  en: january february march april may june july august september october november december
 ```
 > [!NOTE]
 >  The `>` symbol means to remove all line breaks, the `|` symbol means to keep line breaks.
 
 The bot will first search for a translation in your file, and then in the standard one.
 
-If you've created a translation file that you'd like to share with the community, please make a pull request.
+If you've created a translation file that you'd like to share with the community, please make a pull request to the `/docs/locales` folder of this repository.
 
 ## What's Next
 Read about the tools for working [with Matrix account](https://github.com/outarde/reminder-bot/tree/main/docs/matrix.md) (including device verification) or skip straight to the page about the intricacies [of using the bot](https://github.com/outarde/reminder-bot/tree/main/docs/usage.md).
