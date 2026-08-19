@@ -1,0 +1,329 @@
+en:
+  welcome: >
+    I'm a reminder bot. Send me a reminder in this format: 
+    `!remind %{date} [at] 15:30 <reminder text>`. You can replace the month number with its name,
+    use words `today` or `tomorrow`. If no time was specified the reminder will arrive at 09:00.
+    I'll send it to you in a shared or private chat.
+  reminder.command: remind
+  reminder.saved: ⏲️ Remind you on %{date} at %{hour}:%{min}
+  reminder.list: >
+    %{text} on %{date} at %{time}
+  reminder.new: >
+    🟢 Reminder for you: %{text}
+  reminder.summary: |
+    ⚠️ Missed reminders in this room: 
+    %{sum}
+  reminder.error.date: Unable to determine the reminder month.
+  reminder.error.time: Wrong time.
+  reminder.error.time-past: The reminder time has already passed.
+
+  dates.today: today
+  dates.tomorrow: tomorrow
+  times.morning: morning
+  times.afternoon: afternoon
+  times.evening: evening
+
+  months: january february march april may june july august september october november december
+de: 
+  welcome: >
+    Ich bin ein Erinnerungs-Bot. Sende mir eine Erinnerung in diesem Format: 
+    `!remind %{date} [at] 15:30 <Erinnerungstext>`. 
+    Du kannst die Monatsnummer durch den Monatsnamen ersetzen.
+    Verwende Wörter wie „heute“ oder „morgen“. Wenn keine Uhrzeit angegeben wurde, 
+    kommt die Erinnerung um 9:00 Uhr. Ich sende sie dir in einem gemeinsamen oder privaten Chat.
+  reminder.command: erinnern
+  reminder.saved: ⏲️ Erinnerung am %{date} um %{hour}:%{min}
+  reminder.list: >
+    %{text} am %{date} um %{time}
+  reminder.new: >
+    🟢 Zur Erinnerung: %{text}
+  reminder.summary: |
+    ⚠️ Missed reminders in this room: 
+    %{sum}
+  reminder.error.date: Der Erinnerungsmonat kann nicht ermittelt werden.
+  reminder.error.time: Falsche Zeit.
+  reminder.error.time-past: Die Erinnerungsfrist ist bereits abgelaufen.
+
+  dates.today: heute
+  dates.tomorrow: morgen
+  times.morning: morgen
+  times.afternoon: nachmittag
+  times.evening: abend
+
+  months: januar februar märz april mai juni juli august september oktober november dezember
+fr:
+  welcome: >
+    Je suis un bot de rappels. Envoyez-moi un rappel au format suivant: 
+    `!remind %{date} [at] 15:30 <texte du rappel>`. Vous pouvez remplacer le numéro du mois par son nom,
+    et utiliser les mots «aujourd'hui» ou «demain». Si aucune heure n'est précisée, le rappel sera envoyé à 9h00. 
+    Je vous l'enverrai dans une conversation partagée ou privée.
+  reminder.command: rappeler
+  reminder.saved: ⏲️ Vous rappeler le %{date} à %{hour}:%{min}
+  reminder.list: >
+    %{text} le %{date} à %{time}
+  reminder.new: >
+    🟢 Petit rappel: %{text}
+  reminder.summary: |
+    ⚠️ Promemoria non visualizzati in questa stanza:
+      %{sum}
+  reminder.error.date: Impossible de déterminer le mois de rappel.
+  reminder.error.time: Mauvais moment.
+  reminder.error.time-past: L'heure de rappel est déjà passée.
+
+  dates.today: aujourd'hui
+  dates.tomorrow: demain
+  times.morning: matin
+  times.afternoon: après-midi
+  times.evening: soir
+
+  months: janvier février mars avril mai juin juillet août septembre octobre novembre décembre
+it:
+  welcome: >
+    Sono un bot per i promemoria. Inviami un promemoria in questo formato: 
+    `!remind %{date} [at] 15:30 <testo del promemoria>`. 
+    Puoi sostituire il numero del mese con il suo nome, usare le parole "oggi" o "domani". 
+    Se non viene specificato un orario, il promemoria arriverà alle 09:00. 
+    Te lo invierò in una chat condivisa o privata.
+  reminder.command: ricordare
+  reminder.saved: ⏲️ Ti ricorderò il %{date} alle %{hour}:%{min}
+  reminder.list: >
+    %{text} il %{date} alle %{time}
+  reminder.new: >
+    🟢 Promemoria per te: %{text}
+  reminder.summary: |
+    ⚠️ Promemoria non visualizzati in questa stanza:
+    %{sum}
+  reminder.error.date: Impossibile determinare il mese del promemoria.
+  reminder.error.time: Non era il momento giusto.
+  reminder.error.time-past: Il tempo del promemoria è già trascorso.
+
+  dates.today: oggi
+  dates.tomorrow: domani
+  times.morning: mattina
+  times.afternoon: pomeriggio
+  times.evening: sera
+
+  months: gennaio febbraio marzo aprile maggio giugno luglio agosto settembre ottobre novembre dicembre
+es: 
+  welcome: >
+    Soy un bot de recordatorios. Envíame un recordatorio con este formato: 
+    `!remind %{date} [at] 15:30 <texto del recordatorio>`. 
+    Puedes reemplazar el número del mes por su nombre, usar las palabras "hoy" o "mañana". 
+    Si no se especifica la hora, el recordatorio llegará a las 09:00. 
+    Te lo enviaré en un chat compartido o privado.
+  reminder.command: recordar
+  reminder.saved: ⏲️ Recordatorio el %{date} a las %{hour}:%{min}
+  reminder.list: >
+    %{text} el %{date} a las %{time}
+  reminder.new: >
+    🟢 Recordatorio para ti: %{text}
+  reminder.summary: |
+    ⚠️ Recordatorios omitidos en esta sala:
+    %{sum}
+  reminder.error.date: No se puede determinar el mes del recordatorio.
+  reminder.error.time: Momento inoportuno.
+  reminder.error.time-past: El tiempo del recordatorio ya pasó.
+
+  dates.today: hoy
+  dates.tomorrow: mañana
+  times.morning: morning
+  times.afternoon: tarde
+  times.evening: noche
+
+  months: enero febrero marzo abril mayo junio julio agosto septiembre octubre noviembre diciembre
+sv:
+  welcome: >
+    Jag är en påminnelsebot. Skicka mig en påminnelse i det här formatet: `!remind %{date} [at] 15:30 <påminnelsetext>`. Du kan ersätta månadsnumret med dess namn, använda orden "idag" eller "imorgon". Om ingen tid har angetts kommer påminnelsen klockan 09:00. Jag skickar den till dig i en delad eller privat chatt.
+  reminder.command: påminna
+  reminder.saved: ⏲️ Påminnelse den %{date} kl. %{hour}:%{min}
+  reminder.list: >
+    %{text} den %{date} kl. %{time}
+  reminder.new: >
+    🟢 Påminnelse till dig: %{text}
+  reminder.summary: |
+    ⚠️ Missade påminnelser i det här rummet:
+    %{sum}
+  reminder.error.date: Det gick inte att fastställa påminnelsemånaden.
+  reminder.error.time: Fel tidpunkt.
+  reminder.error.time-past: Påminnelsetiden har redan passerat.
+
+  dates.today: idag
+  dates.tomorrow: morgondag
+  times.morning: morgon
+  times.afternoon: eftermiddag
+  times.evening: kväll
+
+  months: januari februari mars april maj juni juli augusti september oktober november december
+pl:
+  welcome: >
+    Jestem botem przypominającym. Wyślij mi przypomnienie w tym formacie: `!remind %{date} [at] 15:30 <treść przypomnienia>`. Możesz zastąpić numer miesiąca jego nazwą, używając słów „dzisiaj” lub „jutro”. Jeśli nie podano godziny, przypomnienie pojawi się o 09:00. Wyślę Ci je na czacie współdzielonym lub prywatnym.
+  reminder.command: przypomnieć
+  reminder.saved: ⏲️ Przypomnij Ci w dniu %{date} o godzinie %{hour}:%{min}
+  reminder.list: >
+    %{text} w dniu %{date} o godzinie %{time}
+  reminder.new: >
+    🟢 Przypomnienie dla Ciebie: %{text}
+  reminder.summary: |
+    ⚠️ Pominięte przypomnienia w tym pokoju:
+    %{sum}
+  reminder.error.date: Nie można określić miesiąca przypomnienia.
+  reminder.error.time: Zły czas.
+  reminder.error.time-past: Czas przypomnienia już minął.
+
+  dates.today: dzisiaj
+  dates.tomorrow: jutro
+  times.morning: poranek
+  times.afternoon: popołudnie
+  times.evening: wieczór
+
+  months: styczeń luty marzec kwiecień maj czerwiec lipiec sierpień wrzesień październik listopad grudzień
+cs:
+  welcome: >
+    Jsem bot pro připomenutí. Pošlete mi připomenutí v tomto formátu: `!remind %{date} [at] 15:30 <text připomenutí>`. Číslo měsíce můžete nahradit jeho názvem, použít slova „dnes“ nebo „zítra“. Pokud nebyl zadán žádný čas, připomenutí dorazí v 9:00. Pošlu vám ho ve sdíleném nebo soukromém chatu.
+  reminder.command: připomenout
+  reminder.saved: ⏲️ Připomenout vám %{date} v %{hour}:%{min}
+  reminder.list: >
+    %{text} dne %{date} v %{time}
+  reminder.new: >
+    🟢 Připomínka pro vás: %{text}
+  reminder.summary: |
+    ⚠️ Zmeškané připomínky v této místnosti:
+    %{sum}
+
+  reminder.error.date: Nelze určit měsíc připomenutí.
+  reminder.error.time: Špatný čas.
+  reminder.error.time-past: Čas připomenutí již uplynul.
+
+  dates.today: dnes
+  dates.tomorrow: zítra
+  times.morning: ráno
+  times.afternoon: odpoledne
+  times.evening: večer
+
+  months: leden únor březen duben květen červen červenec srpen září říjen listopad prosinec
+fi:
+  welcome: >
+    Olen muistutusbotti. Lähetä minulle muistutus tässä muodossa: `!remind %{date} [at] 15:30 <muistutuksen teksti>`. Voit korvata kuukauden numeron sen nimellä tai käyttää sanoja "tänään" tai "huomenna". Jos aikaa ei ole määritetty, muistutus saapuu klo 09:00. Lähetän sen sinulle jaetussa tai yksityisessä chatissa.
+  reminder.command: muistuttaa
+  reminder.saved: ⏲️ Muistutus sinulle %{date} klo %{hour}:%{min}
+  reminder.list: >
+    %{text} päivänä %{date} kello %{time}
+  reminder.new: >
+    🟢 Muistutus sinulle: %{text}
+  reminder.summary: |
+    ⚠️ Tässä huoneessa olevat muistutukset, jotka eivät ole tulleet mieleen:
+    %{sum}
+
+  reminder.error.date: Muistutuskuukautta ei voida määrittää.
+  reminder.error.time: Väärä aika.
+  reminder.error.time-past: Muistutusaika on jo kulunut.
+
+  dates.today: tänään
+  dates.tomorrow: huomenna
+  times.morning: aamu
+  times.afternoon: iltapäivällä
+  times.evening: ilta
+
+  months: tammi helmi maaliskuu huhtikuu touko kesäkuu heinäkuu elokuu syyskuu syyskuu lokakuu marraskuu joulukuu
+ja:
+  welcome: >
+    私はリマインダーボットです。リマインダーは「!remind %{date} [at] 15:30 <リマインダーテキスト>」という形式で送信してください。月の番号は月の名前に置き換えたり、「今日」や「明日」などの単語を使用したりできます。時間が指定されていない場合は、午前9時にリマインダーが届きます。共有チャットまたはプライベートチャットで送信します。
+  reminder.command: 思い出させる
+  reminder.saved: ⏲️ %{date}の%{hour}:%{min}にリマインダーを送信します
+  reminder.list: >
+    %{text} %{date} %{time}
+  reminder.new: >
+    🟢 あなたへのリマインダー：%{text}
+  reminder.summary: |
+    ⚠️ この部屋で見逃したリマインダー:
+    %{sum}
+
+  reminder.error.date: リマインダー月を決定できません。
+  reminder.error.time: 時間が間違っています。
+  reminder.error.time-past: 通知時間はすでに過ぎています。
+
+  dates.today: 今日
+  dates.tomorrow: 明日
+  times.morning: 朝
+  times.afternoon: 午後
+  times.evening: 夕方
+
+  months: 1月 2月 3月 4月 5月 6月 7月 8月 9月 10月 11月 12月
+zh:
+  welcome: >
+    我是一个提醒机器人。请按以下格式发送提醒：`!remind %{date} [at] 15:30 <提醒内容>`。您可以将月份数字替换为月份名称，也可以使用“今天”或“明天”等词语。如果没有指定时间，提醒将在 09:00 发送。我会通过公共聊天或私聊发送给您。
+  reminder.command: 忆
+  reminder.saved: ⏲️ 提醒您于 %{date} 的 %{hour}:%{min}
+  reminder.list: >
+    %{text} %{date} %{time}
+  reminder.new: >
+    🟢温馨提示：%{text}
+  reminder.summary: |
+    ⚠️ 本房间未收到的提醒:
+    %{sum}
+
+  reminder.error.date: 无法确定提醒月份。
+  reminder.error.time: 时间不对。
+  reminder.error.time-past: 提醒时间已过。
+
+  dates.today: 今天
+  dates.tomorrow: 明天
+  times.morning: 早晨
+  times.afternoon: 下午
+  times.evening: 晚上
+
+  months: 一月 二月 三月 四月 五月 六月 七月 八月 九月 十月 十一月 十二月
+ru:
+  welcome: >
+    Я — бот-напоминалка. Отправьте мне напоминание в формате: 
+    `!напомни %{date} [в] 15:30 <текст напоминания>`. Вы можете заменить число месяца его названием,
+    дату — на слова `сегодня` или `завтра` и не указывать время — тогда напоминание придет в 09:00.
+    Я отправлю вам его в общем или личном чате.
+  reminder.command: напомни
+  reminder.saved: ⏲️ Напомню %{date} в %{hour}:%{min}
+  reminder.list: >
+    %{text} (%{date} в %{time})
+  reminder.new: >
+    🟢 Вам напоминание: %{text}
+  reminder.summary: |
+    ⚠️ Пропущенные напоминания в этой комнате: 
+    %{sum}
+
+  reminder.error.date: Не получилось определить месяц напоминания.
+  reminder.error.time: Неправильное время.
+  reminder.error.time-past: Время напоминания уже прошло.
+
+  dates.today: сегодня
+  dates.tomorrow: завтра
+  times.morning: утром
+  times.afternoon: днем
+  times.evening: вечером
+
+  months: января февраля марта апреля мая июня июля августа сентября октября ноября декабря
+uk:
+  welcome: >
+    Я – бот-нагадувач. Надішліть мені нагадування у форматі: 
+    `!нагади %{date} [в] 15:30 <текст нагадування>`. Ви можете замінити число місяця його назвою, 
+    дату - на слова "сьогодні" або "завтра" і не вказувати час - тоді нагадування прийде о 09:00. 
+    Я надішлю вам його в загальному або особистому чаті.
+  reminder.command: нагадай
+  reminder.saved: ⏲️ Нагадаю %{date} у %{hour}:%{min}
+  reminder.list: >
+    %{text} (%{date} у %{time})
+  reminder.new: >
+    🟢 Вам нагадування: %{text}
+  reminder.summary: |
+    ⚠️ Пропущені нагадування у цій кімнаті: 
+    %{sum}
+
+  reminder.error.date: Не вдалося визначити місяць нагадування.
+  reminder.error.time: Неправильний час.
+  reminder.error.time-past: Час нагадування вже минув.
+
+  dates.today: сьогодні
+  dates.tomorrow: завтра
+  times.morning: вранці
+  times.afternoon: вдень
+  times.evening: вечір
+
+  months: січня лютого березня квітня травня червня липня серпня вересня жовтня листопада грудня
