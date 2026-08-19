@@ -79,14 +79,11 @@ If you notice an incorrect translation or would like to request an other languag
 ### Using a Custom Translation File
 A custom translation file is a great way to add a language that isn't yet in the bot, or to customize an existing translation to suit your needs, for a themed homeserver or special occasion 🎃!
 
-**Step one**
-Create a `locales` folder in the folder already bound to `/app/data/reminder_bot`.
+**Step one.** Create a `locales` folder in the folder already bound to `/app/data/reminder_bot`.
 
-**Step two**
-Create an `app.yml` file inside it or download alternative translation files from the `/docs/locales` folder of this repository. File [app.flat.yml]((https://github.com/outarde/reminder-bot/blob/main/docs/locales/app.flat.yml)) contains default translation in a proper flat structure.
+**Step two.** Create an `app.yml` file inside it or download alternative translation files from the `/docs/locales` folder of this repository. File [app.flat.yml](https://github.com/outarde/reminder-bot/blob/main/docs/locales/app.flat.yml) contains default translation in a proper flat structure.
 
-**Step three**
-Add your translations, checking the keys from the [standard localization file](https://github.com/outarde/reminder-bot/blob/main/locales/app.yml).
+**Step three.** Add your translations, checking the keys from the [standard localization file](https://github.com/outarde/reminder-bot/blob/main/locales/app.yml).
 
 > [!IMPORTANT]
 >  Use the format of a custom translation file, where **the language code comes first**, and then the keys. For the language code, use the [standard language codes](https://en.wikipedia.org/wiki/List_of_ISO_639_language_codes).
