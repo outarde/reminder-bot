@@ -8,6 +8,7 @@ Required settings are stored as environment variables. These are the parameters 
 | `MATRIX_USERNAME`   | Bot's account username.                                                                                       | `@reminder-bot:matrix.org` |
 | `MATRIX_PASSWORD`   | Bot's account password.                                                                                       | `mypassword`               |
 | `MATRIX_TOKEN`      | Authentication token instead of a username and password. Generate a token via [Element Admin](https://github.com/element-hq/element-admin) or other service. | `mpt_mytoken`              |
+| `MATRIX_RECOVERY`      | A recovery key that you enter only when you want to verify your account and then keep in a safe place. For more information, see the dedicated [Matrix account page](https://github.com/outarde/reminder-bot/tree/main/docs/matrix.md). | `recovery_key`              |
 
 You can set variables in the [docker-compose.yml](https://github.com/outarde/reminder-bot/blob/main/docker/docker-compose.yml):
 ```yaml

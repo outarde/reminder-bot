@@ -1,12 +1,21 @@
+# For a description of the fields, see 
+# https://github.com/outarde/reminder-bot/tree/main/docs/configuration.md
+# or use interactive setup via <config-setup> command
+
+# Message parsing and sending language.
 lang: en
 
+# Override default commands aliases.
 remind_commands: [ "remind" ]
 list_commands: [ "list" ]
 tz_commands: [ "tz" ]
 
+# Bot activation only on command.
 on_command: true
+# Bot activation only when mentioned.
 on_mention: false
 
+# Default time values.
 morning: "09:00"
 afternoon: "14:00"
 evening: "19:00"
