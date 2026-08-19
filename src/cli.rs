@@ -10,7 +10,7 @@ use crate::config;
 use crate::reminder::is_time_valid;
 
 /// Reminder Bot will send reminders for anything you ask 
-/// at any time on your [matrix] server
+/// at any time on your Matrix server.
 #[derive(Parser, Debug)]
 #[command(author, version, about)]
 struct Cli {

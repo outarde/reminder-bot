@@ -50,6 +50,7 @@ impl Backend for RemoteI18n {
 
     fn messages_for_locale(&self, locale: &str) -> Option<Vec<(Cow<'static, str>, Cow<'static, str>)>> {
         // translations for locale
+        // works only when the key is a language name, but this format is not supported by the main crate.
         let locale_map = self.trs.get(locale)?;
 
         // key-value to Vec<(Cow, Cow)>
