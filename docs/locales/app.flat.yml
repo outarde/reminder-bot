@@ -10,12 +10,12 @@ en:
     %{text} on %{date} at %{time}
   reminder.new: >
     🟢 Reminder for you: %{text}
-  reminder.summary: |
+  reminder.missed: |
     ⚠️ Missed reminders in this room: 
     %{sum}
-  reminder.error.date: Unable to determine the reminder month.
+  reminder.error.month: Unable to determine the reminder month.
   reminder.error.time: Wrong time.
-  reminder.error.time-past: The reminder time has already passed.
+  reminder.error.past-time: The reminder time has already passed.
 
   dates.today: today
   dates.tomorrow: tomorrow
@@ -37,12 +37,12 @@ de:
     %{text} am %{date} um %{time}
   reminder.new: >
     🟢 Zur Erinnerung: %{text}
-  reminder.summary: |
+  reminder.missed: |
     ⚠️ Missed reminders in this room: 
     %{sum}
-  reminder.error.date: Der Erinnerungsmonat kann nicht ermittelt werden.
+  reminder.error.month: Der Erinnerungsmonat kann nicht ermittelt werden.
   reminder.error.time: Falsche Zeit.
-  reminder.error.time-past: Die Erinnerungsfrist ist bereits abgelaufen.
+  reminder.error.past-time: Die Erinnerungsfrist ist bereits abgelaufen.
 
   dates.today: heute
   dates.tomorrow: morgen
@@ -63,12 +63,12 @@ fr:
     %{text} le %{date} à %{time}
   reminder.new: >
     🟢 Petit rappel: %{text}
-  reminder.summary: |
+  reminder.missed: |
     ⚠️ Promemoria non visualizzati in questa stanza:
       %{sum}
-  reminder.error.date: Impossible de déterminer le mois de rappel.
+  reminder.error.month: Impossible de déterminer le mois de rappel.
   reminder.error.time: Mauvais moment.
-  reminder.error.time-past: L'heure de rappel est déjà passée.
+  reminder.error.past-time: L'heure de rappel est déjà passée.
 
   dates.today: aujourd'hui
   dates.tomorrow: demain
@@ -90,12 +90,12 @@ it:
     %{text} il %{date} alle %{time}
   reminder.new: >
     🟢 Promemoria per te: %{text}
-  reminder.summary: |
+  reminder.missed: |
     ⚠️ Promemoria non visualizzati in questa stanza:
     %{sum}
-  reminder.error.date: Impossibile determinare il mese del promemoria.
+  reminder.error.month: Impossibile determinare il mese del promemoria.
   reminder.error.time: Non era il momento giusto.
-  reminder.error.time-past: Il tempo del promemoria è già trascorso.
+  reminder.error.past-time: Il tempo del promemoria è già trascorso.
 
   dates.today: oggi
   dates.tomorrow: domani
@@ -117,12 +117,12 @@ es:
     %{text} el %{date} a las %{time}
   reminder.new: >
     🟢 Recordatorio para ti: %{text}
-  reminder.summary: |
+  reminder.missed: |
     ⚠️ Recordatorios omitidos en esta sala:
     %{sum}
-  reminder.error.date: No se puede determinar el mes del recordatorio.
+  reminder.error.month: No se puede determinar el mes del recordatorio.
   reminder.error.time: Momento inoportuno.
-  reminder.error.time-past: El tiempo del recordatorio ya pasó.
+  reminder.error.past-time: El tiempo del recordatorio ya pasó.
 
   dates.today: hoy
   dates.tomorrow: mañana
@@ -140,12 +140,12 @@ sv:
     %{text} den %{date} kl. %{time}
   reminder.new: >
     🟢 Påminnelse till dig: %{text}
-  reminder.summary: |
+  reminder.missed: |
     ⚠️ Missade påminnelser i det här rummet:
     %{sum}
-  reminder.error.date: Det gick inte att fastställa påminnelsemånaden.
+  reminder.error.month: Det gick inte att fastställa påminnelsemånaden.
   reminder.error.time: Fel tidpunkt.
-  reminder.error.time-past: Påminnelsetiden har redan passerat.
+  reminder.error.past-time: Påminnelsetiden har redan passerat.
 
   dates.today: idag
   dates.tomorrow: morgondag
@@ -163,12 +163,12 @@ pl:
     %{text} w dniu %{date} o godzinie %{time}
   reminder.new: >
     🟢 Przypomnienie dla Ciebie: %{text}
-  reminder.summary: |
+  reminder.missed: |
     ⚠️ Pominięte przypomnienia w tym pokoju:
     %{sum}
-  reminder.error.date: Nie można określić miesiąca przypomnienia.
+  reminder.error.month: Nie można określić miesiąca przypomnienia.
   reminder.error.time: Zły czas.
-  reminder.error.time-past: Czas przypomnienia już minął.
+  reminder.error.past-time: Czas przypomnienia już minął.
 
   dates.today: dzisiaj
   dates.tomorrow: jutro
@@ -186,13 +186,13 @@ cs:
     %{text} dne %{date} v %{time}
   reminder.new: >
     🟢 Připomínka pro vás: %{text}
-  reminder.summary: |
+  reminder.missed: |
     ⚠️ Zmeškané připomínky v této místnosti:
     %{sum}
 
-  reminder.error.date: Nelze určit měsíc připomenutí.
+  reminder.error.month: Nelze určit měsíc připomenutí.
   reminder.error.time: Špatný čas.
-  reminder.error.time-past: Čas připomenutí již uplynul.
+  reminder.error.past-time: Čas připomenutí již uplynul.
 
   dates.today: dnes
   dates.tomorrow: zítra
@@ -210,13 +210,13 @@ fi:
     %{text} päivänä %{date} kello %{time}
   reminder.new: >
     🟢 Muistutus sinulle: %{text}
-  reminder.summary: |
+  reminder.missed: |
     ⚠️ Tässä huoneessa olevat muistutukset, jotka eivät ole tulleet mieleen:
     %{sum}
 
-  reminder.error.date: Muistutuskuukautta ei voida määrittää.
+  reminder.error.month: Muistutuskuukautta ei voida määrittää.
   reminder.error.time: Väärä aika.
-  reminder.error.time-past: Muistutusaika on jo kulunut.
+  reminder.error.past-time: Muistutusaika on jo kulunut.
 
   dates.today: tänään
   dates.tomorrow: huomenna
@@ -234,13 +234,13 @@ ja:
     %{text} %{date} %{time}
   reminder.new: >
     🟢 あなたへのリマインダー：%{text}
-  reminder.summary: |
+  reminder.missed: |
     ⚠️ この部屋で見逃したリマインダー:
     %{sum}
 
-  reminder.error.date: リマインダー月を決定できません。
+  reminder.error.month: リマインダー月を決定できません。
   reminder.error.time: 時間が間違っています。
-  reminder.error.time-past: 通知時間はすでに過ぎています。
+  reminder.error.past-time: 通知時間はすでに過ぎています。
 
   dates.today: 今日
   dates.tomorrow: 明日
@@ -258,13 +258,13 @@ zh:
     %{text} %{date} %{time}
   reminder.new: >
     🟢温馨提示：%{text}
-  reminder.summary: |
+  reminder.missed: |
     ⚠️ 本房间未收到的提醒:
     %{sum}
 
-  reminder.error.date: 无法确定提醒月份。
+  reminder.error.month: 无法确定提醒月份。
   reminder.error.time: 时间不对。
-  reminder.error.time-past: 提醒时间已过。
+  reminder.error.past-time: 提醒时间已过。
 
   dates.today: 今天
   dates.tomorrow: 明天
@@ -285,13 +285,13 @@ ru:
     %{text} (%{date} в %{time})
   reminder.new: >
     🟢 Вам напоминание: %{text}
-  reminder.summary: |
+  reminder.missed: |
     ⚠️ Пропущенные напоминания в этой комнате: 
     %{sum}
 
-  reminder.error.date: Не получилось определить месяц напоминания.
+  reminder.error.month: Не получилось определить месяц напоминания.
   reminder.error.time: Неправильное время.
-  reminder.error.time-past: Время напоминания уже прошло.
+  reminder.error.past-time: Время напоминания уже прошло.
 
   dates.today: сегодня
   dates.tomorrow: завтра
@@ -312,13 +312,13 @@ uk:
     %{text} (%{date} у %{time})
   reminder.new: >
     🟢 Вам нагадування: %{text}
-  reminder.summary: |
+  reminder.missed: |
     ⚠️ Пропущені нагадування у цій кімнаті: 
     %{sum}
 
-  reminder.error.date: Не вдалося визначити місяць нагадування.
+  reminder.error.month: Не вдалося визначити місяць нагадування.
   reminder.error.time: Неправильний час.
-  reminder.error.time-past: Час нагадування вже минув.
+  reminder.error.past-time: Час нагадування вже минув.
 
   dates.today: сьогодні
   dates.tomorrow: завтра

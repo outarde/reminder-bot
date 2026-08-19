@@ -132,7 +132,7 @@ reminder.new:
     🟢 Вам напоминание: %{text}
   uk: >
     🟢 Вам нагадування: %{text}
-reminder.summary:
+reminder.missed:
   en: |
     ⚠️ Missed reminders in this room: 
     %{sum}
@@ -172,7 +172,7 @@ reminder.summary:
   uk: |
     ⚠️ Пропущені нагадування у цій кімнаті: 
     %{sum}
-reminder.date-error:
+reminder.error.month:
   en: Unable to determine the reminder month.
   de: Der Erinnerungsmonat kann nicht ermittelt werden.
   fr: Impossible de déterminer le mois de rappel.
@@ -186,7 +186,7 @@ reminder.date-error:
   zh: 无法确定提醒月份。
   ru: Не получилось определить месяц напоминания.
   uk: Не вдалося визначити місяць нагадування.
-reminder.time-past-error:
+reminder.error.past-time:
   en: The reminder time has already passed.
   de: Die Erinnerungsfrist ist bereits abgelaufen.
   fr: L'heure de rappel est déjà passée.
@@ -200,7 +200,7 @@ reminder.time-past-error:
   zh: 提醒时间已过。
   ru: Время напоминания уже прошло.
   uk: Час нагадування вже минув.
-reminder.time-error:
+reminder.error.time:
   en: Wrong time.
   de: Falsche Zeit.
   fr: Mauvais moment.
@@ -242,7 +242,7 @@ dates.tomorrow:
   zh: 明天
   ru: завтра
   uk: завтра
-dates.morning:
+times.morning:
   en: morning
   de: morgen
   fr: matin
@@ -256,7 +256,7 @@ dates.morning:
   zh: 早晨
   ru: утром
   uk: вранці
-dates.afternoon:
+times.afternoon:
   en: afternoon
   de: nachmittag
   fr: après-midi
@@ -270,7 +270,7 @@ dates.afternoon:
   zh: 下午
   ru: днем
   uk: вдень
-dates.evening:
+times.evening:
   en: evening
   de: abend
   fr: soir
@@ -284,7 +284,7 @@ dates.evening:
   zh: 晚上
   ru: вечером
   uk: вечір
-dates.months:
+months:
   en: january february march april may june july august september october november december
   de: januar februar märz april mai juni juli august september oktober november dezember
   fr: janvier février mars avril mai juin juillet août septembre octobre novembre décembre

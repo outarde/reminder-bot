@@ -104,9 +104,9 @@ en:
   reminder.missed: |
     ⚠️ You missed something: 
     %{sum}
-  reminder.error.date: The thirteenth month!
+  reminder.error.month: The thirteenth month!
   reminder.error.time: Oh, the times!
-  reminder.error.time-past: Time is in the past, no reminder needed!
+  reminder.error.past-time: Time is in the past, no reminder needed!
 
   dates.today: today
   dates.tomorrow: tomorrow

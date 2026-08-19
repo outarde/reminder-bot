@@ -274,7 +274,7 @@ async fn summary_missed(
                     //.collect::<Vec<_>>();
                     //.join("\n");
 
-                let message = t!("reminder.summary", sum = summary);
+                let message = t!("reminder.missed", sum = summary);
 
                 // todo urgent: change to UPDATE! one method!
                 if room.send(RoomMessageEventContent::text_plain(message)).await.is_ok() {

@@ -115,9 +115,9 @@ enum ReminderDateError {
 impl ReminderDateError {
     fn as_i18n_key(&self) -> &'static str {
         match self {
-            ReminderDateError::InvalidMonth => "reminder.date-error",
-            ReminderDateError::TimeInPast => "reminder.time-past-error",
-            ReminderDateError::InvalidTime => "reminder.time-error",
+            ReminderDateError::InvalidMonth => "reminder.error.month",
+            ReminderDateError::TimeInPast => "reminder.error.past-time",
+            ReminderDateError::InvalidTime => "reminder.error.time",
         }
     }
 }
@@ -239,9 +239,9 @@ pub async fn handle_remind(
     // i18n
     let i18n_today = t!("dates.today");
     let i18n_tomorrow = t!("dates.tomorrow");
-    let i18n_morning = t!("dates.morning");
-    let i18n_afternoon = t!("dates.afternoon");
-    let i18n_evening = t!("dates.evening");
+    let i18n_morning = t!("times.morning");
+    let i18n_afternoon = t!("times.afternoon");
+    let i18n_evening = t!("times.evening");
 
     let i18n_days = vec![i18n_today.as_ref(), i18n_tomorrow.as_ref()];
     let i18n_times = vec![i18n_morning.as_ref(), i18n_afternoon.as_ref(), i18n_evening.as_ref()];
