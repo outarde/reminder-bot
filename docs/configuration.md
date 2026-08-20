@@ -88,10 +88,15 @@ A custom translation file is a great way to add a language that isn't yet in the
 
 Example:
 ```yaml
-welcome: 
+welcome.on_command: 
   en: >
     I'm a reminder bot. Creating a reminder is easy: 
     `!remind %{date} [at] 15:30 <reminder text>`. 
+    I'll take care of the rest!
+welcome.on_command_off: 
+  en: >
+    I'm a reminder bot. Creating a reminder is easy: 
+    `%{date} [at] 15:30 <reminder text>`. 
     I'll take care of the rest!
 reminder.command: 
   en: remind
