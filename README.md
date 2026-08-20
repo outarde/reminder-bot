@@ -13,7 +13,7 @@
 # Reminder Bot
 A lightweight chatbot for reminders on Matrix servers focused on multilingual support and clear user experience. Schedule reminders on the go in personal or group rooms.
 ## Key Features
-- ⏲️ Create reminders with the `!remind` command
+- ⏲️ Create reminders with the `/remind` command
 - 📆 Basic date and time variability with the words `today`, `tomorrow`, `morning`, `afternoon`, `evening`, omitting the year and month
 - 🔤 Multilingual support for user input and bot responses, with the capability to upload custom translations
 - 📋 Send a summary of missed reminders in each room
@@ -73,6 +73,8 @@ A lightweight chatbot for reminders on Matrix servers focused on multilingual su
   </tr>
 </table>
 
+Exclamation mark `!` in screenshots are from an older version. From v0.5.0, the bot uses slash `/` to recognise commands.
+
 ## Quick Start
 ### Docker Run
 ```
@@ -106,15 +108,15 @@ For a full description of all bot settings, see [the configuration help page](ht
 
 ## Usage
 ### Start a Chat
-Create a conversation with the bot or add it to a room. Send the `!remind` command to get help:
->I'm a reminder bot. Send me a reminder in this format: `!remind 19.08.2026 [at] 15:30 <reminder text>`. You can replace the month number with its name, use words `today` or `tomorrow`. If no time was specified the reminder will arrive at 09:00. I'll send it to you in a group or private room.
+Create a conversation with the bot or add it to a room. Send the `/remind` command to get help:
+>I'm a reminder bot. Send me a reminder in this format: `/remind 19.08.2026 [at] 15:30 <reminder text>`. You can replace the month number with its name, use words `today` or `tomorrow`. If no time was specified the reminder will arrive at 09:00. I'll send it to you in a group or private room.
 
 ### Create a Reminder
 Example commands:
-- `!remind 19.08.2026 at 10:00 buy milk`
-- `!remind 19/08 pet a cactus` - create a reminder for August 19th of this year at 9am.
-- `!remind 19 August 21:30 plant a tree`
-- `!remind tomorrow evening be kind with people` - create a reminder with predefined `afternoon` time.
+- `/remind 19.08.2026 at 10:00 buy milk`
+- `/remind 19/08 pet a cactus` - create a reminder for August 19th of this year at 9am.
+- `/remind 19 August 21:30 plant a tree`
+- `/remind tomorrow evening be kind with people` - create a reminder with predefined `afternoon` time.
 - `19 feb afternoon to have a fantasy` - create a reminder if the creation of reminders only on command (`on_command` in `config.yml`) is `false`.
 
 > [!WARNING]

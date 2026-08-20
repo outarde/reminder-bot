@@ -2,52 +2,52 @@ _version: 2
 welcome:
   en: >
     I'm a reminder bot. Send me a reminder in this format: 
-    `!remind %{date} [at] 15:30 <reminder text>`. You can replace the month number with its name,
+    `/remind %{date} [at] 15:30 <reminder text>`. You can replace the month number with its name,
     use words `today` or `tomorrow`. If no time was specified the reminder will arrive at 09:00.
     I'll send it to you in a shared or private chat.
   de: >
     Ich bin ein Erinnerungs-Bot. Sende mir eine Erinnerung in diesem Format: 
-    `!remind %{date} [at] 15:30 <Erinnerungstext>`. 
+    `/remind %{date} 15:30 <Erinnerungstext>`. 
     Du kannst die Monatsnummer durch den Monatsnamen ersetzen.
     Verwende Wörter wie „heute“ oder „morgen“. Wenn keine Uhrzeit angegeben wurde, 
     kommt die Erinnerung um 9:00 Uhr. Ich sende sie dir in einem gemeinsamen oder privaten Chat.
   fr: >
     Je suis un bot de rappels. Envoyez-moi un rappel au format suivant: 
-    `!remind %{date} [at] 15:30 <texte du rappel>`. Vous pouvez remplacer le numéro du mois par son nom,
+    `/remind %{date} 15:30 <texte du rappel>`. Vous pouvez remplacer le numéro du mois par son nom,
     et utiliser les mots «aujourd'hui» ou «demain». Si aucune heure n'est précisée, le rappel sera envoyé à 9h00. 
     Je vous l'enverrai dans une conversation partagée ou privée.
   it: >
     Sono un bot per i promemoria. Inviami un promemoria in questo formato: 
-    `!remind %{date} [at] 15:30 <testo del promemoria>`. 
+    `/remind %{date} 15:30 <testo del promemoria>`. 
     Puoi sostituire il numero del mese con il suo nome, usare le parole "oggi" o "domani". 
     Se non viene specificato un orario, il promemoria arriverà alle 09:00. 
     Te lo invierò in una chat condivisa o privata.
   es: >
     Soy un bot de recordatorios. Envíame un recordatorio con este formato: 
-    `!remind %{date} [at] 15:30 <texto del recordatorio>`. 
+    `/remind %{date} 15:30 <texto del recordatorio>`. 
     Puedes reemplazar el número del mes por su nombre, usar las palabras "hoy" o "mañana". 
     Si no se especifica la hora, el recordatorio llegará a las 09:00. 
     Te lo enviaré en un chat compartido o privado.
   sv: >
-    Jag är en påminnelsebot. Skicka mig en påminnelse i det här formatet: `!remind %{date} [at] 15:30 <påminnelsetext>`. Du kan ersätta månadsnumret med dess namn, använda orden "idag" eller "imorgon". Om ingen tid har angetts kommer påminnelsen klockan 09:00. Jag skickar den till dig i en delad eller privat chatt.
+    Jag är en påminnelsebot. Skicka mig en påminnelse i det här formatet: `/remind %{date} 15:30 <påminnelsetext>`. Du kan ersätta månadsnumret med dess namn, använda orden "idag" eller "imorgon". Om ingen tid har angetts kommer påminnelsen klockan 09:00. Jag skickar den till dig i en delad eller privat chatt.
   pl: >
-    Jestem botem przypominającym. Wyślij mi przypomnienie w tym formacie: `!remind %{date} [at] 15:30 <treść przypomnienia>`. Możesz zastąpić numer miesiąca jego nazwą, używając słów „dzisiaj” lub „jutro”. Jeśli nie podano godziny, przypomnienie pojawi się o 09:00. Wyślę Ci je na czacie współdzielonym lub prywatnym.
+    Jestem botem przypominającym. Wyślij mi przypomnienie w tym formacie: `/remind %{date} 15:30 <treść przypomnienia>`. Możesz zastąpić numer miesiąca jego nazwą, używając słów „dzisiaj” lub „jutro”. Jeśli nie podano godziny, przypomnienie pojawi się o 09:00. Wyślę Ci je na czacie współdzielonym lub prywatnym.
   cs: >
-    Jsem bot pro připomenutí. Pošlete mi připomenutí v tomto formátu: `!remind %{date} [at] 15:30 <text připomenutí>`. Číslo měsíce můžete nahradit jeho názvem, použít slova „dnes“ nebo „zítra“. Pokud nebyl zadán žádný čas, připomenutí dorazí v 9:00. Pošlu vám ho ve sdíleném nebo soukromém chatu.
+    Jsem bot pro připomenutí. Pošlete mi připomenutí v tomto formátu: `/remind %{date} 15:30 <text připomenutí>`. Číslo měsíce můžete nahradit jeho názvem, použít slova „dnes“ nebo „zítra“. Pokud nebyl zadán žádný čas, připomenutí dorazí v 9:00. Pošlu vám ho ve sdíleném nebo soukromém chatu.
   fi: >
-    Olen muistutusbotti. Lähetä minulle muistutus tässä muodossa: `!remind %{date} [at] 15:30 <muistutuksen teksti>`. Voit korvata kuukauden numeron sen nimellä tai käyttää sanoja "tänään" tai "huomenna". Jos aikaa ei ole määritetty, muistutus saapuu klo 09:00. Lähetän sen sinulle jaetussa tai yksityisessä chatissa.
+    Olen muistutusbotti. Lähetä minulle muistutus tässä muodossa: `/remind %{date} [at] 15:30 <muistutuksen teksti>`. Voit korvata kuukauden numeron sen nimellä tai käyttää sanoja "tänään" tai "huomenna". Jos aikaa ei ole määritetty, muistutus saapuu klo 09:00. Lähetän sen sinulle jaetussa tai yksityisessä chatissa.
   ja: >
-    私はリマインダーボットです。リマインダーは「!remind %{date} [at] 15:30 <リマインダーテキスト>」という形式で送信してください。月の番号は月の名前に置き換えたり、「今日」や「明日」などの単語を使用したりできます。時間が指定されていない場合は、午前9時にリマインダーが届きます。共有チャットまたはプライベートチャットで送信します。
+    私はリマインダーボットです。リマインダーは「/remind %{date} 15:30 <リマインダーテキスト>」という形式で送信してください。月の番号は月の名前に置き換えたり、「今日」や「明日」などの単語を使用したりできます。時間が指定されていない場合は、午前9時にリマインダーが届きます。共有チャットまたはプライベートチャットで送信します。
   zh: >
-    我是一个提醒机器人。请按以下格式发送提醒：`!remind %{date} [at] 15:30 <提醒内容>`。您可以将月份数字替换为月份名称，也可以使用“今天”或“明天”等词语。如果没有指定时间，提醒将在 09:00 发送。我会通过公共聊天或私聊发送给您。
+    我是一个提醒机器人。请按以下格式发送提醒：`/remind %{date} 15:30 <提醒内容>`。您可以将月份数字替换为月份名称，也可以使用“今天”或“明天”等词语。如果没有指定时间，提醒将在 09:00 发送。我会通过公共聊天或私聊发送给您。
   ru: >
     Я — бот-напоминалка. Отправьте мне напоминание в формате: 
-    `!напомни %{date} [в] 15:30 <текст напоминания>`. Вы можете заменить число месяца его названием,
+    `/напомни %{date} [в] 15:30 <текст напоминания>`. Вы можете заменить число месяца его названием,
     дату — на слова `сегодня` или `завтра` и не указывать время — тогда напоминание придет в 09:00.
     Я отправлю вам его в общем или личном чате.
   uk: >
     Я – бот-нагадувач. Надішліть мені нагадування у форматі: 
-    `!нагади %{date} [о] 15:30 <текст нагадування>`. Ви можете замінити число місяця його назвою, 
+    `/нагади %{date} [о] 15:30 <текст нагадування>`. Ви можете замінити число місяця його назвою, 
     дату - на слова "сьогодні" або "завтра" і не вказувати час - тоді нагадування прийде о 09:00. 
     Я надішлю вам його в загальному або особистому чаті.
 reminder.command:
@@ -299,7 +299,7 @@ months:
   ru: января февраля марта апреля мая июня июля августа сентября октября ноября декабря
   uk: січня лютого березня квітня травня червня липня серпня вересня жовтня листопада грудня
 prepositions:
-  en: at
+  en: at in
   de: um
   fr: à
   it: alle

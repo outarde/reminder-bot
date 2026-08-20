@@ -128,6 +128,9 @@ times.evening:
 # we want to use default English month names
 # months: 
 #  en: january february march april may june july august september october november december
+
+prepositions:
+  en: at in
 ```
 > [!TIP]
 >  The `>` symbol means to remove all line breaks, the `|` symbol means to keep line breaks.

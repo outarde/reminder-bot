@@ -32,7 +32,7 @@ enum BotCommand {
 
 impl BotCommand {
     fn parse(text: &str, bot_config: BotConfig) -> Option<(Self, String)> {
-        if !text.starts_with('!') {
+        if !text.starts_with('/') {
             // Return None if bot can be activated only with command
             // and return "remind" command if can be activated without command
             if bot_config.on_command {
