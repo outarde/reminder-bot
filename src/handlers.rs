@@ -242,12 +242,14 @@ pub async fn handle_remind(
     let i18n_morning = t!("times.morning");
     let i18n_afternoon = t!("times.afternoon");
     let i18n_evening = t!("times.evening");
+    let i18n_prepositions_str = t!("prepositions");
 
     let i18n_days = vec![i18n_today.as_ref(), i18n_tomorrow.as_ref()];
     let i18n_times = vec![i18n_morning.as_ref(), i18n_afternoon.as_ref(), i18n_evening.as_ref()];
+    let i18n_prepositions: Vec<&str> = i18n_prepositions_str.split_whitespace().collect();
 
     // Make regular expression
-    let re = build_reminder_regex(&i18n_days, &i18n_times);
+    let re = build_reminder_regex(&i18n_days, &i18n_times, &i18n_prepositions);
 
     if let Some(caps) = re.captures(body) {
         let reminder_data = match parse_reminder_data(
@@ -336,18 +338,22 @@ pub async fn on_stripped_state_member(
 /// Build regular expression
 fn build_reminder_regex(
     i18n_days: &[&str],
-    i18n_times: &[&str]
+    i18n_times: &[&str],
+    i18n_prepositions: &[&str]
 ) -> &'static Regex {
     REMINDER_REGEX.get_or_init(|| {
         let mut regex_str = String::with_capacity(256); 
         
         // [^\.\-\s]{1,15} in ?P<month> can be replaced with white list of months names
-        regex_str.push_str(r"^(?i)(?:(?P<datetime>(?P<day>\d{1,2})(?:\s+|\.|\|-)(?P<month>[^\.\-\s]{1,15}|\d{2})(?:\s?|\.|\|-)(?P<year>\d{4})?)|(?P<day_natural>");
+        regex_str.push_str(r"^(?i)(?:(?P<datetime>(?P<day>\d{1,2})(?:\s+|\.|\/|-)(?P<month>[^\.\-\s]{1,15}|\d{2})(?:\s|\.|\/|-)?(?P<year>\d{4})?)|(?P<day_natural>");
         regex_str.push_str(&i18n_days.join("|"));
 
-        regex_str.push_str(r"))(?:(?:\s+(?:в|at))?\s+((?P<hour>\d{2}):(?P<min>\d{2})|(?P<time_natural>");
+        regex_str.push_str(r"))(?:(?:\s+(?<prep>at|");
+        regex_str.push_str(&i18n_prepositions.join("|"));
+        regex_str.push_str(r"))?\s+(((?P<hour>\d{2}):(?P<min>\d{2}))|(?P<time_natural>");
         regex_str.push_str(&i18n_times.join("|"));
         regex_str.push_str(r")))?\s+(?P<text>.+)$");
+        //regex_str.push_str(r")|(?P<time_interval>(?<gap>\d{1,2})\s(?<step>минут|часов)) ))?\s+(?P<text>.+)$");
 
         Regex::new(&regex_str).unwrap()
     })
