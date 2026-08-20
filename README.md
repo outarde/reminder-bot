@@ -106,8 +106,16 @@ For a full description of all bot settings, see [the configuration help page](ht
 
 ## Usage
 ### Start a Chat
-Create a conversation with the bot or add it to a room. Send the `/remind` or `!remind` command to get help:
->I'm a reminder bot. Send me a reminder in this format: `/remind 19.08.2026 [at] 15:30 <reminder text>`. You can replace the month number with its name, use words `today` or `tomorrow`. If no time was specified the reminder will arrive at 09:00. I'll send it to you in a group or private room.
+Create a conversation with the bot or add it to a room. Send the `/remind`, `!remind` or command in your chosen language to get help:
+> I am a reminder bot. Send: `/remind` and the date, time and reminder text on the same line. For example: `/remind 19.08.2026 20:03 your reminder`
+> ###### 📅 Date
+> - `19.08.2026`, `19/08/2026`, `19-08`
+> - `19 August`, `19 aug`
+> - `today`, `tomorrow`
+> ###### 🕐 Time 
+> - `20:03`, `at 20:03`
+> - `morning`, `afternoon`, `evening`
+> - if you do not specify the time, the reminder will come at `09:00`.
 
 ### Create a Reminder
 Example commands:
