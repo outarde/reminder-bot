@@ -50,6 +50,295 @@ welcome:
     `/нагади %{date} [о] 15:30 <текст нагадування>`. Ви можете замінити число місяця його назвою, 
     дату - на слова "сьогодні" або "завтра" і не вказувати час - тоді нагадування прийде о 09:00. 
     Я надішлю вам його в загальному або особистому чаті.
+welcome.on_command:
+  en: |
+    I am a reminder bot. Send: `/%{cmd}` and the date, time and reminder text on the same line. For example: `/%{cmd} %{date} 20:03 your reminder`
+
+    ###### 📅 Date 
+    - `%{date}`, `%{date_slash}`, `%{date_hyphen}`
+    - `%{date_d} %{month}`, `%{date_d} %{month_truncated}`
+    - `%{today}`, `%{tomorrow}`
+    ###### 🕐 Time 
+    - `20:03`, `at 20:03`
+    - `%{morning}`, `%{afternoon}`, `%{evening}`
+    - if you do not specify the time, the reminder will come at `09:00`.
+  de: |
+    Ich bin ein Erinnerungs-Bot. Sende: `/%{cmd}` und Datum, Uhrzeit und Erinnerungstext in derselben Zeile. Zum Beispiel: `/%{cmd} %{date} 20:03 deine Erinnerung`
+
+    ###### 📅 Datum
+    - `%{date}`, `%{date_slash}`, `%{date_hyphen}`
+    - `%{date_d} %{month}`, `%{date_d} %{month_truncated}`
+    - `%{today}`, `%{tomorrow}`
+    ###### 🕐 Uhrzeit
+    - `20:03`, `um 20:03`
+    - `%{morning}`, `%{afternoon}`, `%{evening}`
+    - Wenn du keine Uhrzeit angibst, erfolgt die Erinnerung um 9:00 Uhr.
+  fr: |
+    Je suis un bot de rappel. Envoyez: `/%{cmd}` suivi de la date, de l'heure et du texte du rappel sur la même ligne. Par exemple: `/%{cmd} %{date} 20:03 votre rappel`
+
+    ###### 📅 Date
+    - `%{date}`, `%{date_slash}`, `%{date_hyphen}`
+    - `%{date_d} %{month}`, `%{date_d} %{month_truncated}`
+    - `%{today}`, `%{tomorrow}`
+    ###### 🕐 Heure
+    - `20:03`, `à 20:03`
+    - `%{morning}`, `%{afternoon}`, `%{evening}`
+    - Si vous ne spécifiez pas l'heure, le rappel sera envoyé à `09:00`.
+  it: |
+    Sono un bot per i promemoria. Invia: `/%{cmd}` seguito da data, ora e testo del promemoria sulla stessa riga. Ad esempio: `/%{cmd} %{date} 20:03 il tuo promemoria`
+
+    ###### 📅 Data
+    - `%{date}`, `%{date_slash}`, `%{date_hyphen}`
+    - `%{date_d} %{month}`, `%{date_d} %{month_truncated}`
+    - `%{today}`, `%{tomorrow}`
+    ##### 🕐 Ora
+    - `20:03`, `alle 20:03`
+    - `%{morning}`, `%{afternoon}`, `%{evening}`
+    - Se non specifichi l'ora, il promemoria arriverà alle `09:00`.
+  es: |
+    Soy un bot de recordatorios. Envía: `/%{cmd}` y la fecha, la hora y el texto del recordatorio en la misma línea. Por ejemplo: `/%{cmd} %{date} 20:03 tu recordatorio`
+
+    ###### 📅 Fecha
+    - `%{date}`, `%{date_slash}`, `%{date_hyphen}`
+    - `%{date_d} %{month}`, `%{date_d} %{month_truncated}`
+    - `%{today}`, `%{tomorrow}`
+    ###### 🕐 Hora
+    - `20:03`, `a las 20:03`
+    - `%{morning}`, `%{afternoon}`, `%{evening}`
+    - Si no especificas la hora, el recordatorio llegará a las `09:00`.
+  sv: |
+    Jag är en påminnelsebot. Skicka: `/%{cmd}` och datum, tid och påminnelsetext på samma rad. Till exempel: `/%{cmd} %{date} 20:03 din påminnelse`
+
+    ###### 📅 Datum
+    - `%{date}`, `%{date_slash}`, `%{date_hyphen}`
+    - `%{date_d} %{month}`, `%{date_d} %{month_truncated}`
+    - `%{today}`, `%{tomorrow}`
+    ###### 🕐 Tid
+    - `20:03`, `mig 20:03`
+    - `%{morning}`, `%{afternoon}`, `%{evening}`
+    - om du inte anger tiden kommer påminnelsen klockan `09:00`.
+  pl: |
+    Jestem botem przypominającym. Wyślij: `/%{cmd}` oraz datę, godzinę i tekst przypomnienia w jednym wierszu. Na przykład: `/%{cmd} %{date} 20:03 Twoje przypomnienie`
+
+    ###### 📅 Data
+    - `%{date}`, `%{date_slash}`, `%{date_hyphen}`
+    - `%{date_d} %{month}`, `%{date_d} %{month_truncated}`
+    - `%{today}`, `%{tomorrow}`
+    ###### 🕐 Godzina
+    - `20:03`, `o 20:03`
+    - `%{morning}`, `%{afternoon}`, `%{evening}`
+    - jeśli nie podasz godziny, przypomnienie pojawi się o `09:00`.
+  cs: |
+    Jsem bot pro připomenutí. Pošlete: `/%{cmd}` a datum, čas a text připomenutí na stejný řádek. Například: `/%{cmd} %{date} 20:03 vaše připomenutí`
+
+    ###### 📅 Datum
+    - `%{date}`, `%{date_slash}`, `%{date_hyphen}`
+    - `%{date_d} %{month}`, `%{date_d} %{month_truncated}`
+    - `%{today}`, `%{tomorrow}`
+    ###### 🕐 Čas
+    - `20:03`, `v 20:03`
+    - `%{morning}`, `%{afternoon}`, `%{evening}`
+    - pokud nezadáte čas, připomenutí se zobrazí v `09:00`.
+  fi: |
+    Olen muistutusbotti. Lähetä: `/%{cmd}` ja päivämäärä, kellonaika ja muistutuksen teksti samalla rivillä. Esimerkiksi: `/%{cmd} %{date} 20:03 muistutuksesi`
+
+    ###### 📅 Päivämäärä
+    - `%{date}`, `%{date_slash}`, `%{date_hyphen}`
+    - `%{date_d} %{month}`, `%{date_d} %{month_truncated}`
+    - `%{today}`, `%{tomorrow}`
+    ###### 🕐 Aika
+    - `20:03`, `kello 20:03`
+    - `%{morning}`, `%{afternoon}`, `%{evening}`
+    - jos et määritä aikaa, muistutus tulee klo `09:00`.
+  ja: |
+    私はリマインダーボットです。`/%{cmd}` と日付、時刻、リマインダーのテキストを同じ行に送信してください。例：`/%{cmd} %{date} 20:03 ゴジラの耳の後ろを掻いて`
+
+    ###### 📅 日付
+    - `%{date}`、`%{date_slash}`、`%{date_hyphen}`
+    - `%{date_d} %{month}`、`%{date_d} %{month_truncated}`
+    - `%{today}`、`%{tomorrow}`
+    ###### 🕐 時間
+    - `20:03`
+    - `%{morning}`、`%{afternoon}`、`%{evening}`
+    - 時間を指定しない場合、リマインダーは`09:00`に送信されます。
+  zh: |
+    我是一个提醒机器人。发送：`/%{cmd}`，日期、时间和提醒文本写在同一行。例如：`/%{cmd} %{date} 20:03 您的提醒`
+
+    ###### 📅 日期
+    - `%{date}`、`%{date_slash}`、`%{date_hyphen}`
+    - `%{date_d} %{month}`、`%{date_d} %{month_truncated}`
+    - `%{today}`、`%{tomorrow}`
+    ###### 🕐 时间
+    - `20:03`
+    - `%{morning}`、`%{afternoon}`、`%{evening}`
+    - 如果您未指定时间，提醒将在 `09:00` 发送。
+  ru: |
+    Я бот-напоминалка. Напишите: `/%{cmd}` и дату, время и текст напоминания в той же строке. Например: `/%{cmd} %{date} 14:00 ваше напоминание` 
+    
+    ###### 📅 Дата
+      - `%{date}`, `%{date_slash}`, `%{date_hyphen}`
+      - `%{date_d} %{month}`, `%{date_d} %{month_truncated}`
+      - `%{today}`, `%{tomorrow}`
+    ###### 🕐 Время
+      - `20:03`, `в 20:03`.
+      - `%{morning}`, `%{afternoon}`, `%{evening}`.
+      - если вы не укажете время, напоминание придет в `09:00`.
+  uk: |
+    Я бот-нагадування. Надішліть: `/%{cmd}` та дату, час і текст нагадування в одному рядку. Наприклад: `/%{cmd} %{date} 20:03 ваше нагадування`
+
+    ###### 📅 Дата
+    - `%{date}`, `%{date_slash}`, `%{date_hyphen}`
+    - `%{date_d} %{month}`, `%{date_d} %{month_truncated}`
+    - `%{today}`, `%{tomorrow}`
+    ###### 🕐 Час
+    - `20:03`, `о 20:03`
+    - `%{morning}`, `%{afternoon}`, `%{evening}`
+    - якщо не вказати час, нагадування надійде о `09:00`.
+welcome.on_command_off:
+  en: |
+    I am a reminder bot. Send the date, time and reminder text on the same line. For example: `%{date} 20:03 your reminder`
+
+    ###### 📅 Date 
+    - `%{date}`, `%{date_slash}`, `%{date_hyphen}`
+    - `%{date_d} %{month}`, `%{date_d} %{month_truncated}`
+    - `%{today}`, `%{tomorrow}`
+    ###### 🕐 Time 
+    - `20:03`, `at 20:03`
+    - `%{morning}`, `%{afternoon}`, `%{evening}`
+    - if you do not specify the time, the reminder will come at `09:00`.
+  de: |
+    Ich bin ein Erinnerungs-Bot. Sende mir Datum, Uhrzeit und Erinnerungstext in einer Zeile. Zum Beispiel: `%{date} 20:03 deine Erinnerung`
+
+    ###### 📅 Datum
+    - `%{date}`, `%{date_slash}`, `%{date_hyphen}`
+    - `%{date_d} %{month}`, `%{date_d} %{month_truncated}`
+    - `%{today}`, `%{tomorrow}`
+    ###### 🕐 Uhrzeit
+    - `20:03`, `um 20:03`
+    - `%{morning}`, `%{afternoon}`, `%{evening}`
+    - Wenn du keine Uhrzeit angibst, erfolgt die Erinnerung um 9:00 Uhr.
+  fr: |
+    Je suis un bot de rappel. Envoyez-moi la date, l'heure et le texte du rappel sur la même ligne. Par exemple : `%{date} 20:03 votre rappel`
+
+    ###### 📅 Date
+    - `%{date}`, `%{date_slash}`, `%{date_hyphen}`
+    - `%{date_d} %{month}`, `%{date_d} %{month_truncated}`
+    - `%{today}`, `%{tomorrow}`
+    ###### 🕐 Heure
+    - `20:03`, `à 20:03`
+    - `%{morning}`, `%{afternoon}`, `%{evening}`
+    - Si vous ne précisez pas l'heure, le rappel sera envoyé à `09:00`.
+  it: |
+    Sono un bot per i promemoria. Inviami la data, l'ora e il testo del promemoria sulla stessa riga. Ad esempio: `%{date} 20:03 il tuo promemoria`
+
+    ###### 📅 Data
+    - `%{date}`, `%{date_slash}`, `%{date_hyphen}`
+    - `%{date_d} %{month}`, `%{date_d} %{month_truncated}`
+    - `%{today}`, `%{tomorrow}`
+    ###### 🕐 Ora
+    - `20:03`, `alle 20:03`
+    - `%{morning}`, `%{afternoon}`, `%{evening}`
+    - Se non specifichi l'ora, il promemoria arriverà alle `09:00`.
+  es: |
+    Soy un bot de recordatorios. Envíame la fecha, la hora y el texto del recordatorio en la misma línea. Por ejemplo: `%{fecha} 20:03 tu recordatorio`
+
+    ###### 📅 Fecha
+    - `%{fecha}`, `%{fecha_barra}`, `%{fecha_guion}`
+    - `%{fecha_d} %{mes}`, `%{fecha_d} %{mes_truncado}`
+    - `%{hoy}`, `%{mañana}`
+    ###### 🕐 Hora
+    - `20:03`, `a las 20:03`
+    - `%{mañana}`, `%{tarde}`, `%{noche}`
+    - Si no especificas la hora, el recordatorio llegará a las `09:00`.
+  sv: |
+    Jag är en påminnelsebot. Skicka mig datum, tid och påminnelsetext på samma rad. Till exempel: `%{date} 20:03 din påminnelse`
+
+    ###### 📅 Datum
+    - `%{date}`, `%{date_slash}`, `%{date_hyphen}`
+    - `%{date_d} %{month}`, `%{date_d} %{month_truncated}`
+    - `%{today}`, `%{tomorrow}`
+    ###### 🕐 Tid
+    - `20:03`, `mig 20:03`
+    - `%{morning}`, `%{afternoon}`, `%{evening}`
+    - om du inte anger tiden kommer påminnelsen klockan `09:00`.
+  pl: |
+    Jestem botem przypominającym. Wyślij mi datę, godzinę i tekst przypomnienia w jednym wierszu. Na przykład: `%{date} 20:03 twoje przypomnienie`
+
+    ###### 📅 Data
+    - `%{date}`, `%{date_slash}`, `%{date_hyphen}`
+    - `%{date_d} %{month}`, `%{date_d} %{month_truncated}`
+    - `%{today}`, `%{tomorrow}`
+    ###### 🕐 Godzina
+    - `20:03`, `o 20:03`
+    - `%{morning}`, `%{afternoon}`, `%{evening}`
+    - jeśli nie podasz godziny, przypomnienie pojawi się o `09:00`.
+  cs: |
+    Jsem bot pro připomenutí. Pošlete mi datum, čas a text připomenutí na stejném řádku. Například: `%{date} 20:03 vaše připomenutí`
+
+    ###### 📅 Datum
+    - `%{date}`, `%{date_slash}`, `%{date_hyphen}`
+    - `%{date_d} %{month}`, `%{date_d} %{month_truncated}`
+    - `%{today}`, `%{tomorrow}`
+    ###### 🕐 Čas
+    - `20:03`, `v 20:03`
+    - `%{morning}`, `%{afternoon}`, `%{evening}`
+    - pokud nezadáte čas, připomenutí se zobrazí v `09:00`.
+  fi: |
+    Olen muistutusbotti. Lähetä minulle päivämäärä, aika ja muistutusteksti samalla rivillä. Esimerkiksi: `%{date} 20:03 muistutuksesi`
+
+    ##### 📅 Päivämäärä
+    - `%{date}`, `%{date_slash}`, `%{date_hyphen}`
+    - `%{date_d} %{month}`, `%{date_d} %{month_truncated}`
+    - `%{today}`, `%{tomorrow}`
+    ###### 🕐 Aika
+    - `20:03`, `kello 20:03`
+    - `%{morning}`, `%{afternoon}`, `%{evening}`
+    - jos et määritä aikaa, muistutus tulee klo `09:00`.
+  ja: |
+    私はリマインダーボットです。日付、時刻、リマインダーのテキストを同じ行で送信してください。例：`%{date} 20:03 あなたのリマインダー`
+
+    ###### 📅 日付
+    - `%{date}`、`%{date_slash}`、`%{date_hyphen}`
+    - `%{date_d} %{month}`、`%{date_d} %{month_truncated}`
+    - `%{today}`、`%{tomorrow}`
+    ###### 🕐 時刻
+    - `20:03`
+    - `%{morning}`、`%{afternoon}`、`%{evening}`
+    - 時刻を指定しない場合、リマインダーは`09:00`に送信されます。
+  zh: |
+    我是提醒机器人。请将日期、时间和提醒文本写在同一行。例如：`%{date} 20:03 您的提醒`
+
+    ###### 📅 日期
+    - `%{date}`, `%{date_slash}`, `%{date_hyphen}`
+    - `%{date_d} %{month}`, `%{date_d} %{month_truncated}`
+    - `%{today}`, `%{tomorrow}`
+
+    ###### 🕐 时间
+    - `20:03`
+    - `%{morning}`, `%{afternoon}`, `%{evening}`
+    - 如果您未指定时间，提醒将在 `09:00` 发送。
+  ru: |
+    Я бот-напоминалка. Отправьте мне дату, время и текст напоминания в той же строке. Например: `%{date} 14:00 ваше напоминание` 
+    
+    ###### 📅 Дата
+      - `%{date}`, `%{date_slash}`, `%{date_hyphen}`
+      - `%{date_d} %{month}`, `%{date_d} %{month_truncated}`
+      - `%{today}`, `%{tomorrow}`
+    ###### 🕐 Время
+      - `20:03`, `в 20:03`.
+      - `%{morning}`, `%{afternoon}`, `%{evening}`.
+      - если вы не укажете время, напоминание придет в `09:00`.
+  uk: |
+    Я бот-нагадування. Надішліть: дату, час і текст нагадування в одному рядку. Наприклад: `%{date} 20:03 ваше нагадування`
+
+    ###### 📅 Дата
+    - `%{date}`, `%{date_slash}`, `%{date_hyphen}`
+    - `%{date_d} %{month}`, `%{date_d} %{month_truncated}`
+    - `%{today}`, `%{tomorrow}`
+    ###### 🕐 Час
+    - `20:03`, `о 20:03`
+    - `%{morning}`, `%{afternoon}`, `%{evening}`
+    - якщо не вказати час, нагадування надійде о `09:00`.
 reminder.command:
   en: remind
   de: erinnern

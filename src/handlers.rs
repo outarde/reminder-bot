@@ -32,7 +32,7 @@ enum BotCommand {
 
 impl BotCommand {
     fn parse(text: &str, bot_config: BotConfig) -> Option<(Self, String)> {
-        if !text.starts_with('/') {
+        if !text.starts_with('/') && !text.starts_with('!') {
             // Return None if bot can be activated only with command
             // and return "remind" command if can be activated without command
             if bot_config.on_command {
@@ -292,10 +292,37 @@ pub async fn handle_remind(
             }
         }
     } else {
+        let i18n_cmd = t!("reminder.command");
+        let i18n_months_str = t!("months");
+
         let tomorrow = Local::now().date_naive() + Days::new(1);
         let date = tomorrow.format("%d.%m.%Y").to_string();
 
-        let welcome_msg = t!("welcome", date = date);
+        let month = tomorrow.format("%m").to_string().parse::<usize>().unwrap();
+        let i18n_months: Vec<&str> = i18n_months_str.split_whitespace().collect();
+        let month_str = i18n_months[month - 1].to_string();
+
+        let month_str_truncated = month_str.get(0..3).unwrap_or(&month.to_string()).to_string();
+
+        let welcome_type = if bot_config.on_command {
+            "welcome.on_command"
+        } else { "welcome.on_command_off" };
+
+        let welcome_msg = t!(
+            welcome_type, 
+            cmd = i18n_cmd, 
+            date = date,
+            date_slash = tomorrow.format("%d/%m/%Y").to_string(),
+            date_hyphen = tomorrow.format("%d-%m").to_string(),
+            date_d = tomorrow.format("%d").to_string(),
+            month = month_str,
+            month_truncated = month_str_truncated,
+            today = &i18n_today,
+            tomorrow = &i18n_tomorrow,
+            morning = &i18n_morning,
+            afternoon = &i18n_afternoon,
+            evening = &i18n_evening
+        );
         // for markdonw to text_html: use pulldown_cmark::{Parser, html};
         // let welcome_msg_html = markdown_to_html(&welcome_msg).await;
 
@@ -345,7 +372,7 @@ fn build_reminder_regex(
         let mut regex_str = String::with_capacity(256); 
         
         // [^\.\-\s]{1,15} in ?P<month> can be replaced with white list of months names
-        regex_str.push_str(r"^(?i)(?:(?P<datetime>(?P<day>\d{1,2})(?:\s+|\.|\/|-)(?P<month>[^\.\-\s]{1,15}|\d{2})(?:\s|\.|\/|-)?(?P<year>\d{4})?)|(?P<day_natural>");
+        regex_str.push_str(r"^(?i)(?:(?P<datetime>(?P<day>\d{1,2})(?:\s|\.|\/|-)(?P<month>[^\.\-\s]{1,15}|\d{2})(?:\s|\.|\/|-)?(?P<year>\d{4})?)|(?P<day_natural>");
         regex_str.push_str(&i18n_days.join("|"));
 
         regex_str.push_str(r"))(?:(?:\s+(?<prep>at|");
@@ -428,7 +455,7 @@ fn build_datetime_str(data: &ParsedReminder) -> Result<NaiveDateTime, ReminderDa
     }
     // If word
     else {
-        let i18n_months_str = t!("dates.months");
+        let i18n_months_str = t!("months");
         let i18n_months: Vec<&str> = i18n_months_str.split_whitespace().collect();
         let month_numbers = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
 

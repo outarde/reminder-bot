@@ -73,8 +73,6 @@ A lightweight chatbot for reminders on Matrix servers focused on multilingual su
   </tr>
 </table>
 
-Exclamation mark `!` in screenshots are from an older version. From v0.5.0, the bot uses slash `/` to recognise commands.
-
 ## Quick Start
 ### Docker Run
 ```
@@ -108,7 +106,7 @@ For a full description of all bot settings, see [the configuration help page](ht
 
 ## Usage
 ### Start a Chat
-Create a conversation with the bot or add it to a room. Send the `/remind` command to get help:
+Create a conversation with the bot or add it to a room. Send the `/remind` or `!remind` command to get help:
 >I'm a reminder bot. Send me a reminder in this format: `/remind 19.08.2026 [at] 15:30 <reminder text>`. You can replace the month number with its name, use words `today` or `tomorrow`. If no time was specified the reminder will arrive at 09:00. I'll send it to you in a group or private room.
 
 ### Create a Reminder
