@@ -9,7 +9,8 @@ use matrix_sdk::{
     }
 };
 use tokio::time::{Duration, sleep};
-use chrono::{Local, Days, NaiveDateTime};
+use chrono::{Local, Days, NaiveDateTime, DateTime, Utc, TimeZone};
+use chrono_tz::Tz;
 use tokio_rusqlite::Connection;
 
 use regex::Regex;
@@ -268,6 +269,7 @@ pub async fn handle_remind(
             }
         };
 
+        /*
         let target_time = match build_datetime_str(&reminder_data) {
             Ok(dt) => dt,
             Err(err) => {
@@ -284,6 +286,39 @@ pub async fn handle_remind(
                 super::reminder::schedule_reminder(client.clone(), db.clone(), new_reminder).await;
 
                 let date_str = target_time.format("%d.%m.%Y");
+                let reminder_mes = t!("reminder.saved", date = date_str, hour = reminder_data.hour, min = reminder_data.min);
+                let _ = room.send(RoomMessageEventContent::text_plain(reminder_mes)).await;
+            }
+            Err(err) => {
+                tracing::error!("SQLite error: {:?}", err);
+            }
+        }
+        */
+
+        let user_tz: Tz = match "Europe/Moscow".parse() {
+            Ok(tz) => tz,
+            Err(err) => {
+                tracing::error!("Invalid user timezone: {:?} for {:?}", err, reminder_data);
+                return;
+            }
+        };
+
+        let (utc_time, naive_time) = match build_datetime_utc(&reminder_data, user_tz) {
+            Ok((ut, nt)) => (ut, nt),
+            Err(err) => {
+                let err_msg = t!(err.as_i18n_key()); 
+                let _ = room.send(RoomMessageEventContent::text_plain(err_msg)).await;
+                
+                tracing::error!("Date and time validation error: {:?} for {:?}", err, reminder_data);
+                return;
+            }
+        };
+
+        match super::reminder::save_reminder_to_db_utc(&db, room.room_id(), reminder_data.text, naive_time.clone(), utc_time.clone(), user_tz.clone()).await {
+            Ok(new_reminder) => {
+                super::reminder::schedule_reminder_utc(client.clone(), db.clone(), new_reminder).await;
+
+                let date_str = naive_time.format("%d.%m.%Y");
                 let reminder_mes = t!("reminder.saved", date = date_str, hour = reminder_data.hour, min = reminder_data.min);
                 let _ = room.send(RoomMessageEventContent::text_plain(reminder_mes)).await;
             }
@@ -458,6 +493,7 @@ fn build_datetime_str(data: &ParsedReminder) -> Result<NaiveDateTime, ReminderDa
         let i18n_months_str = t!("months");
         let i18n_months: Vec<&str> = i18n_months_str.split_whitespace().collect();
         let month_numbers = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
+        // let (i18n_months, month_numbers) = get_months();
 
         let idx = i18n_months.iter().position(|&name| {
             (name == data.month || name.starts_with(&data.month)) && data.month.len() >= 3
@@ -476,6 +512,50 @@ fn build_datetime_str(data: &ParsedReminder) -> Result<NaiveDateTime, ReminderDa
     }
 
     Ok(target_time)
+}
+
+/// Build final UTC DateTime for DB and validate its time in the future.
+fn build_datetime_utc(data: &ParsedReminder, user_tz: Tz) -> Result<(DateTime<Utc>, NaiveDateTime), ReminderDateError> {
+    let mut month: String = String::from("");
+
+    // Check if number
+    if let Ok(m) = data.month.as_str().parse::<u32>() {
+        if (1..=12).contains(&m) {
+            month = format!("{:02}", m);
+        }
+    }
+    // If word
+    else {
+        let i18n_months_str = t!("months");
+        let i18n_months: Vec<&str> = i18n_months_str.split_whitespace().collect();
+        let month_numbers = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
+
+        let idx = i18n_months.iter().position(|&name| {
+            (name == data.month || name.starts_with(&data.month)) && data.month.len() >= 3
+        }).ok_or(ReminderDateError::InvalidMonth)?;
+        month = month_numbers[idx].to_string();
+    }
+
+    let datetime_string = format!("{}-{}-{} {}:{}:00", data.year, month.as_str(), data.day, data.hour, data.min);
+    
+    // Check if time can be parsed and in the future
+    let naive_dt = NaiveDateTime::parse_from_str(&datetime_string, "%Y-%m-%d %H:%M:%S")
+        .map_err(|_| ReminderDateError::InvalidTime)?;
+        
+    //if naive_dt <= Local::now().naive_local() {
+    //    return Err(ReminderDateError::TimeInPast); 
+    //}
+
+    let user_dt = user_tz.from_local_datetime(&naive_dt).single().ok_or(ReminderDateError::InvalidTime)?; 
+    // to UTC
+    let utc_dt = user_dt.with_timezone(&Utc);
+    
+    // Checking that the time is in the future
+    if utc_dt <= Utc::now() {
+        return Err(ReminderDateError::TimeInPast);
+    }
+
+    Ok((utc_dt, naive_dt))
 }
 
 /// Save reminder to DB
@@ -516,6 +596,18 @@ async fn markdown_to_html(markdown: &str) -> String {
     let mut buffer = String::new();
     html::push_html(&mut buffer, parser);
     buffer
+}
+*/
+
+/// Get 2 Vecs of months: month names and numbers to compare
+// TODO: to HashMap
+/*
+async fn get_months() -> (Vec<&'static str>, Vec<&'static str>) {
+    let i18n_months_str = t!("months");
+    let i18n_months: Vec<&str> = i18n_months_str.split_whitespace().collect();
+    let month_numbers = vec!["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
+
+    return (i18n_months, month_numbers);
 }
 */
 

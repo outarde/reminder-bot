@@ -21,6 +21,7 @@ envy = "0.4.2"
 serde_yaml_ng = "0.10.0"
 tokio-rusqlite = { version = "0.7", features = ["bundled"] }
 chrono = { version = "0.4", features = ["serde"] }
+chrono-tz = "0.10.4"
 regex = "1"
 colored = "^3.1.1"
 # temps = { version = "^4", features = ["chrono"] }
@@ -28,7 +29,3 @@ colored = "^3.1.1"
 rust-i18n = "^4.2.0"
 # pulldown-cmark = "0.13"
 inquire = "^0.9.4"
-
-[package.metadata.i18n]
-available-locales = ["en", "ru"]
-default-locale = "en"
