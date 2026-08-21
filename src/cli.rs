@@ -153,6 +153,11 @@ fn config_setup() -> Result<(config::BotConfig, bool)> {
         .with_help_message("In rooms with only two people, the bot will respond regardless of whether it is mentioned.")
         .with_default(false).prompt()?;
 
+    // TODO: validate format
+    let tz = Text::new("Default timezone in IANA format:")
+        .with_help_message("This time zone will be applied in rooms where users have not specified their own.")
+        .with_default("Europe/Paris").prompt()?.to_string();
+
     let morning = Text::new("Set morning time (HH:MM):")
         .with_default(config::DEFAULT_MORNING_TIME)
         .with_validator(validate_config_time)
@@ -173,6 +178,7 @@ fn config_setup() -> Result<(config::BotConfig, bool)> {
         tz_commands: vec![config::DEFAULT_TIMEZONE_COMMAND.to_string()],
         on_command,
         on_mention,
+        tz,
         morning,
         afternoon,
         evening

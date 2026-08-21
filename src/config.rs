@@ -15,6 +15,8 @@ pub const DEFAULT_COMMAND: &str = "remind";
 pub const DEFAULT_LIST_COMMAND: &str = "list";
 /// Default bot command.
 pub const DEFAULT_TIMEZONE_COMMAND: &str = "tz";
+/// Default bot command.
+pub const DEFAULT_TZ: &str = "Europe/Paris";
 /// Default times
 pub const DEFAULT_MORNING_TIME: &str = "09:00";
 pub const DEFAULT_AFTERNOON_TIME: &str = "14:00";
@@ -64,6 +66,8 @@ pub struct BotConfig {
     pub on_command: bool,
     #[serde(default = "BotConfig::default_on_mention")]
     pub on_mention: bool,
+    #[serde(default = "BotConfig::default_tz")]
+    pub tz: String,
     #[serde(default = "BotConfig::default_morning_time")]
     pub morning: String,
     #[serde(default = "BotConfig::default_afternoon_time")]
@@ -99,6 +103,9 @@ impl BotConfig {
     }
     fn default_tz_command() -> Vec<String> {
         vec![DEFAULT_TIMEZONE_COMMAND.to_string()]
+    }
+    fn default_tz() -> String {
+        DEFAULT_TZ.into()
     }
     fn default_morning_time() -> String {
         DEFAULT_MORNING_TIME.into()
