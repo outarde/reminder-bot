@@ -6,6 +6,7 @@ extern crate rust_i18n;
 use std::{
     sync::Arc,
     path::{PathBuf},
+    collections::HashMap
 };
 use matrix_sdk::{
     Client, 
@@ -16,6 +17,7 @@ use anyhow::Result;
 use tracing_subscriber;
 use tracing::info;
 use tokio::signal;
+use tokio::sync::RwLock;
 use tokio_rusqlite::Connection;
 
 mod cli;
@@ -26,6 +28,7 @@ mod reminder;
 mod remote_i18n;
 
 use crate::remote_i18n::RemoteI18n;
+use crate::handlers::I18nManager;
 
 rust_i18n::i18n!("locales", fallback = "en", backend = RemoteI18n::new());
 
@@ -118,12 +121,37 @@ impl BotRuntime {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 struct BotContext {
     pub client: Client,
     pub bot_id: OwnedUserId,
-    pub db_conn: Arc<Connection>,
+    pub db: Arc<Connection>,
     pub bot_config: config::BotConfig,
+    pub i18n_cache: Arc<RwLock<HashMap<String, Arc<I18nManager>>>>,
+}
+
+impl BotContext {
+    /// Get I18nManager for locale with lazyload.
+    pub async fn get_i18n_manager(&self, locale: &str) -> Arc<I18nManager> {
+        // Access to read. ReadGuard.
+        {
+            let cache = self.i18n_cache.read().await;
+            if let Some(manager) = cache.get(locale) {
+                return Arc::clone(manager);
+            }
+        }
+
+        // Create it if we have not it. WriteGuard.
+        let mut cache = self.i18n_cache.write().await;
+        
+        // Double-checked locking. 
+        // While we were waiting for WriteGuard, another thread could have created the manager.
+        cache.entry(locale.to_string())
+            .or_insert_with(|| {
+                Arc::new(I18nManager::new_for_locale(locale))
+            })
+            .clone()
+    }
 }
 
 type SharedState = Arc<BotContext>;
@@ -139,8 +167,9 @@ impl BotManager {
         let context = Arc::new(BotContext {
             client: runtime.client.clone(),
             bot_id: runtime.bot_id.clone(),
-            db_conn: db_conn,
+            db: db_conn,
             bot_config: config.bot.clone(),
+            i18n_cache: Arc::new(RwLock::new(HashMap::new())),
         });
 
         Ok(Self { context })
@@ -148,7 +177,7 @@ impl BotManager {
 
     pub async fn start(&self, runtime: &BotRuntime) -> Result<()> {
         // Restore reminders
-        reminder::restore_reminders(self.context.client.clone(), &self.context.db_conn).await?;
+        reminder::restore_reminders(self.context.clone()).await?;
 
         // Register handlers
         self.register_handlers();
