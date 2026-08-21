@@ -9,7 +9,7 @@ use matrix_sdk::{
     }
 };
 use tokio::time::{Duration, sleep};
-use chrono::{Local, Days, NaiveDateTime, DateTime, Utc, TimeZone};
+use chrono::{Local, Days, NaiveDateTime, DateTime, Utc, TimeZone, Datelike};
 use chrono_tz::Tz;
 use tokio_rusqlite::Connection;
 
@@ -123,8 +123,53 @@ impl ReminderDateError {
     }
 }
 
+/// Parse months
+pub struct MonthManager {
+    names: Vec<String>, 
+}
+
+impl MonthManager {
+    pub fn new(i18n_months_str: &str) -> Self {
+        let names = i18n_months_str
+            .split_whitespace()
+            .map(|s| s.to_string())
+            .collect();
+        Self { names }
+    }
+
+    // User Input -> Month Number
+    pub fn parse(&self, input: &str) -> Option<u8> {
+        // If number
+        if let Ok(m) = input.parse::<u8>() {
+            if (1..=12).contains(&m) {
+                return Some(m);
+            }
+        }
+
+        // If name
+        let idx = self.names.iter()
+            .position(|name| {
+                (name == input || name.starts_with(input)) && input.len() >= 3
+            })?;
+
+        Some((idx + 1) as u8)
+    }
+
+    // Number -> Month name, short name
+    pub fn format(&self, month_num: &u32) -> Option<(String, String)> {
+        if (1..=12).contains(month_num) {
+            // Some(self.names[(month_num - 1) as usize].clone())
+            let name = self.names[(month_num - 1) as usize].clone();
+            let short_name = name.get(0..3).unwrap_or(&month_num.to_string()).to_string();
+            Some((name, short_name))
+        } else {
+            None
+        }
+    }
+}
+
 /// Parsed data of user message for newly reminder
- #[derive(Debug)]
+#[derive(Debug)]
 struct ParsedReminder {
     text: String,
     year: String,
@@ -173,6 +218,7 @@ pub async fn on_room_message(
 
     match command {
         BotCommand::Remind => {
+            // TODO: Arc<ctx>
             handle_remind(&args, room, &ctx.client, &ctx.db_conn, &ctx.bot_config).await;
         }
         BotCommand::List => {
@@ -295,7 +341,8 @@ pub async fn handle_remind(
         }
         */
 
-        let user_tz: Tz = match "Europe/Moscow".parse() {
+        //TODO: move to ParsedReminder structure? + add MonthManager, too?
+        let user_tz: Tz = match bot_config.tz.parse() {
             Ok(tz) => tz,
             Err(err) => {
                 tracing::error!("Invalid user timezone: {:?} for {:?}", err, reminder_data);
@@ -316,6 +363,7 @@ pub async fn handle_remind(
 
         match super::reminder::save_reminder_to_db_utc(&db, room.room_id(), reminder_data.text, naive_time.clone(), utc_time.clone(), user_tz.clone()).await {
             Ok(new_reminder) => {
+                //TODO: use &ctx instead of client.clone(), ...
                 super::reminder::schedule_reminder_utc(client.clone(), db.clone(), new_reminder).await;
 
                 let date_str = naive_time.format("%d.%m.%Y");
@@ -333,11 +381,12 @@ pub async fn handle_remind(
         let tomorrow = Local::now().date_naive() + Days::new(1);
         let date = tomorrow.format("%d.%m.%Y").to_string();
 
-        let month = tomorrow.format("%m").to_string().parse::<usize>().unwrap();
-        let i18n_months: Vec<&str> = i18n_months_str.split_whitespace().collect();
-        let month_str = i18n_months[month - 1].to_string();
-
-        let month_str_truncated = month_str.get(0..3).unwrap_or(&month.to_string()).to_string();
+        // let month = tomorrow.month().to_string().parse::<i32>().unwrap();
+        // let i18n_months: Vec<&str> = i18n_months_str.split_whitespace().collect();
+        // let month_str = i18n_months[month - 1].to_string();
+        let manager = MonthManager::new(&i18n_months_str);
+        let (month_str, month_str_truncated) = manager.format(&tomorrow.month()).unwrap();
+        // let month_str_truncated = month_str.get(0..3).unwrap_or(&tomorrow.month().to_string()).to_string();
 
         let welcome_type = if bot_config.on_command {
             "welcome.on_command"
@@ -516,8 +565,17 @@ fn build_datetime_str(data: &ParsedReminder) -> Result<NaiveDateTime, ReminderDa
 
 /// Build final UTC DateTime for DB and validate its time in the future.
 fn build_datetime_utc(data: &ParsedReminder, user_tz: Tz) -> Result<(DateTime<Utc>, NaiveDateTime), ReminderDateError> {
-    let mut month: String = String::from("");
+    //let mut month: String = String::from("");
 
+    // Get month number
+    let manager = MonthManager::new(&format!("{}", t!("months")));
+
+    let month = if let Some(m) = manager.parse(data.month.as_str()) {
+        m.to_string()
+    } else {
+        return Err(ReminderDateError::InvalidMonth);
+    };
+    /*
     // Check if number
     if let Ok(m) = data.month.as_str().parse::<u32>() {
         if (1..=12).contains(&m) {
@@ -535,6 +593,7 @@ fn build_datetime_utc(data: &ParsedReminder, user_tz: Tz) -> Result<(DateTime<Ut
         }).ok_or(ReminderDateError::InvalidMonth)?;
         month = month_numbers[idx].to_string();
     }
+    */
 
     let datetime_string = format!("{}-{}-{} {}:{}:00", data.year, month.as_str(), data.day, data.hour, data.min);
     
@@ -549,7 +608,7 @@ fn build_datetime_utc(data: &ParsedReminder, user_tz: Tz) -> Result<(DateTime<Ut
     let user_dt = user_tz.from_local_datetime(&naive_dt).single().ok_or(ReminderDateError::InvalidTime)?; 
     // to UTC
     let utc_dt = user_dt.with_timezone(&Utc);
-    
+
     // Checking that the time is in the future
     if utc_dt <= Utc::now() {
         return Err(ReminderDateError::TimeInPast);
@@ -559,7 +618,6 @@ fn build_datetime_utc(data: &ParsedReminder, user_tz: Tz) -> Result<(DateTime<Ut
 }
 
 /// Save reminder to DB
-// TODO: move to reminder.rs; use it in reminder.rs
 async fn save_reminder_to_db(
     db: &Connection,
     room_id: &RoomId,
