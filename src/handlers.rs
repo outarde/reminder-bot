@@ -9,7 +9,7 @@ use matrix_sdk::{
     }
 };
 use tokio::time::{Duration, sleep};
-use chrono::{Local, Days, NaiveDateTime, DateTime, Utc, TimeZone, Datelike};
+use chrono::{Local, Days, NaiveDateTime, DateTime, Utc, TimeZone, Datelike, LocalResult};
 use chrono_tz::Tz;
 use tokio_rusqlite::Connection;
 
@@ -110,6 +110,7 @@ enum ReminderDateError {
     InvalidMonth,
     TimeInPast,
     InvalidTime,
+    SummerTime,
 }
 
 /// i18n keys
@@ -119,6 +120,7 @@ impl ReminderDateError {
             ReminderDateError::InvalidMonth => "reminder.error.month",
             ReminderDateError::TimeInPast => "reminder.error.past-time",
             ReminderDateError::InvalidTime => "reminder.error.time",
+            ReminderDateError::SummerTime => "reminder.error.summer-time",
         }
     }
 }
@@ -562,7 +564,20 @@ fn build_datetime_utc(data: &ParsedReminder, room_tz: Tz) -> Result<(DateTime<Ut
     let naive_dt = NaiveDateTime::parse_from_str(&datetime_string, "%Y-%m-%d %H:%M:%S")
         .map_err(|_| ReminderDateError::InvalidTime)?;
 
-    let user_dt = room_tz.from_local_datetime(&naive_dt).single().ok_or(ReminderDateError::InvalidTime)?; 
+    // We convert it to DateTime and check that zone mapping has a single result.
+    // TODO: parse None
+    // let user_dt = room_tz.from_local_datetime(&naive_dt).single().ok_or(ReminderDateError::InvalidTime)?;
+    let user_dt = match room_tz.from_local_datetime(&naive_dt) {
+        LocalResult::Single(dt) => dt,
+        LocalResult::Ambiguous(dt1, dt2) => {
+            // To Winter Time
+            dt2 
+        }
+        LocalResult::None => {
+            // To Summer Time
+            return Err(ReminderDateError::SummerTime); 
+        }
+    };
     let utc_dt = user_dt.with_timezone(&Utc);
 
     // Checking that the time is in the future

@@ -503,6 +503,20 @@ reminder.error.time:
   zh: 时间不对。
   ru: Неправильное время.
   uk: Неправильний час.
+reminder.error.summer-time:
+  en: This time does not exist in your time zone due to seasonal change, please choose another one.
+  de: Dieser Zeitpunkt existiert in Ihrer Zeitzone aufgrund jahreszeitlicher Veränderungen nicht. Bitte wählen Sie einen anderen.
+  fr: Cette heure n'est pas disponible dans votre fuseau horaire en raison du changement de saison, veuillez en choisir une autre.
+  it: A causa del cambio di stagione, questo orario non è disponibile nel tuo fuso orario. Selezionane un altro.
+  es: Esta hora no existe en su zona horaria debido al cambio estacional; por favor, elija otra.
+  sv: Den här tiden finns inte i din tidszon på grund av säsongsväxlingar, vänligen välj en annan.
+  pl: Ze względu na zmianę pory roku ta godzina nie występuje w Twojej strefie czasowej. Wybierz inną.
+  cs: Tento čas ve vašem časovém pásmu neexistuje kvůli sezónním změnám, zvolte prosím jiný.
+  fi: Tätä aikaa ei ole olemassa aikavyöhykkeelläsi vuodenaikojen vaihtelun vuoksi, valitse toinen aika.
+  ja: 季節変動のため、この時刻はあなたのタイムゾーンには存在しません。別の時刻を選択してください。
+  zh: 由于季节变化，您所在时区不存在此时间，请选择其他时间。
+  ru: Это время не существует в вашем часовом поясе из-за смены сезона, пожалуйста, выберите другое.
+  uk: Цей час не існує у вашому часовому поясі через зміну сезону, будь ласка, виберіть інше.
 dates.today:
   en: today
   de: heute

@@ -118,6 +118,8 @@ reminder.error.time:
   en: Oh, the times!
 reminder.error.past-time: 
   en: Time is in the past, no reminder needed!
+reminder.error.summer-time:
+  en: This time does not exist in your time zone due to seasonal change.
 
 dates.today: 
   en: today
