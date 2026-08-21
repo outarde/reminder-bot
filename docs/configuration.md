@@ -33,13 +33,13 @@ Additional settings are stored in the `config.yml`/`config.yaml` file in a folde
 
 The interactive configurator walks you through a series of questions to create a settings file and saves it to disk. Run it via the command line:
 ```
-docker run --rm -it -v ~/bot-data:/app/data/reminder_bot ghcr.io/outarde/reminder-bot:latest setup-config
+docker run --rm -it -v ~/bot-data:/app/data/reminder_bot ghcr.io/outarde/reminder-bot:latest config-setup
 ```
 The settings file will be saved in `~/bot-data` - in this case, in the folder in the user's home directory.
 
 If you have already created a bot container, run the command where `reminder-bot` is the name of your container:
 
-`docker exec -it reminder-bot setup-config`
+`docker exec -it reminder-bot config-setup`
 
 Confirm that you want to create or overwrite a settings file.
 </details>

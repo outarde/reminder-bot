@@ -7,7 +7,7 @@ use inquire::{Text, Confirm, Select, validator::Validation};
 use crate::{AppConfig, BotRuntime, BotManager};
 use crate::auth;
 use crate::config;
-use crate::reminder::is_time_valid;
+use crate::reminder::{is_time_valid, parse_tz};
 
 /// Reminder Bot will send reminders for anything you ask 
 /// at any time on your Matrix server.
@@ -71,7 +71,7 @@ enum Commands {
     },
 
     /// Generate configuration file interactive
-    SetupConfig,
+    ConfigSetup,
 }
 
 // === CLI Commands ===
@@ -153,10 +153,11 @@ fn config_setup() -> Result<(config::BotConfig, bool)> {
         .with_help_message("In rooms with only two people, the bot will respond regardless of whether it is mentioned.")
         .with_default(false).prompt()?;
 
-    // TODO: validate format
     let tz = Text::new("Default timezone in IANA format:")
         .with_help_message("This time zone will be applied in rooms where users have not specified their own.")
-        .with_default("Europe/Paris").prompt()?.to_string();
+        .with_default(config::DEFAULT_TZ)
+        .with_validator(validate_config_tz)
+        .prompt()?.to_string();
 
     let morning = Text::new("Set morning time (HH:MM):")
         .with_default(config::DEFAULT_MORNING_TIME)
@@ -198,7 +199,7 @@ pub async fn run(config: &mut AppConfig) -> Result<()> {
             cleanup(&level)?;
             return Ok(());
         }
-        Some(Commands::SetupConfig) => {
+        Some(Commands::ConfigSetup) => {
             let (new_config, overwrite) = config_setup()?;
             // Currently, after setup, the application terminates, and the mutable config is redundant. 
             // If we remove it, we'd have to remove &mut and send the new BotConfig to the save_setup() instead of None.
@@ -261,5 +262,15 @@ fn validate_config_time(input: &str) -> Result<Validation, inquire::error::Custo
         Ok(Validation::Valid)
     } else {
         Ok(Validation::Invalid("Use %H:%M format, like 09:00.".into()))
+    }
+}
+
+/// Validate TZ for CLI setup
+fn validate_config_tz(input: &str) -> Result<Validation, inquire::error::CustomUserError> {
+    match parse_tz(input) {
+        Ok(tz) => Ok(Validation::Valid),
+        Err(err) => {
+            Ok(Validation::Invalid("Use IANA Time Zone Database, like Europe/Paris.".into()))
+        }
     }
 }
