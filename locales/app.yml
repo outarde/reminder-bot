@@ -517,6 +517,16 @@ reminder.error.summer-time:
   zh: 由于季节变化，您所在时区不存在此时间，请选择其他时间。
   ru: Это время не существует в вашем часовом поясе из-за смены сезона, пожалуйста, выберите другое.
   uk: Цей час не існує у вашому часовому поясі через зміну сезону, будь ласка, виберіть інше.
+tz.current:
+  en: Room time zone is **%{tz}**.
+  ru: >
+    Часовой пояс комнаты: **%{tz}**.
+tz.set:
+  en: Room time zone is now set to **%{tz}**.
+tz.not-set:
+  en: Room time zone is default **%{tz}** zone.
+tz.invalid-format:
+  en: Invalid time zone format, use IANA Time Zone Database, like Europe/Paris.
 dates.today:
   en: today
   de: heute

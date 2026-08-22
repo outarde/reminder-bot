@@ -1,15 +1,17 @@
 use matrix_sdk::{
+    deserialized_responses::SyncOrStrippedState,
     Client, Room, RoomState,
     ruma::{
         RoomId,
         events::room::{
-            member::StrippedRoomMemberEvent,
+            member::StrippedRoomMemberEvent, 
             message::{MessageType, OriginalSyncRoomMessageEvent, RoomMessageEventContent},
         }
     }
 };
+//use ruma::events::room::{SyncOrStrippedState};
 use tokio::time::{Duration, sleep};
-use chrono::{Local, Days, NaiveDateTime, DateTime, Utc, TimeZone, Datelike, LocalResult};
+use chrono::{Days, NaiveDateTime, DateTime, Utc, TimeZone, Datelike, LocalResult};
 use chrono_tz::Tz;
 use tokio_rusqlite::Connection;
 
@@ -18,8 +20,9 @@ use std::sync::{OnceLock, Arc};
 use rust_i18n::t;
 
 // app crates
-use crate::reminder::{Reminder, ReminderStatus};
 use crate::config::BotConfig;
+use crate::reminder::{Reminder, ReminderStatus};
+use crate::settings::RoomTimezoneContent;
 
 // Compile regex only once
 static REMINDER_REGEX: OnceLock<Regex> = OnceLock::new();
@@ -204,51 +207,6 @@ impl I18nManager {
     }
 }
 
-/// Parse months
-pub struct MonthManager {
-    names: Vec<String>
-}
-
-impl MonthManager {
-    pub fn new(i18n_months_str: &str) -> Self {
-        let names = i18n_months_str
-            .split_whitespace()
-            .map(|s| s.to_string())
-            .collect();
-        Self { names }
-    }
-
-    // User Input -> Month Number
-    pub fn parse(&self, input: &str) -> Option<u8> {
-        // If number
-        if let Ok(m) = input.parse::<u8>() {
-            if (1..=12).contains(&m) {
-                return Some(m);
-            }
-        }
-
-        // If name
-        let idx = self.names.iter()
-            .position(|name| {
-                (name == input || name.starts_with(input)) && input.len() >= 3
-            })?;
-
-        Some((idx + 1) as u8)
-    }
-
-    // Number -> Month name, short name
-    pub fn format(&self, month_num: &u32) -> Option<(String, String)> {
-        if (1..=12).contains(month_num) {
-            // Some(self.names[(month_num - 1) as usize].clone())
-            let name = self.names[(month_num - 1) as usize].clone();
-            let short_name = name.get(0..3).unwrap_or(&month_num.to_string()).to_string();
-            Some((name, short_name))
-        } else {
-            None
-        }
-    }
-}
-
 /// Parsed data of user message for newly reminder
 #[derive(Debug)]
 struct ParsedReminder {
@@ -306,7 +264,7 @@ pub async fn on_room_message(
             return;
         }
         BotCommand::Tz => {
-            handle_tz(&args, room, ctx.clone()).await;
+            handle_tz(&args, event.clone(), room, ctx.clone()).await;
             return;
         }
     }
@@ -314,21 +272,58 @@ pub async fn on_room_message(
 
 /// Change TZ
 pub async fn handle_tz(
-    body: &str, 
+    body: &str,
+    ev: OriginalSyncRoomMessageEvent,
     room: Room,
     ctx: Arc<super::BotContext>,
 ) {
-    // Parse TZ
-    let room_tz = match super::reminder::parse_tz(&body) {
-        Ok(tz) => tz,
-        Err(err) => {
-            let err_msg = t!("tz.invalid-format"); 
-            let _ = room.send(RoomMessageEventContent::text_plain(err_msg)).await;
-            
-            tracing::error!("Invalid user timezone: {err:?}");
-            return;
+    // Update timezone if we have one in the input.
+    if !body.is_empty() {
+        // Parse TZ
+        let user_tz = match super::reminder::parse_tz(&body) {
+            Ok(tz) => tz,
+            Err(err) => {
+                let err_msg = t!("tz.invalid-format"); 
+                let _ = room.send(RoomMessageEventContent::text_markdown(err_msg)).await;
+                
+                tracing::error!("Invalid user timezone: {err:?}");
+                return;
+            }
+        };
+
+        // TODO: check current timezone by get_room_tz() and update only user changes it
+        // may be via result from room.send_state_event(content).await ?
+        let _ = super::settings::set_room_tz(room.clone(), ctx.clone(), user_tz).await;
+
+        let msg = t!("tz.set", tz = user_tz); 
+        let _ = room.send(RoomMessageEventContent::text_markdown(msg)).await;
+
+        return;
+    }
+
+    // Reply with current timezone.
+    // Raw JSON: Option<Raw<StateEvent<C>>>
+    if let Ok(Some(raw)) = room.get_state_event_static::<RoomTimezoneContent>().await {
+        // Pattern matching to Sync variant, not Stripped
+        // https://docs.rs/matrix-sdk/latest/matrix_sdk/deserialized_responses/enum.SyncOrStrippedState.html
+        // Instead of pattern matching we can use as_sync() 
+        // on et Ok(state) = raw.deserialize() with type SyncOrStrippedState<RoomTimezoneContent>.
+        if let Ok(SyncOrStrippedState::Sync(sync_event)) = raw.deserialize() {
+            // Check if it is not Redacted
+            // https://docs.rs/ruma-events/0.34.0/ruma_events/enum.SyncStateEvent.html
+            if let Some(original) = sync_event.as_original() {
+                // println!("Timezone: {}", original.content.timezone);
+                let msg = t!("tz.current", tz = &original.content.timezone);
+                let _ = room.send(RoomMessageEventContent::text_markdown(msg)).await;
+            } else {
+                tracing::warn!("Redacted timezone can not be viewed.");
+            }
         }
-    };
+    } else {
+        let msg = t!("tz.not-set", tz = ctx.bot_config.tz); 
+        let _ = room.send(RoomMessageEventContent::text_markdown(msg)).await;
+    }
+    
 }
 
 /// New reminder
@@ -340,6 +335,7 @@ pub async fn handle_remind(
     // i18n
     let i18n = ctx.get_i18n_manager(&ctx.bot_config.lang).await;
     // TZ
+    // TODO: Move it to structure or smth else
     let room_tz = match super::reminder::parse_tz(&ctx.bot_config.tz) {
         Ok(tz) => tz,
         Err(err) => {
@@ -368,7 +364,7 @@ pub async fn handle_remind(
         };
 
         // Times
-        let (utc_time, naive_time) = match build_datetime_utc(&reminder_data, room_tz) {
+        let (utc_time, naive_time) = match build_datetime_utc(&reminder_data, room_tz, &i18n) {
             Ok((ut, nt)) => (ut, nt),
             Err(err) => {
                 let err_msg = t!(err.as_i18n_key()); 
@@ -380,9 +376,9 @@ pub async fn handle_remind(
         };
 
         // Save to DB and schedule
+        // TODO: Use &ctx instead of client.clone() + use ReminderUtc?
         match super::reminder::save_reminder_to_db_utc(&ctx.db, room.room_id(), reminder_data.text, naive_time.clone(), utc_time.clone(), room_tz.clone()).await {
             Ok(new_reminder) => {
-                // TODO: use &ctx instead of client.clone(), ...
                 super::reminder::schedule_reminder_utc(ctx.clone(), new_reminder).await;
 
                 let date_str = naive_time.format("%d.%m.%Y");
@@ -396,7 +392,7 @@ pub async fn handle_remind(
     } 
     // Welcome message
     else {
-        send_welcome_message(room.clone(), &ctx, &room_tz, &i18n);
+        send_welcome_message(room.clone(), &ctx, &room_tz, &i18n).await;
     }
 }
 
@@ -546,13 +542,13 @@ fn parse_reminder_data(
 }
 
 /// Build final UTC DateTime for DB and validate its time in the future.
-fn build_datetime_utc(data: &ParsedReminder, room_tz: Tz) -> Result<(DateTime<Utc>, NaiveDateTime), ReminderDateError> {
-    //let mut month: String = String::from("");
-
-    // Get month number
-    let manager = MonthManager::new(&format!("{}", t!("months")));
-
-    let month = if let Some(m) = manager.parse(data.month.as_str()) {
+fn build_datetime_utc(
+    data: &ParsedReminder, 
+    room_tz: Tz, 
+    i18n: &Arc<I18nManager>
+) -> Result<(DateTime<Utc>, NaiveDateTime), ReminderDateError> {
+    // Parse to get month number
+    let month = if let Some(m) = i18n.parse_month(data.month.as_str()) {
         m.to_string()
     } else {
         return Err(ReminderDateError::InvalidMonth);

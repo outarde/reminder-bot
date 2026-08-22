@@ -25,6 +25,7 @@ mod config;
 mod auth;
 mod handlers;
 mod reminder;
+mod settings;
 mod remote_i18n;
 
 use crate::remote_i18n::RemoteI18n;
